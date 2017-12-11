@@ -149,7 +149,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
                     }
                 });
             }else {
-                console.log('Warning: Group '+ recipient_group_id +' not found ' );
+                console.warn('Warning: Group '+ recipient_group_id +' not found ' );
                 //recipient_id is NOT a group
                             
             }
