@@ -65,47 +65,9 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
 
         if (message.is_group==1) { //is a group message
             return sendGroupMessageToRecipientsTimeline(sender_id, recipient_id, message, message_id, app_id);
-            // admin.database().ref('/apps/'+app_id+'/groups/'+recipient_id).once('value').then(function(groupSnapshot) {
-            //     console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
-            //     //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
-
-            //     if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
-            //         var group_id = recipient_id;
-            //         var groupMembers = groupSnapshot.val().members;
-            //         var groupMembersAsArray = Object.keys(groupMembers);
-            //         console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
-            //         //TODO check se sender è membro del gruppo
-            //         // if (groupMembersAsArray.indexOf(sender_id)<0) {
-            //         //     errore non sei membro del gruppo
-            //         // }
-            //         groupMembersAsArray.forEach(function(groupMember) {
-            //             console.log('groupMember ' + groupMember);
-            //             //DON'T send a message to the sender of the message 
-            //             if (groupMember!=sender_id) { 
-            //                 //here recipient_id is the group_id
-            //                 updates['/'+groupMember+'/messages/'+group_id + '/'+ message_id] = message; 
-            //             }
-            //         });
-            //     }else {
-            //         console.log('group not found ' );
-            //          //recipient_id is NOT a group
-                                
-            //     }
-
-
-            //     console.log('updates ' + JSON.stringify(updates) );
-                
-            //     return admin.database().ref('/apps/'+app_id+'/users').update(updates);
-
-            // });
         }else {//is a direct message
            
             return sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id);
-             //updates['/'+recipient_id+'/messages/'+sender_id + '/'+ message_id] = message;   
-            //console.log('updates ' + JSON.stringify(updates) );
-            
-            //return admin.database().ref('/apps/'+app_id+'/users').update(updates);
-
         }
 
     }
