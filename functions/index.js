@@ -4,11 +4,12 @@ var admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 /*
 STATUS
-0 GENERATO
-100 SENDING
-150 MESSAGE SENT to recipient inbox
-200 RICEVUTO DAL DESTINATARIO (MESSAGE DELIVERED to recipient client app)
-250 RICEVUTO DAL DESTINATARIO (RETURN RECEIPT from the recipient client app)
+-100 FAILED 
+0 SENDING (SOLO CLIENT)
+100 SENT (SALVATO SULLA TIMELINE DEL MITTENTE)
+150 DELIVERED_TO_RECIPIENT_TIMELINE (SALVATO SULLA TIMELINE DEL DESTINATARIO)
+200 RECEIVED_FROM_RECIPIENT_CLIENT
+250 RETURN RECEIPT from the recipient client app)
 300 SEEN (VISTO)
 */
 /*
@@ -401,59 +402,61 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
     
         const text = message.text;
         const messageTimestamp = JSON.stringify(message.timestamp);
-        const senderFullname = message.sender_fullname;
         
-        const getInstanceIdPromise = admin.database().ref(`/apps/${app_id}/users/${recipient_id}/instanceId`).once('value');
-        const getSenderUidPromise = admin.auth().getUser(sender_id);
-    
-        return Promise.all([getInstanceIdPromise, getSenderUidPromise]).then(results => {
-        const instanceId = results[0].val(); // risultato di getInstanceIdPromise
-        const sender = results[1];  // risutalto di getSenderUidPromise
-    
-        console.log('instanceId ' + instanceId);
-        console.log('sender ' + sender);
-        
-        
-        //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
-        const payload = {
-            notification: {
-            title: senderFullname,
-            body: text,
-            icon : "ic_notification_small",
-            sound : "default",
-            click_action: "OPEN_MESSAGE_LIST_ACTIVITY", // for intent filter in your activity
-            badge : "1"
-        },
-    
-            data: {
-                recipient: recipient_id,
-                sender: sender_id,
-                sender_fullname: senderFullname,     
-                text: text,
-                //timestamp : JSON.stringify(admin.database.ServerValue.TIMESTAMP)
-                timestamp : new Date().getTime().toString()
-            }
-        };
-        
-        console.log('payload ', payload);
+        console.log(`--->/apps/${app_id}/users/${sender_id}/instanceId`);
 
-        admin.messaging().sendToDevice(instanceId, payload)
-        .then(function (response) {
-            console.log("Push notification sent with response ", response);
+        admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
+          
+            //console.log('instanceIdAsObj ' + instanceIdAsObj); 
+
+            var instanceId = instanceIdAsObj.val();
+
+            console.log('instanceId ' + instanceId); 
             
-            // { results: [ { error: [Object] } ],
-            // canonicalRegistrationTokenCount: 0,
-            // failureCount: 1,
-            // successCount: 0,
-            // multicastId: 8632601518674035000 }
+            //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
+            const payload = {
+                notification: {
+                title: message.sender_fullname,
+                body: text,
+                icon : "ic_notification_small",
+                sound : "default",
+                click_action: "OPEN_MESSAGE_LIST_ACTIVITY", // for intent filter in your activity
+                badge : "1"
+            },
+        
+                data: {
+                    recipient: message.recipient,
+                    sender: message.sender,
+                    sender_fullname: message.sender_fullname,     
+                    text: text,
+                    //timestamp : JSON.stringify(admin.database.ServerValue.TIMESTAMP)
+                    timestamp : new Date().getTime().toString()
+                }
+            };
+            
+            console.log('payload ', payload);
 
-            console.log("Push notification sent with response as string ", JSON.stringify(response));
-            //console.log("Successfully sent message.results[0]:", response.results[0]);
-        })
-        .catch(function (error) {
-            console.log("Error sending message:", error);
+            admin.messaging().sendToDevice(instanceId, payload)
+            .then(function (response) {
+                console.log("Push notification sent with response ", response);
+                
+                // { results: [ { error: [Object] } ],
+                // canonicalRegistrationTokenCount: 0,
+                // failureCount: 1,
+                // successCount: 0,
+                // multicastId: 8632601518674035000 }
+
+                console.log("Push notification sent with response as string ", JSON.stringify(response));
+                //console.log("Successfully sent message.results[0]:", response.results[0]);
+            })
+            .catch(function (error) {
+                console.log("Error sending message:", error);
+            });
+
         });
-        });
+
+        return 0;
+
 });
 
 // const pushNotificationsFunction = require('./push_notifications');
