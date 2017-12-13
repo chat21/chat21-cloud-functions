@@ -237,7 +237,8 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     if (message.recipient_fullname){        
         conversation.recipient_fullname = message.recipient_fullname;
     }
-    conversation.status = message.status;
+    //conversation.status = message.status;
+    conversation.status = 2;
     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
 
     console.log('conversation ' + JSON.stringify(conversation));
@@ -285,3 +286,320 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
    
   });
   
+
+
+
+
+
+
+
+
+
+  exports.fanOutGroup = functions.database.ref('/apps/{tenantId}/groups/{groupId}').onWrite(event => {
+    
+     //console.log('event.data: ' +  event.data);
+   
+     const tenantId = event.params.tenantId;
+     console.log("tenantId : " + tenantId);
+   
+     const groupId = event.params.groupId;
+     console.log("groupId : " + groupId);
+   
+   
+     const group = event.data.current.val();
+     
+     console.log('group ' + JSON.stringify(group) );
+   
+    
+     if (group && group.owner) {
+           const owner = group.owner;
+       console.log('owner ' + owner);
+     }
+   
+    
+     if (group && group.name) {
+       const name = group.name;
+       console.log('group name ' + name);
+     }
+   
+     var members = null
+     var membersAsArray = [];
+     if (group && group.members) {
+       members = group.members;
+       //console.log('members ' + JSON.stringify(members));
+       membersAsArray = Object.keys(members);
+       console.log('membersAsArray ' + JSON.stringify(membersAsArray));
+     }
+   
+   
+     //POTREI ITERARE I PREVIES MEMBER E AGGIORNALI TUTTI CON IL NUOVO GRUPPO
+    
+     var previousMembers = null;
+     var previousMembersAsArray = [];
+     
+     //var deletedMembers = [];
+     if (event.data.previous.exists()) {
+       previousMembers = event.data.previous.val().members;
+       //console.log('previousMembers ' + JSON.stringify(previousMembers));
+       previousMembersAsArray = Object.keys(previousMembers);
+       console.log('previousMembersAsArray ' + JSON.stringify(previousMembersAsArray));
+     }
+   
+   
+     var membersToUpdate = membersAsArray.concat(previousMembersAsArray.filter(function (item) {
+       return membersAsArray.indexOf(item) < 0;
+      }));
+     console.log('membersToUpdate ' + JSON.stringify(membersToUpdate));
+     
+   
+     //aggiorno i gruppi replicati dei membri 
+     if (membersToUpdate)  {
+         //Object.keys(membersToUpdate).forEach(function(key) {
+         membersToUpdate.forEach(function(memberToUpdate) {
+         console.log('memberToUpdate ' + memberToUpdate);
+   
+           admin.database().ref('/apps/'+tenantId+'/users/'+memberToUpdate+'/groups/'+groupId).set(group).then(snapshot => {
+               console.log("snapshot",snapshot);   
+           });    
+         });
+     }
+   });
+
+
+
+ // invio di una singola notifica push ad un utente (direct)
+exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+        const message_id = event.params.message_id;
+        const sender_id = event.params.sender_id; 
+        const recipient_id = event.params.recipient_id;
+        const app_id = event.params.app_id;
+        const message = event.data.current.val();
+
+        console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+       
+        console.log('message ' + JSON.stringify(message));
+    
+    
+        // se esiste il parametro "recipientGroupId" allora si Ã¨ in presenza di un gruppo
+        // la funzione termina se si tenta di mandare la notifica ad un gruppo
+        if (message.is_group==1) { //is a group message
+            return 0;
+        }
+
+        console.log("message.status : " + message.status);     
+        if (message.status != 150){
+            return 0;
+        }
+        
+        const promises = [];
+    
+        if (sender_id == recipient_id) {
+        console.log('not send push notification for the same user');
+        //if sender is receiver, don't send notification
+        return 0;
+        }
+    
+        const text = message.text;
+        const messageTimestamp = JSON.stringify(message.timestamp);
+        const senderFullname = message.sender_fullname;
+        
+        const getInstanceIdPromise = admin.database().ref(`/apps/${app_id}/users/${recipient_id}/instanceId`).once('value');
+        const getSenderUidPromise = admin.auth().getUser(sender_id);
+    
+        return Promise.all([getInstanceIdPromise, getSenderUidPromise]).then(results => {
+        const instanceId = results[0].val(); // risultato di getInstanceIdPromise
+        const sender = results[1];  // risutalto di getSenderUidPromise
+    
+        console.log('instanceId ' + instanceId);
+        console.log('sender ' + sender);
+        
+        
+        //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
+        const payload = {
+            notification: {
+            title: senderFullname,
+            body: text,
+            icon : "ic_notification_small",
+            sound : "default",
+            click_action: "OPEN_MESSAGE_LIST_ACTIVITY", // for intent filter in your activity
+            badge : "1"
+        },
+    
+            data: {
+                recipient: recipient_id,
+                sender: sender_id,
+                sender_fullname: senderFullname,     
+                text: text,
+                //timestamp : JSON.stringify(admin.database.ServerValue.TIMESTAMP)
+                timestamp : new Date().getTime().toString()
+            }
+        };
+        
+        console.log('payload ', payload);
+
+        admin.messaging().sendToDevice(instanceId, payload)
+        .then(function (response) {
+            console.log("Push notification sent with response ", response);
+            
+            // { results: [ { error: [Object] } ],
+            // canonicalRegistrationTokenCount: 0,
+            // failureCount: 1,
+            // successCount: 0,
+            // multicastId: 8632601518674035000 }
+
+            console.log("Push notification sent with response as string ", JSON.stringify(response));
+            //console.log("Successfully sent message.results[0]:", response.results[0]);
+        })
+        .catch(function (error) {
+            console.log("Error sending message:", error);
+        });
+        });
+});
+
+// const pushNotificationsFunction = require('./push_notifications');
+
+// exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+       
+//         const message_id = event.params.message_id;
+//         const sender_id = event.params.sender_id; 
+//         const recipient_id = event.params.recipient_id;
+//         const app_id = event.params.app_id;
+//         const message = event.data.current.val();
+
+//   return pushNotificationsFunction.sendNotification(app_id, sender_id, recipient_id, message_id, message);
+// });
+
+
+
+
+
+
+
+exports.sendNotificationToGroup = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+
+    const message_id = event.params.message_id;
+    const sender_id = event.params.sender_id; 
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;
+    const message = event.data.current.val();
+
+    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+   
+    console.log('message ' + JSON.stringify(message));
+
+
+  
+    if (message.is_group!=1) { 
+        console.log('it s not a message to a group. exit');
+        return 0;
+    }
+
+    console.log("message.status : " + message.status);     
+    if (message.status != 150){
+        console.log('it s not a message to a recipient timeline with status=150. exit');
+        return 0;
+    }
+  
+    const text = message.text;
+    //const messageTimestamp = JSON.stringify(message.timestamp);
+    const senderFullname = message.sender_fullname;
+    const recipient_group_id = recipient_id;
+  
+    const promises = [];
+  
+
+    admin.database().ref(`/apps/${app_id}/groups/${recipient_group_id}/members`).once('value', function(groupMembersSnapshot) {
+
+      var userInstanceIdPromises = [];
+  
+      groupMembersSnapshot.forEach(function(groupMemberObj) {
+        // la mappa degli utenti Ã¨ nel formato Map<String, Integer>
+        // es. <test.monitoraggio, 1>
+        // dove: 
+        // String: Ã¨ il nome utente
+        // Integer: Ã¨ un valore di default utilizzato per poter create la mappa (scelta progettuale dettata dalle limitazioni di firebase)
+        var groupMemberUserId = groupMemberObj.key; // corrisponde allo userId dell'utente
+        console.log("groupMemberUserId: " + groupMemberUserId); 
+  
+        if(groupMemberUserId !== sender_id) {
+          const userInstanceIdPromise = admin.database().ref(`/apps/${app_id}/users/${groupMemberUserId}/instanceId`).once('value');
+          userInstanceIdPromises.push(userInstanceIdPromise);
+        }
+      });
+  
+      console.log("userInstanceIdPromises: " + JSON.stringify(userInstanceIdPromises));
+  
+      Promise.all(userInstanceIdPromises).then(usersInstancesId => {
+
+        console.log("usersInstancesId: ",  JSON.stringify(usersInstancesId));
+  
+        if (usersInstancesId.length==0) {
+            console.log("no members have an instanceId registered. usersInstancesId.length is 0. exit");
+            return 0;
+        }
+
+        var usersInstancesIdToSend = [];
+  
+        usersInstancesId.forEach(function(userInstanceIdObj) {
+          // var usersId = instance.key; // corrisponde allo userId dell'utente
+          var userInstanceid = userInstanceIdObj.val(); // corrisponde al valore di defautl dell'utente
+          console.log("userInstanceid: " + userInstanceid);
+  
+          if(userInstanceid !== null && userInstanceid !== undefined)
+             usersInstancesIdToSend.push(userInstanceid);
+          });
+  
+          if (usersInstancesIdToSend.length==0){
+              console.log("usersInstancesIdToSend is 0. exit");
+              return 0;
+          }
+
+          console.log("usersInstancesIdToSend", usersInstancesIdToSend);
+
+          const nodeGroupRef = admin.database().ref(`/apps/${app_id}/groups/${recipient_group_id}`).once('value', function(groupSnapshot) {
+            //console.log("nodeGroupRef-> groupSnapshot: " + groupSnapshot.key + ", groupSnapshot.val: " + groupSnapshot.val());
+  
+            var groupName = groupSnapshot.val().name;
+            console.log("groupName", groupName);
+
+            //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
+            const payload = {
+              notification: {
+                title: groupName,
+                body: senderFullname + ": "+ text,
+                icon : "ic_notification_small",
+                sound : "default",
+                click_action: "OPEN_MESSAGE_LIST_ACTIVITY", // for intent filter in your activity
+                // badge : badgeCount.toString()
+                badge : "1"
+              },
+  
+              data: {
+                group_id: recipient_group_id,
+                group_name: groupName,
+                sender: sender_id,
+                sender_fullname: senderFullname,     
+                text: text,
+                timestamp : new Date().getTime().toString()
+              }
+            };
+    
+  
+            console.log("payload: " + JSON.stringify(payload));
+  
+            admin.messaging().sendToDevice(usersInstancesIdToSend, payload)
+              .then(function (response) {
+                console.log("Successfully sent message:", response);
+                console.log("Successfully sent message: stringifiedresponse: ", JSON.stringify(response));
+                console.log("Successfully sent message.results[0]:", response.results[0]);
+              })
+              .catch(function (error) {
+                console.log("Error sending message:", error);
+              });
+
+            });
+        });
+      });
+
+      return 0;
+  });
