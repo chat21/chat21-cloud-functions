@@ -15,16 +15,16 @@ STATUS
 /*
 
 curl -v -X POST \
--d '{"sender_fullname" : "Andrea Leo", "type": "TEXT", "recipient_fullname": "Andrea Sponziello","text":"ciao"}' \
+-d '{"channel_type":"direct", "sender_fullname" : "Andrea Leo", "type": "TEXT", "recipient_fullname": "Andrea Sponziello","text":"ciao"}' \
  'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_leo/messages/andrea_sponziello.json'
 
 curl -v -X POST \
--d '{"sender_fullname" : "Andrea Sponziello", "type": "TEXT", "recipient_fullname": "Andrea Leo","text":"ciao2"}' \
+-d '{"channel_type":"direct", "sender_fullname" : "Andrea Sponziello", "type": "TEXT", "recipient_fullname": "Andrea Leo","text":"ciao2"}' \
  'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_sponziello/messages/andrea_leo.json'
 
-curl -v -X POST  -d '{"is_group":1, "sender_fullname" : "Andrea Sponziello", "type": "TEXT", "recipient_fullname": "Gruppo1","text":"ciao gruppo"}' 'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_sponziello/messages/gruppo1.json'
+curl -v -X POST  -d '{"channel_type":"group", "sender_fullname" : "Andrea Sponziello", "type": "TEXT", "recipient_fullname": "Gruppo1","text":"ciao gruppo"}' 'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_sponziello/messages/gruppo1.json'
 
-curl -v -X POST  -d '{"is_group":1, "sender_fullname" : "Andrea Leo", "type": "TEXT", "recipient_fullname": "Gruppo1","text":"ciao gruppo2"}' 'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_leo/messages/gruppo1.json'
+curl -v -X POST  -d '{"channel_type":"group", "sender_fullname" : "Andrea Leo", "type": "TEXT", "recipient_fullname": "Gruppo1","text":"ciao gruppo2"}' 'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_leo/messages/gruppo1.json'
 
 */
 
@@ -63,12 +63,13 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
         message.status = 150;                                        
         message.sender = sender_id;
         message.recipient = recipient_id;
-
-        if (message.is_group==1) { //is a group message
+        message.timestamp = admin.database.ServerValue.TIMESTAMP;
+        
+        if (message.channel_type==null || channel_type=="direct") {  //is a direct message
+            message.channel_type = "direct";            
+            return sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id);            
+        }else {//is a group message
             return sendGroupMessageToRecipientsTimeline(sender_id, recipient_id, message, message_id, app_id);
-        }else {//is a direct message
-           
-            return sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id);
         }
 
     }
@@ -188,6 +189,11 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
         fixedMessageFields.recipient = recipient_id; //for security set message.recipient =  recipient_id of the path
    //TODO se nn passo fullname di sender e recipient vado in contacts e prendo i nomi
     }
+
+    if (message.channel_type==null) {
+        fixedMessageFields.channel_type = "direct";
+    }
+
     return messageRef.update(fixedMessageFields);
    
   });
@@ -267,12 +273,12 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     //console.log('messageRef ' + messageRef );
 
     console.log("message.status : " + message.status);      
-    console.log("message.is_group : " + message.is_group);      
+    //console.log("message.is_group : " + message.is_group);      
     
     var eventSnapshot = event.data;
     var messageStatusSnapshot = eventSnapshot.child('status');
     if (
-        (message.is_group==null  || message.is_group==0) //only for direct message
+        (message.channel_type==null  || message.channel_type=="direct") //only for direct message
         && messageStatusSnapshot.changed() && message.status==200
         ) {
 
@@ -383,7 +389,7 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
     
         // se esiste il parametro "recipientGroupId" allora si Ã¨ in presenza di un gruppo
         // la funzione termina se si tenta di mandare la notifica ad un gruppo
-        if (message.is_group==1) { //is a group message
+        if (message.channel_type=="group") { //is a group message
             return 0;
         }
 
@@ -492,7 +498,7 @@ exports.sendNotificationToGroup = functions.database.ref('/apps/{app_id}/users/{
 
 
   
-    if (message.is_group!=1) { 
+    if (message.channel_type!="group") { 
         console.log('it s not a message to a group. exit');
         return 0;
     }
