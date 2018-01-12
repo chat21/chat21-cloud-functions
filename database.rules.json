@@ -4,23 +4,21 @@
       "apps": {
         "$app_id": {
           "contacts": {
-            ".read": true,
-                ".write": true,
+            ".read": "auth != null",
+            ".write": "$uid === auth.uid"
           },
           "groups":{
-            ".read": true,
-                ".write": true,
+            ".read": false,
+            ".write": true
           },
           "presence": {
-            ".read": true,
-                ".write": true,
-          },
+            ".read": "auth != null",
+            ".write": "$uid === auth.uid"
+        },
           "users":{
             "$uid":{
-            //".read": true,
-                //".write": true,
-                 ".read": "$uid === auth.uid",
-                  ".write": "$uid === auth.uid",
+                ".read": "$uid === auth.uid",
+                ".write": "$uid === auth.uid",
                 "messages" : {
                   "$message_id":{
                       ".validate": "(!newData.hasChildren(['status']) || ( newData.hasChildren(['status']) && newData.child('status').isNumber() && newData.child('status').val()==200) )"
