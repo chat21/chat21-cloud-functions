@@ -4,8 +4,8 @@
       "apps": {
         "$app_id": {
           "contacts": {
+            ".read": "auth != null",
             "$uid":{
-                ".read": "auth != null",
                 ".write": "$uid === auth.uid"
             }
           },
@@ -14,8 +14,8 @@
             ".write": true
           },
           "presence": {
+            ".read": "auth != null",
             "$uid":{
-                ".read": "auth != null",
                 ".write": "$uid === auth.uid"
             }
         },
