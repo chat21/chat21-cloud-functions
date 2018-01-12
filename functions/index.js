@@ -432,8 +432,10 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
         
                 data: {
                     recipient: message.recipient,
+                    recipient_fullname: message.recipient_fullname,                    
                     sender: message.sender,
                     sender_fullname: message.sender_fullname,     
+                    channel_type: message.channel_type,
                     text: text,
                     //timestamp : JSON.stringify(admin.database.ServerValue.TIMESTAMP)
                     timestamp : new Date().getTime().toString()
@@ -584,8 +586,9 @@ exports.sendNotificationToGroup = functions.database.ref('/apps/{app_id}/users/{
               },
   
               data: {
-                group_id: recipient_group_id,
-                group_name: groupName,
+                recipient: recipient_group_id,
+                recipient_fullname: groupName,
+                channel_type: message.channel_type,                
                 sender: sender_id,
                 sender_fullname: senderFullname,     
                 text: text,

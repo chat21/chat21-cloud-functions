@@ -1,15 +1,15 @@
 # Build
-Run ```npm install```
+From the project folder run ```npm install```
 
 # Deploy
 
-Run 
+From the project folder run :
 * ```cd functions```
 * ```firebase deploy --only functions```
 
 # Security
 
-Add these line to Firebase Realtime Database Rules:
+Add these lines to Firebase Realtime Database Rules:
 
 ```
 
