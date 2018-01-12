@@ -4,16 +4,20 @@
       "apps": {
         "$app_id": {
           "contacts": {
-            ".read": "auth != null",
-            ".write": "$uid === auth.uid"
+            "$uid":{
+                ".read": "auth != null",
+                ".write": "$uid === auth.uid"
+            }
           },
           "groups":{
             ".read": false,
             ".write": true
           },
           "presence": {
-            ".read": "auth != null",
-            ".write": "$uid === auth.uid"
+            "$uid":{
+                ".read": "auth != null",
+                ".write": "$uid === auth.uid"
+            }
         },
           "users":{
             "$uid":{
