@@ -244,6 +244,9 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     if (message.recipient_fullname){        
         conversation.recipient_fullname = message.recipient_fullname;
     }
+
+    conversation.channel_type = message.channel_type;
+
     //conversation.status = message.status;
     conversation.status = 2;
     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
@@ -372,7 +375,197 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      }
    });
 
+  
 
+   exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
+    
+     const group_id = event.params.group_id;
+     const app_id = event.params.app_id;;
+     console.log("group_id: "+ group_id + ", app_id: " + app_id);
+   
+     const group = event.data.current.val();
+     console.log("group",group);
+     
+     var sender_id =  "system";
+
+     var message = {};
+     message.status = 150;                                        
+     message.sender = sender_id;
+     message.recipient = group_id;
+     message.recipient_fullname = group.name;
+     message.timestamp = admin.database.ServerValue.TIMESTAMP;
+     message.channel_type = "group";
+     message.text = "Gruppo creato";
+     message.type = "text";
+     console.log("message",message);
+
+
+     return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
+     
+});
+
+// exports.createInfoConversationOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
+    
+//      const group_id = event.params.group_id;
+//      const app_id = event.params.app_id;;
+//      console.log("group_id: "+ group_id + ", app_id: " + app_id);
+
+//      var conversation = {};
+//      var updates = {};
+    
+    
+//         admin.database().ref('/apps/' + app_id + '/groups/' + group_id).once('value').then(function(groupSnapshot) {
+//             console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
+//             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
+
+
+//             // https://stackoverflow.com/questions/42750060/getting-the-user-id-from-a-database-trigger-in-cloud-functions-for-firebase
+//             var isAdmin = event.auth.admin;
+//             var currentUserID = event.auth.variable ? event.auth.variable.uid : null;
+
+//             console.log("current user isAdmin: ", isAdmin);
+//             console.log("current user uid: ", currentUserID);
+
+//             if (groupSnapshot.val()!=null){ 
+
+//                 var group = groupSnapshot.val();
+//                 console.log("group", group);
+
+//                 var groupName = group.name;
+//                 console.log("groupName", groupName);
+                
+//                 var groupMembers = group.members;
+//                 var groupMembersAsArray = Object.keys(groupMembers);
+//                 console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
+
+//                 groupMembersAsArray.forEach(function(groupMember) {
+//                     console.log('groupMember ' + groupMember);
+
+//                     conversation = {}; //re-initialize
+
+//                     conversation.is_new = true; 
+//                     conversation.sender = currentUserID;
+//                     conversation.recipient = group_id;
+//                     conversation.recipient_fullname = groupName;
+//                     conversation.status = 2;
+//                     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
+//                     conversation.channel_type = "group";
+                   
+                    
+//                     if (groupMember==currentUserID) { 
+//                         conversation.last_message_text = "Hai creato il gruppo "+ groupName;                        
+//                     }else {
+//                         conversation.last_message_text = currentUserID + " ha creato il gruppo "+ groupName;   
+//                     }
+//                     console.log('conversation ', conversation);
+
+//                     updates['/'+groupMember+'/conversations/'+group_id] = conversation; 
+                    
+//                     // return admin.database().ref('/apps/'+app_id+'/users/'+groupMember+'/conversations/'+group_id).set(conversation);
+                    
+//                 });
+//             }else {
+//                 console.log('Warning: Group '+ group_id +' not found ' );
+//                 //recipient_id is NOT a group
+//                 return 0;
+//             }
+            
+//             console.log('updates ' + JSON.stringify(updates) );
+            
+//             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
+
+
+//         });
+
+    
+// });
+
+
+
+// exports.createInfoConversationOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+    
+//      const member_id = event.params.member_id;
+//      const group_id = event.params.group_id;
+//      const app_id = event.params.app_id;;
+//      console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+     
+//      const member = event.data.current.val();
+//      console.log("member", member);
+
+//      var conversation = {};
+//      var updates = {};
+//     //  var memberRef = member.ref();
+//     //  console.log("memberRef", memberRef);
+     
+//     //  var parentRef = memberRef.parent();
+//     //  console.log("parentRef", parentRef);
+     
+    
+//         admin.database().ref('/apps/'+app_id+'/groups/'+group_id).once('value').then(function(groupSnapshot) {
+//             console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
+//             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
+
+
+//             // https://stackoverflow.com/questions/42750060/getting-the-user-id-from-a-database-trigger-in-cloud-functions-for-firebase
+//             var isAdmin = event.auth.admin;
+//             var currentUserID = event.auth.variable ? event.auth.variable.uid : null;
+
+//             console.log("current user isAdmin: ", isAdmin);
+//             console.log("current user uid: ", currentUserID);
+
+//             if (groupSnapshot.val()!=null){ 
+
+//                 var group = groupSnapshot.val();
+//                 console.log("group", group);
+
+//                 var groupName = group.name;
+//                 console.log("groupName", groupName);
+                
+//                 var groupMembers = group.members;
+//                 var groupMembersAsArray = Object.keys(groupMembers);
+//                 console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
+
+//                 groupMembersAsArray.forEach(function(groupMember) {
+//                     console.log('groupMember ' + groupMember);
+
+//                     conversation = {}; //re-initialize
+
+//                     conversation.is_new = true; 
+//                     conversation.sender = currentUserID;
+//                     conversation.recipient = group_id;
+//                     conversation.recipient_fullname = groupName;
+//                     conversation.status = 2;
+//                     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
+//                     conversation.channel_type = "group";
+                   
+                    
+//                     // if (groupMember==member_id) { 
+//                         conversation.last_message_text = "Sei stato aggiunto al gruppo "+ groupName;                        
+//                     // }else {
+//                     //     conversation.last_message_text = groupMember + " è stato aggiunto al gruppo "+ groupName;   
+//                     // }
+//                     console.log('conversation ', conversation);
+
+//                     updates['/'+groupMember+'/conversations/'+group_id] = conversation; 
+                    
+//                     // return admin.database().ref('/apps/'+app_id+'/users/'+groupMember+'/conversations/'+group_id).set(conversation);
+                    
+//                 });
+//             }else {
+//                 console.log('Warning: Group '+ group_id +' not found ' );
+//                 //recipient_id is NOT a group
+//                 return 0;
+//             }
+            
+//             console.log('updates ' + JSON.stringify(updates) );
+            
+//             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
+
+
+//         });
+
+    
+// });
 
  // invio di una singola notifica push ad un utente (direct)
 exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
