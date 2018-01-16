@@ -11,7 +11,10 @@
           },
           "groups":{
             ".read": false,
-            ".write": "auth != null"
+            ".write": "auth != null",
+            "$group_id":{
+                ".validate":"newData.hasChildren(['name','members', 'owner'])"
+            }
           },
           "presence": {
             ".read": "auth != null",

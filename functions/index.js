@@ -65,7 +65,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
         message.recipient = recipient_id;
         message.timestamp = admin.database.ServerValue.TIMESTAMP;
         
-        if (message.channel_type==null || channel_type=="direct") {  //is a direct message
+        if (message.channel_type==null || message.channel_type=="direct") {  //is a direct message
             message.channel_type = "direct";            
             return sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id);            
         }else {//is a group message
