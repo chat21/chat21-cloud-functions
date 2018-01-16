@@ -11,7 +11,7 @@
           },
           "groups":{
             ".read": false,
-            ".write": true
+            ".write": "auth != null"
           },
           "presence": {
             ".read": "auth != null",

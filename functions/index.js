@@ -245,7 +245,12 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
         conversation.recipient_fullname = message.recipient_fullname;
     }
 
-    conversation.channel_type = message.channel_type;
+    if (message.channel_type!=null) {
+        conversation.channel_type = message.channel_type;
+    }else {
+        conversation.channel_type = "direct";
+    }
+    
 
     //conversation.status = message.status;
     conversation.status = 2;
