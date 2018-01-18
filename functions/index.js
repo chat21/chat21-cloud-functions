@@ -72,7 +72,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
             return sendGroupMessageToRecipientsTimeline(sender_id, recipient_id, message, message_id, app_id);
         }
 
-    }
+    } 
 
     return 0;
    
@@ -162,6 +162,86 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
 
         });
   }
+
+  function sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id) {
+
+    var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_id;
+    console.log("path", path);
+
+
+    var message = {};
+    message.status = 0;                                        
+    message.sender = sender_id;
+    message.sender_fullname = sender_fullname;
+    message.recipient = recipient_id;
+    message.recipient_fullname = recipient_fullname;
+    message.timestamp = admin.database.ServerValue.TIMESTAMP;
+    message.channel_type = "direct";
+    message.text = text;
+    message.type = "text";
+
+    console.log("message",message);
+    return admin.database().ref(path).push(message);
+  }
+
+
+const request = require('request-promise');  
+
+const Entities = require('html-entities').AllHtmlEntities;
+const entities = new Entities();
+
+exports.botreply = functions.database.ref('/apps/{app_id}/users/6qI3oekSwabW9w05JHd2SQlV2rz2/messages/{recipient_id}/{message_id}').onCreate(event => {
+    const message_id = event.params.message_id;
+    const sender_id = "6qI3oekSwabW9w05JHd2SQlV2rz2";
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+    console.log('message ' + JSON.stringify(message));
+
+    console.log("message.status : " + message.status);     
+
+    if (message.status != 150){
+        return 0;
+    }
+
+    console.log('it s a message to bot ');
+    
+    return request({
+        uri: "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/f486b8ed-b587-413a-948e-e02c9a129d12/generateAnswer",
+        headers: {
+            'Ocp-Apim-Subscription-Key': '59c2511b9825415eb4254ab8a7d4b094',
+            'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        json: true,
+        body: {"question": message.text},
+        //resolveWithFullResponse: true
+        }).then(response => {
+        if (response.statusCode >= 400) {
+            throw new Error(`HTTP Error: ${response.statusCode}`);
+        }
+
+        console.log('SUCCESS! Posted', event.data.ref);        
+        console.log('SUCCESS! response', response);
+
+        var answer = entities.decode(response.answers[0].answer);
+        console.log('answer', answer);    
+
+        var question = response.answers[0].questions[0];
+        console.log('question', question);        
+
+        if (answer == "No good match found in the KB"){
+            answer = "Non ho trovato una risposta nella knowledge base. Vuoi parlare con un operatore?";
+        }
+        return sendDirectMessage(sender_id, message.recipient_fullname, recipient_id, message.sender_fullname, answer, app_id);            
+        
+        });
+
+    
+    
+});
 
   exports.insertMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
    
