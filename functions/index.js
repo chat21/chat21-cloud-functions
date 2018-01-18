@@ -2,17 +2,21 @@ const functions = require('firebase-functions');
 
 var admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
+
+const CHAT_MESSAGE_STATUS = {
+    FAILED : -100,
+    SENDING : 0,
+    SENT : 100, //saved into sender timeline
+    DELIVERED : 150, //delivered to recipient timeline
+    RECEIVED : 200, //received from the recipient client
+    RETURN_RECEIPT: 250, //return receipt from the recipient client
+    SEEN : 300 //seen
+
+}
+
 /*
-STATUS
--100 FAILED 
-0 SENDING (SOLO CLIENT)
-100 SENT (SALVATO SULLA TIMELINE DEL MITTENTE)
-150 DELIVERED_TO_RECIPIENT_TIMELINE (SALVATO SULLA TIMELINE DEL DESTINATARIO)
-200 RECEIVED_FROM_RECIPIENT_CLIENT
-250 RETURN RECEIPT from the recipient client app)
-300 SEEN (VISTO)
-*/
-/*
+
+How to send a message (direct and group) from curl. It's work if the authentication is disabled for Firebase.
 
 curl -v -X POST \
 -d '{"channel_type":"direct", "sender_fullname" : "Andrea Leo", "type": "TEXT", "recipient_fullname": "Andrea Sponziello","text":"ciao"}' \
@@ -49,7 +53,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
     var sendMessageToRecipients = false;
     //sendMessageToRecipient if i'm the sender (author) of the message and the message is not a self message
     //if (messageSender_id==sender_id && sender_id!=recipient_id){
-    if (message.status==null || message.status==0){
+    if (message.status==null || message.status==CHAT_MESSAGE_STATUS.SENDING){
         sendMessageToRecipients=true;
     }
     
@@ -59,8 +63,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
 
         var updates = {};
    
-        //set statuts = 150 (MSG_STATUS_SENT_TO_RECIPIENT_TIMELINE) of the message
-        message.status = 150;                                        
+        message.status = CHAT_MESSAGE_STATUS.DELIVERED;                                        
         message.sender = sender_id;
         message.recipient = recipient_id;
         message.timestamp = admin.database.ServerValue.TIMESTAMP;
@@ -170,7 +173,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
 
 
     var message = {};
-    message.status = 0;                                        
+    message.status = CHAT_MESSAGE_STATUS.SENDING;                                        
     message.sender = sender_id;
     message.sender_fullname = sender_fullname;
     message.recipient = recipient_id;
@@ -202,7 +205,7 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/6qI3oekSwabW9w05
 
     console.log("message.status : " + message.status);     
 
-    if (message.status != 150){
+    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
         return 0;
     }
 
@@ -263,8 +266,8 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/6qI3oekSwabW9w05
 
     //set the status = 100 only if message.status is null. If message.status==200 (came form sendMessage) saveMessage not must modify the value
     console.log("message.status : " + message.status);        
-    if (message.status==null || message.status==0) {
-        fixedMessageFields.status = 100; //MSG_STATUS_RECEIVED_ON_PERSIONAL_TIMELINE
+    if (message.status==null || message.status==CHAT_MESSAGE_STATUS.SENDING) {
+        fixedMessageFields.status = CHAT_MESSAGE_STATUS.SENT; //MSG_STATUS_RECEIVED_ON_PERSIONAL_TIMELINE
         fixedMessageFields.sender = sender_id; //for security set message.sender =  sender_id of the path
         fixedMessageFields.recipient = recipient_id; //for security set message.recipient =  recipient_id of the path
    //TODO se nn passo fullname di sender e recipient vado in contacts e prendo i nomi
@@ -298,19 +301,10 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     var conversation = {};
     console.log("message.status : " + message.status);       
 
-    if (message.status == null || message.status==0) {
+    if (message.status == null || message.status==CHAT_MESSAGE_STATUS.SENDING) {
         conversation.is_new = false;
         conversation.sender = sender_id; //message.sender could be null because saveMessage could be called after
-        conversation.recipient = recipient_id;  ///message.recipient could be null because saveMessage could be called after
-    // }
-    // else if (message.status == 150) {
-    //     conversation.is_new = true;
-    //     conversation.sender = recipient_id; //oppure lo puoi prendere dal messaggio che questa volta è valorizzato correttametente visto che viene da sendmessage
-    //     conversation.recipient = sender_id;    
-    // }else if (message.status == 175) {
-    //     conversation.is_new = true;
-    //     conversation.sender = recipient_id; //oppure lo puoi prendere dal messaggio che questa volta è valorizzato correttametente visto che viene da sendmessage
-    //     conversation.recipient = sender_id;    
+        conversation.recipient = recipient_id;  ///message.recipient could be null because saveMessage could be called after  
     }else {
         conversation.is_new = true;
         conversation.sender = message.sender;
@@ -367,12 +361,12 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     var messageStatusSnapshot = eventSnapshot.child('status');
     if (
         (message.channel_type==null  || message.channel_type=="direct") //only for direct message
-        && messageStatusSnapshot.changed() && message.status==200
+        && messageStatusSnapshot.changed() && message.status==CHAT_MESSAGE_STATUS.RECEIVED
         ) {
 
 
             //TODO controlla prima se il nodo su cui stai facendo l'update esiste altrimenti si crea una spazzatura
-        return admin.database().ref('/apps/'+app_id+'/users/'+recipient_id+'/messages/'+sender_id + '/'+ message_id).update({"status":250});
+        return admin.database().ref('/apps/'+app_id+'/users/'+recipient_id+'/messages/'+sender_id + '/'+ message_id).update({"status":CHAT_MESSAGE_STATUS.RETURN_RECEIPT});
     }
 
        
@@ -458,6 +452,8 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
            });    
          });
      }
+
+     return 0;
    });
 
   
@@ -474,7 +470,7 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      var sender_id =  "system";
 
      var message = {};
-     message.status = 150;                                        
+     message.status = CHAT_MESSAGE_STATUS.DELIVERED;                                        
      message.sender = sender_id;
      message.recipient = group_id;
      message.recipient_fullname = group.name;
@@ -672,16 +668,16 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
         }
 
         console.log("message.status : " + message.status);     
-        if (message.status != 150){
+        if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
             return 0;
         }
         
         const promises = [];
     
         if (sender_id == recipient_id) {
-        console.log('not send push notification for the same user');
-        //if sender is receiver, don't send notification
-        return 0;
+            console.log('not send push notification for the same user');
+            //if sender is receiver, don't send notification
+            return 0;
         }
     
         const text = message.text;
@@ -689,7 +685,7 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
         
         console.log(`--->/apps/${app_id}/users/${sender_id}/instanceId`);
 
-        admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
+        return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
           
             //console.log('instanceIdAsObj ' + instanceIdAsObj); 
 
@@ -722,18 +718,28 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
             
             console.log('payload ', payload);
 
-            admin.messaging().sendToDevice(instanceId, payload)
-            .then(function (response) {
+            return admin.messaging().sendToDevice(instanceId, payload)
+                 .then(function (response) {
                 console.log("Push notification sent with response ", response);
                 
-                // { results: [ { error: [Object] } ],
-                // canonicalRegistrationTokenCount: 0,
-                // failureCount: 1,
-                // successCount: 0,
-                // multicastId: 8632601518674035000 }
-
                 console.log("Push notification sent with response as string ", JSON.stringify(response));
-                //console.log("Successfully sent message.results[0]:", response.results[0]);
+
+
+                            // For each message check if there was an error.
+                const tokensToRemove = [];
+                response.results.forEach((result, index) => {
+                    const error = result.error;
+                    if (error) {
+                    console.error('Failure sending notification to', tokens[index], error);
+                    // Cleanup the tokens who are not registered anymore.
+                    if (error.code === 'messaging/invalid-registration-token' ||
+                        error.code === 'messaging/registration-token-not-registered') {
+                        tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
+                    }
+                    }
+                });
+                return Promise.all(tokensToRemove);
+
             })
             .catch(function (error) {
                 console.log("Error sending message:", error);
@@ -741,9 +747,13 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
 
         });
 
-        return 0;
+        //return 0;
 
 });
+
+
+
+
 
 // const pushNotificationsFunction = require('./push_notifications');
 
@@ -784,8 +794,8 @@ exports.sendNotificationToGroup = functions.database.ref('/apps/{app_id}/users/{
     }
 
     console.log("message.status : " + message.status);     
-    if (message.status != 150){
-        console.log('it s not a message to a recipient timeline with status=150. exit');
+    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+        console.log('it s not a message to a recipient timeline with status= '+CHAT_MESSAGE_STATUS.DELIVERED + ' . exit');
         return 0;
     }
   
