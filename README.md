@@ -6,8 +6,21 @@
 * Send the push notification for direct and group message
 * Send an info message to notify the group creation and member joining
 
+# Build
+Checkout the project and run from the project folder ```npm install```
+
+# Deploy
+
+From the project folder run :
+* ```firebase deploy```
+
+# Security (optional)
+See the file database.rules.json to understand the databases security rules
+
+
 # Database structure
 
+```
 /apps/$appId/
             --> /users/$uid
                             --> /messages/$recipientId/$messageId
@@ -60,21 +73,10 @@
                                                                 "name" : "First Group",
                                                                 "owner" : "DQ6CmBKhRreONqnNvQdHVom5FEr1"
                                                                 }
+```                                                 
 
 
 
 
 ## Messages timeline
 When a message is sent it's archived into the sender timeline. With a fan-out operation the message is placed into the recipient timeline.
-
-
-# Build
-Checkout the project and run from the project folder ```npm install```
-
-# Deploy
-
-From the project folder run :
-* ```firebase deploy```
-
-# Security (optional)
-See the file database.rules.json to understand the databases security rules
