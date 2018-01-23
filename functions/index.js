@@ -187,6 +187,34 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
     return admin.database().ref(path).push(message);
   }
 
+  
+  exports.sendToSupport = functions.database.ref('/apps/{app_id}/users/jjXVZKQSzMhOhhyIjSVOGqy4cMd2/messages/{recipient_id}/{message_id}').onCreate(event => {
+    const message_id = event.params.message_id;
+    const sender_id = "jjXVZKQSzMhOhhyIjSVOGqy4cMd2";
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+    console.log('message ' + JSON.stringify(message));
+
+    console.log("message.status : " + message.status);     
+
+    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+
+    console.log('it s a support message ');
+
+
+    return admin.firestore().collection('messages').doc(message_id).set(message).then(writeResult => {
+        // Send back a message that we've succesfully written the message
+        console.log(`Message with ID: ${writeResult.id} setted.`);
+      });
+    
+
+});
+  
 
 const request = require('request-promise');  
 
@@ -700,8 +728,8 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
                 body: text,
                 icon : "ic_notification_small",
                 sound : "default",
-                click_action: "OPEN_MESSAGE_LIST_ACTIVITY", // for intent filter in your activity
-                badge : "1"
+                //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
+                click_action: "ACTION_CUSTOM_CHAT_INTENT", // uncomment for intent filter in your custom project
             },
         
                 data: {
@@ -725,20 +753,20 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
                 console.log("Push notification sent with response as string ", JSON.stringify(response));
 
 
-                            // For each message check if there was an error.
-                const tokensToRemove = [];
-                response.results.forEach((result, index) => {
-                    const error = result.error;
-                    if (error) {
-                    console.error('Failure sending notification to', tokens[index], error);
-                    // Cleanup the tokens who are not registered anymore.
-                    if (error.code === 'messaging/invalid-registration-token' ||
-                        error.code === 'messaging/registration-token-not-registered') {
-                        tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
-                    }
-                    }
-                });
-                return Promise.all(tokensToRemove);
+                //             // For each message check if there was an error.
+                // const tokensToRemove = [];
+                // response.results.forEach((result, index) => {
+                //     const error = result.error;
+                //     if (error) {
+                //     console.error('Failure sending notification to', tokens[index], error);
+                //     // Cleanup the tokens who are not registered anymore.
+                //     if (error.code === 'messaging/invalid-registration-token' ||
+                //         error.code === 'messaging/registration-token-not-registered') {
+                //         tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
+                //     }
+                //     }
+                // });
+                // return Promise.all(tokensToRemove);
 
             })
             .catch(function (error) {
@@ -868,8 +896,8 @@ exports.sendNotificationToGroup = functions.database.ref('/apps/{app_id}/users/{
                 body: senderFullname + ": "+ text,
                 icon : "ic_notification_small",
                 sound : "default",
-                click_action: "OPEN_MESSAGE_LIST_ACTIVITY", // for intent filter in your activity
-                // badge : badgeCount.toString()
+                //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
+                click_action: "ACTION_CUSTOM_CHAT_INTENT", // uncomment for intent filter in your custom project
                 badge : "1"
               },
   

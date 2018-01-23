@@ -28,10 +28,11 @@
                 ".write": "$uid === auth.uid",
                 "messages" : {
                   "$message_id":{
-                      ".validate": "newData.hasChildren(['sender', 'recipient']) || newData.hasChildren(['sender', 'recipient','status']) || ( newData.hasChildren(['status']) && !newData.hasChildren(['sender','recipient']) )",
-                        "sender": { ".validate": "newData.isString() && newData.val().length > 0" },
-                        "recipient": { ".validate": "newData.isString() && newData.val().length > 0" },
-                        "status": { ".validate":"newData.val()==null || newData.isNumber() && newData.val()==200"}
+                    ".validate": "(!newData.hasChildren(['status']) || ( newData.hasChildren(['status']) && newData.child('status').isNumber() && newData.child('status').val()==200) )"
+                    //   ".validate": "(newData.hasChildren(['sender', 'recipient']) || newData.hasChildren(['sender', 'recipient','status']) || ( newData.hasChildren(['status']) && newData.hasChildren(['sender','recipient'])==false ) )",
+                    //     "sender": { ".validate": "newData.isString() && newData.val().length > 0" },
+                    //     "recipient": { ".validate": "newData.isString() && newData.val().length > 0" },
+                    //     "status": { ".validate":"newData.val()==null || newData.isNumber() && newData.val()==200"}
                     }      
                 }
             }
