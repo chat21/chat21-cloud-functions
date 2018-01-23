@@ -4,7 +4,7 @@
 * Send a group message to the members timelines
 * Create a conversation for each message
 * Send the push notification for direct and group message
-* Send an info message to notify the group creation and member joining
+* Send an info message to notify of the creation of a group or the member joining
 
 # Build
 Checkout the project and run from the project folder ```npm install```
