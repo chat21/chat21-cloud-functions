@@ -187,10 +187,16 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
     return admin.database().ref(path).push(message);
   }
 
+
+
+// START SUPPORT
+
   
-  exports.sendToSupport = functions.database.ref('/apps/{app_id}/users/jjXVZKQSzMhOhhyIjSVOGqy4cMd2/messages/{recipient_id}/{message_id}').onCreate(event => {
+//   exports.sendToSupport = functions.database.ref('/apps/{app_id}/users/jjXVZKQSzMhOhhyIjSVOGqy4cMd2/messages/{recipient_id}/{message_id}').onCreate(event => {
+exports.saveMessagesToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
     const message_id = event.params.message_id;
-    const sender_id = "jjXVZKQSzMhOhhyIjSVOGqy4cMd2";
+    // const sender_id = "jjXVZKQSzMhOhhyIjSVOGqy4cMd2";
+    const sender_id = event.params.sender_id; 
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;;
     console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
@@ -214,6 +220,53 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
     
 
 });
+
+
+    exports.saveConversationToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+        const message_id = event.params.message_id;
+        // const sender_id = "jjXVZKQSzMhOhhyIjSVOGqy4cMd2";
+        const sender_id = event.params.sender_id; 
+        const recipient_id = event.params.recipient_id;
+        const app_id = event.params.app_id;;
+        console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+        
+        const message = event.data.current.val();
+        console.log('message ' + JSON.stringify(message));
+    
+        console.log("message.status : " + message.status);     
+    
+        if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+            return 0;
+        }
+    
+        console.log('it s a support message ');
+    
+        var conversationId = createConversationId(sender_id, recipient_id);
+        console.log('conversationId', conversationId);
+
+    
+        return admin.firestore().collection('conversations').doc(conversationId).set(message).then(writeResult => {
+            // Send back a message that we've succesfully written the message
+            console.log(`Message with ID: ${writeResult.id} setted.`);
+          });
+        
+    
+    });
+
+    function createConversationId(senderId, recipientId) {
+        var conversationId = "";
+
+        if (senderId<=recipientId){
+            conversationId = senderId + "-" + recipientId;
+        }else {
+            conversationId = recipientId + "-" + senderId;
+        }
+
+        return conversationId;
+    }
+
+
+// END SUPPORT
   
 
 const request = require('request-promise');  
