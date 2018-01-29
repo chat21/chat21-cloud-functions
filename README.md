@@ -6,6 +6,10 @@
 * Send the push notification for direct and group message
 * Send an info message to notify of the creation of a group or the member joining
 
+# Pre requisites
+
+It is assumed that you are using an existing Firebase project or that you have created a new one on the Firebase console. if it was not done, follow the Firebase Documentation to create a new app on the Firebase console
+
 # Build
 Checkout the project and run from the project folder ```npm install```
 
