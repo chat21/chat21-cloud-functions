@@ -189,9 +189,69 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
 
 
 
+  function createGroup(group_id, group_name, group_owner, group_members, app_id) {
+
+    var path = '/apps/'+app_id+'/groups/'+group_id;
+    console.log("path", path);
+
+
+    var group = {};
+    group.name = group_name;
+    group.owner = group_owner;
+    group.members = group_members;
+    group.iconURL = "NOICON";
+    group.createdOn = admin.database.ServerValue.TIMESTAMP;
+   
+    console.log("group",group);
+    return admin.database().ref(path).set(group);
+  }
+
+
 // START SUPPORT
 
-  
+exports.newRequestToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}').onCreate(event => {
+    const sender_id = event.params.sender_id; 
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id );
+    
+    // const messageRef = event.data.ref;
+    // console.log('messageRef ' + messageRef);
+
+    // // const messageKey = event.data.current.key;
+    // const messageKey = messageRef.key;
+    // console.log('messageKey ' + messageKey);
+
+
+    const messageWithMessageId = event.data.current.val();
+    console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
+
+    const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
+    console.log('message ' + JSON.stringify(message));
+
+    console.log("message.status : " + message.status);     
+
+    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+
+
+    console.log("new request!!! ");     
+    
+    var group_id = sender_id; //sender_id is the group id
+    var group_name = "Support Group";
+    var group_owner = "system";
+    var group_members = {};
+        group_members.system = 1;
+        group_members[recipient_id] = 1;  //add customer
+        group_members.bot1 = 1;
+
+    console.log("group_members", group_members);     
+
+
+    return createGroup(group_id, group_name, group_owner, group_members, app_id);
+
+});
 //   exports.sendToSupport = functions.database.ref('/apps/{app_id}/users/jjXVZKQSzMhOhhyIjSVOGqy4cMd2/messages/{recipient_id}/{message_id}').onCreate(event => {
 exports.saveMessagesToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
     const message_id = event.params.message_id;
@@ -211,7 +271,8 @@ exports.saveMessagesToFirestore = functions.database.ref('/apps/{app_id}/users/{
     }
 
     console.log('it s a support message ');
-
+    var conversationId = recipient_id;
+    message.conversationId = conversationId;
 
     return admin.firestore().collection('messages').doc(message_id).set(message).then(writeResult => {
         // Send back a message that we've succesfully written the message
@@ -241,11 +302,11 @@ exports.saveMessagesToFirestore = functions.database.ref('/apps/{app_id}/users/{
     
         console.log('it s a support message ');
     
-        var conversationId = createConversationId(sender_id, recipient_id);
-        console.log('conversationId', conversationId);
-
+        // var conversationId = createConversationId(sender_id, recipient_id);
+        // console.log('conversationId', conversationId);
+        var groupId = recipient_id;
     
-        return admin.firestore().collection('conversations').doc(conversationId).set(message).then(writeResult => {
+        return admin.firestore().collection('conversations').doc(groupId).set(message).then(writeResult => {
             // Send back a message that we've succesfully written the message
             console.log(`Message with ID: ${writeResult.id} setted.`);
           });
@@ -253,17 +314,17 @@ exports.saveMessagesToFirestore = functions.database.ref('/apps/{app_id}/users/{
     
     });
 
-    function createConversationId(senderId, recipientId) {
-        var conversationId = "";
+    // function createConversationId(senderId, recipientId) {
+    //     var conversationId = "";
 
-        if (senderId<=recipientId){
-            conversationId = senderId + "-" + recipientId;
-        }else {
-            conversationId = recipientId + "-" + senderId;
-        }
+    //     if (senderId<=recipientId){
+    //         conversationId = senderId + "-" + recipientId;
+    //     }else {
+    //         conversationId = recipientId + "-" + senderId;
+    //     }
 
-        return conversationId;
-    }
+    //     return conversationId;
+    // }
 
 
 // END SUPPORT
@@ -326,6 +387,52 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/6qI3oekSwabW9w05
     
     
 });
+
+
+
+exports.saveToNodeJs = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+    const message_id = event.params.message_id;
+    const sender_id = event.params.sender_id; 
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+    console.log('message ' + JSON.stringify(message));
+
+    console.log("message.status : " + message.status);     
+
+    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+
+    console.log('it s a message to nodejs ');
+    
+    return request({
+        uri: "http://api.chat21.org/"+app_id+"/messages",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwic2VsZWN0ZWQiOnt9LCJnZXR0ZXJzIjp7fSwid2FzUG9wdWxhdGVkIjpmYWxzZSwiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0IiwiX192IjoiaW5pdCIsIl9pZCI6ImluaXQifSwic3RhdGVzIjp7Imlnbm9yZSI6e30sImRlZmF1bHQiOnt9LCJpbml0Ijp7Il9fdiI6dHJ1ZSwicGFzc3dvcmQiOnRydWUsInVzZXJuYW1lIjp0cnVlLCJfaWQiOnRydWV9LCJtb2RpZnkiOnt9LCJyZXF1aXJlIjp7fX0sInN0YXRlTmFtZXMiOlsicmVxdWlyZSIsIm1vZGlmeSIsImluaXQiLCJkZWZhdWx0IiwiaWdub3JlIl19LCJlbWl0dGVyIjp7ImRvbWFpbiI6bnVsbCwiX2V2ZW50cyI6e30sIl9ldmVudHNDb3VudCI6MCwiX21heExpc3RlbmVycyI6MH19LCJpc05ldyI6ZmFsc2UsIl9kb2MiOnsiX192IjowLCJwYXNzd29yZCI6IiQyYSQxMCQ5SjlIUHZCL29NOUxGMFdVaEtZWHRPcmhTZ2wyOEY0ZmtZcGZUVGU3ZGdwRWFZRnFRQlFtdSIsInVzZXJuYW1lIjoiYW5kcmVhIiwiX2lkIjoiNWE2YzU4MzVjM2VjNjU5M2I0ZDk2YjRmIn0sImlhdCI6MTUxNzA1MDcyOX0.OafV9nTa_O48RkRGt6WoFW26ZNNw6AN-HCETkaT3oFU'
+        },
+        method: 'POST',
+        json: true,
+        body: message,
+        //resolveWithFullResponse: true
+        }).then(response => {
+        if (response.statusCode >= 400) {
+            throw new Error(`HTTP Error: ${response.statusCode}`);
+        }
+
+        console.log('SUCCESS! Posted', event.data.ref);        
+        console.log('SUCCESS! response', response);           
+        
+        });
+
+    
+    
+});
+
+
 
   exports.insertMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
    
@@ -950,7 +1057,7 @@ exports.sendNotificationToGroup = functions.database.ref('/apps/{app_id}/users/{
                 icon : "ic_notification_small",
                 sound : "default",
                 //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
-                click_action: "ACTION_CUSTOM_CHAT_INTENT", // uncomment for intent filter in your custom project
+                click_action: "NEW_MESSAGE", // uncomment for intent filter in your custom project
                 badge : "1"
               },
   
