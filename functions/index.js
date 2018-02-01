@@ -39,13 +39,14 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
     const sender_id = event.params.sender_id; 
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+   
+    // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
   
    
     const message = event.data.current.val();
-    console.log('message ' + JSON.stringify(message));
+    // DEBUG console.log('message ' + JSON.stringify(message));
 
-    console.log("message.status : " + message.status);     
+    // console.log("message.status : " + message.status);     
 
     const messageRef = event.data.ref;
     //console.log('messageRef ' + messageRef );
@@ -57,7 +58,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
         sendMessageToRecipients=true;
     }
     
-    console.log('sendMessageToRecipients ' + sendMessageToRecipients );
+    // console.log('sendMessageToRecipients ' + sendMessageToRecipients );
 
     if (sendMessageToRecipients==true){
 
@@ -68,14 +69,23 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
         message.recipient = recipient_id;
         message.timestamp = admin.database.ServerValue.TIMESTAMP;
         
+
         if (message.channel_type==null || message.channel_type=="direct") {  //is a direct message
-            message.channel_type = "direct";            
+            message.channel_type = "direct"; 
+            
+            // DEBUG console.log('sending direct message ' + JSON.stringify(message) );
+
             return sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id);            
         }else {//is a group message
-            return sendGroupMessageToRecipientsTimeline(sender_id, recipient_id, message, message_id, app_id);
+            // DEBUG console.log('sending group message ' + JSON.stringify(message) );
+             //send to group timeline
+             sendMessageToGroupTimeline(recipient_id, message, message_id, app_id);            
+            return sendGroupMessageToMembersTimeline(sender_id, recipient_id, message, message_id, app_id);
         }
 
-    } 
+    } else {
+        // DEBUG console.log('Nothing to send because message.status is not CHAT_MESSAGE_STATUS.SENDING  ');
+    }
 
     return 0;
    
@@ -85,31 +95,54 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
     var updates = {};
     
     updates['/'+recipient_id+'/messages/'+sender_id + '/'+ message_id] = message;   
-    console.log('updates ' + JSON.stringify(updates) );
+    // console.log('updates ' + JSON.stringify(updates) );
     
+    console.log('sendDirectMessageToRecipientTimeline with message' + message + " TO: " + JSON.stringify(updates));           
+
     return admin.database().ref('/apps/'+app_id+'/users').update(updates);
   }
 
-  function sendGroupMessageToRecipientsTimeline(sender_id, recipient_group_id, message, message_id, app_id) {
+
+  function sendMessageToGroupTimeline(group_id, message, message_id, app_id) {
     var updates = {};
     
-        admin.database().ref('/apps/'+app_id+'/groups/'+recipient_group_id).once('value').then(function(groupSnapshot) {
-            console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
+    updates['/messages/'+group_id + '/'+ message_id] = message;   
+    // console.log('updates ' + JSON.stringify(updates) );
+    
+    console.log('sendMessageToGroupTimeline with message' + JSON.stringify(message) + " TO: " + JSON.stringify(updates) );           
+
+    return admin.database().ref('/apps/'+app_id).update(updates);
+  }
+
+
+  function sendGroupMessageToMembersTimeline(sender_id, recipient_group_id, message, message_id, app_id) {
+
+    var updates = {};
+    
+       return admin.database().ref('/apps/'+app_id+'/groups/'+recipient_group_id).once('value').then(function(groupSnapshot) {
+            // DEBUG console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
 
             if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
-                var groupMembers = groupSnapshot.val().members;
+                var group = groupSnapshot.val();
+                console.log('group ' + JSON.stringify(group) );
+
+                var groupMembers = group.members;
                 var groupMembersAsArray = Object.keys(groupMembers);
-                console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
+                // DEBUG console.log('groupMembers ' + JSON.stringify(groupMembersAsArray) );
+               
+               
                 //TODO check se sender è membro del gruppo
                 // if (groupMembersAsArray.indexOf(sender_id)<0) {
                 //     errore non sei membro del gruppo
                 // }
+
+
                 groupMembersAsArray.forEach(function(groupMember) {
-                    console.log('groupMember ' + groupMember);
+                    // console.log('groupMember ' + groupMember);
+
                     //DON'T send a message to the sender of the message 
                     if (groupMember!=sender_id) { 
-                        //here recipient_id is the group_id
                         updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
                     }
                 });
@@ -119,7 +152,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
                 return 0;
             }
 
-            console.log('updates ' + JSON.stringify(updates) );
+            console.log('sendGroupMessageToMembersTimeline with message ' + JSON.stringify(message) + " TO: " + JSON.stringify(updates) );
             
             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
 
@@ -169,22 +202,53 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
   function sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id) {
 
     var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_id;
-    console.log("path", path);
+    // console.log("path", path);
 
 
     var message = {};
-    message.status = CHAT_MESSAGE_STATUS.SENDING;                                        
+    // message.status = CHAT_MESSAGE_STATUS.SENDING;                                        
     message.sender = sender_id;
     message.sender_fullname = sender_fullname;
     message.recipient = recipient_id;
     message.recipient_fullname = recipient_fullname;
-    message.timestamp = admin.database.ServerValue.TIMESTAMP;
+    // message.timestamp = admin.database.ServerValue.TIMESTAMP;
     message.channel_type = "direct";
     message.text = text;
     message.type = "text";
 
-    console.log("message",message);
+    console.log("sendDirectMessage with message " + JSON.stringify(message)  + " to " + path);
     return admin.database().ref(path).push(message);
+  }
+
+
+  function sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id) {
+
+    var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_group_id;
+    // console.log("path", path);
+
+
+    var message = {};
+    // message.status = CHAT_MESSAGE_STATUS.SENDING;                                        
+    message.sender = sender_id;
+    message.sender_fullname = sender_fullname;
+    message.recipient = recipient_group_id;
+    message.recipient_fullname = recipient_group_fullname;
+    // message.timestamp = admin.database.ServerValue.TIMESTAMP;
+    message.channel_type = "group";
+    message.text = text;
+    message.type = "text";
+
+    console.log("sendGroupMessage with  message " + JSON.stringify(message)  + " to " + path);
+    return admin.database().ref(path).push(message);   //send message to group timeline
+
+
+    // var newMessageRef = admin.database().ref(path).push(message);   //send message to group timeline
+    
+    // var message_id = newMessageRef.key;
+
+    // return sendGroupMessageToMembersTimeline(sender_id, recipient_group_id, message, message_id, app_id);
+
+
   }
 
 
@@ -192,7 +256,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
   function createGroup(group_id, group_name, group_owner, group_members, app_id) {
 
     var path = '/apps/'+app_id+'/groups/'+group_id;
-    console.log("path", path);
+    // console.log("path", path);
 
 
     var group = {};
@@ -202,9 +266,325 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
     group.iconURL = "NOICON";
     group.createdOn = admin.database.ServerValue.TIMESTAMP;
    
-    console.log("group",group);
+    console.log("creating group " + JSON.stringify(group) + " to "+ path);
     return admin.database().ref(path).set(group);
   }
+
+
+
+
+  exports.insertMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+   
+    const message_id = event.params.message_id;
+    const sender_id = event.params.sender_id;
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+    // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+    // DEBUG console.log('message ' + JSON.stringify(message));
+
+    const messageRef = event.data.ref;
+    //console.log('messageRef ' + messageRef );
+
+    var fixedMessageFields = {};
+    
+    fixedMessageFields.timestamp = admin.database.ServerValue.TIMESTAMP;
+
+    //set the status = 100 only if message.status is null. If message.status==200 (came form sendMessage) saveMessage not must modify the value
+    // console.log("message.status : " + message.status);        
+    if (message.status==null || message.status==CHAT_MESSAGE_STATUS.SENDING) {
+        fixedMessageFields.status = CHAT_MESSAGE_STATUS.SENT; //MSG_STATUS_RECEIVED_ON_PERSIONAL_TIMELINE
+        fixedMessageFields.sender = sender_id; //for security set message.sender =  sender_id of the path
+        fixedMessageFields.recipient = recipient_id; //for security set message.recipient =  recipient_id of the path
+   //TODO se nn passo fullname di sender e recipient vado in contacts e prendo i nomi
+    }
+
+    if (message.channel_type==null) {
+        fixedMessageFields.channel_type = "direct";
+    }
+
+    console.log('updating message ' + JSON.stringify(message) + " with " + JSON.stringify(fixedMessageFields));
+
+    return messageRef.update(fixedMessageFields);
+   
+  });
+  
+
+
+
+
+//se metto {uid} prende utente corrente
+exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+   
+    const message_id = event.params.message_id;
+    const sender_id = event.params.sender_id;    
+    const recipient_id = event.params.recipient_id;  
+    const app_id = event.params.app_id;;
+//    DEBUG  console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+
+   
+    const message = event.data.current.val();
+    // DEBUG console.log('message ' + JSON.stringify(message));
+
+    var conversation = {};
+    // console.log("message.status : " + message.status);       
+
+    if (message.status == null || message.status==CHAT_MESSAGE_STATUS.SENDING) {
+        conversation.is_new = false;
+        conversation.sender = sender_id; //message.sender could be null because saveMessage could be called after
+        conversation.recipient = recipient_id;  ///message.recipient could be null because saveMessage could be called after  
+    } else {
+        conversation.is_new = true;
+        conversation.sender = message.sender;
+        conversation.recipient = message.recipient;  
+    }
+   
+    conversation.last_message_text = message.text;
+    if (message.sender_fullname){ //message potrebbe non avere il sender fullname perche la app non l'ha passato. in questo caso se nn c'è il fullname anche la conversation non ha il fullname
+        conversation.sender_fullname = message.sender_fullname;
+    }
+    if (message.recipient_fullname){        
+        conversation.recipient_fullname = message.recipient_fullname;
+    }
+
+    if (message.channel_type!=null) {
+        conversation.channel_type = message.channel_type;
+    }else {
+        conversation.channel_type = "direct";
+    }
+    
+
+    //conversation.status = message.status;
+    conversation.status = 2;
+    conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
+
+    var path = '/apps/'+app_id+'/users/'+sender_id+'/conversations/'+recipient_id;
+
+    console.log('creating conversation ' + JSON.stringify(conversation) + " to: "+ path);
+
+    return admin.database().ref(path).set(conversation);
+        
+   
+  });
+
+
+
+//only for direct message
+  exports.sendMessageReturnReceipt = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onUpdate(event => {
+   
+    const message_id = event.params.message_id;
+    const sender_id = event.params.sender_id;
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+//    DEBUG  console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+    // DEBUG console.log('message ' + JSON.stringify(message));
+
+    const messageRef = event.data.ref;
+    //console.log('messageRef ' + messageRef );
+
+    // DEBUG console.log("message.status : " + message.status);      
+    //console.log("message.is_group : " + message.is_group);      
+    
+    var eventSnapshot = event.data;
+    var messageStatusSnapshot = eventSnapshot.child('status');
+    if (
+        (message.channel_type==null  || message.channel_type=="direct") //only for direct message
+        && messageStatusSnapshot.changed() && message.status==CHAT_MESSAGE_STATUS.RECEIVED
+        ) {
+
+        var path = '/apps/'+app_id+'/users/'+recipient_id+'/messages/'+sender_id + '/'+ message_id;
+
+        console.log("sending return receipt to  : " + path );      
+
+            //TODO controlla prima se il nodo su cui stai facendo l'update esiste altrimenti si crea una spazzatura
+        return admin.database().ref().update({"status":CHAT_MESSAGE_STATUS.RETURN_RECEIPT});
+    }
+
+       
+    
+    return 0;
+   
+  });
+  
+
+
+
+
+
+
+
+
+
+  exports.fanOutGroup = functions.database.ref('/apps/{tenantId}/groups/{groupId}').onWrite(event => {
+    
+     //console.log('event.data: ' +  event.data);
+   
+     const tenantId = event.params.tenantId;
+     console.log("tenantId : " + tenantId);
+   
+     const groupId = event.params.groupId;
+     console.log("groupId : " + groupId);
+   
+   
+     const group = event.data.current.val();
+     
+     console.log('group ' + JSON.stringify(group) );
+   
+    
+     if (group && group.owner) {
+           const owner = group.owner;
+       console.log('owner ' + owner);
+     }
+   
+    
+     if (group && group.name) {
+       const name = group.name;
+       console.log('group name ' + name);
+     }
+   
+     var members = null
+     var membersAsArray = [];
+     if (group && group.members) {
+       members = group.members;
+       //console.log('members ' + JSON.stringify(members));
+       membersAsArray = Object.keys(members);
+       console.log('membersAsArray ' + JSON.stringify(membersAsArray));
+     }
+   
+   
+     //POTREI ITERARE I PREVIES MEMBER E AGGIORNALI TUTTI CON IL NUOVO GRUPPO
+    
+     var previousMembers = null;
+     var previousMembersAsArray = [];
+     
+     //var deletedMembers = [];
+     if (event.data.previous.exists()) {
+       previousMembers = event.data.previous.val().members;
+       //console.log('previousMembers ' + JSON.stringify(previousMembers));
+       previousMembersAsArray = Object.keys(previousMembers);
+       console.log('previousMembersAsArray ' + JSON.stringify(previousMembersAsArray));
+     }
+   
+   
+     var membersToUpdate = membersAsArray.concat(previousMembersAsArray.filter(function (item) {
+       return membersAsArray.indexOf(item) < 0;
+      }));
+     console.log('membersToUpdate ' + JSON.stringify(membersToUpdate));
+     
+   
+     //aggiorno i gruppi replicati dei membri 
+     if (membersToUpdate)  {
+         //Object.keys(membersToUpdate).forEach(function(key) {
+         membersToUpdate.forEach(function(memberToUpdate) {
+         console.log('memberToUpdate ' + memberToUpdate);
+   
+           admin.database().ref('/apps/'+tenantId+'/users/'+memberToUpdate+'/groups/'+groupId).set(group).then(snapshot => {
+               console.log("snapshot",snapshot);   
+           });    
+         });
+     }
+
+     return 0;
+   });
+
+  
+
+   exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
+    
+     const group_id = event.params.group_id;
+     const app_id = event.params.app_id;;
+     console.log("group_id: "+ group_id + ", app_id: " + app_id);
+   
+     const group = event.data.current.val();
+     console.log("group",group);
+     
+     var sender_id =  "system";
+     var sender_fullname = "Sistema";
+
+    //  var message = {};
+    //  message.status = CHAT_MESSAGE_STATUS.DELIVERED;                                        
+    //  message.sender = sender_id;
+    //  message.recipient = group_id;
+    //  message.recipient_fullname = group.name;
+    //  message.timestamp = admin.database.ServerValue.TIMESTAMP;
+    //  message.channel_type = "group";
+    //  message.text = "Gruppo creato";
+    //  message.type = "text";
+    //  console.log("message",message);
+
+
+     return sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Gruppo creato", app_id);
+    //  return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
+     
+});
+
+exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+    
+     const member_id = event.params.member_id;
+     const group_id = event.params.group_id;
+     const app_id = event.params.app_id;;
+    // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+     
+     
+     const fromPath = '/apps/'+app_id+'/messages/' + group_id;
+    //  console.log("fromPath", fromPath);
+
+     return admin.database().ref(fromPath).once('value').then(function(messagesSnap) {
+        // console.log('messagesSnap ' + JSON.stringify(messagesSnap) );
+
+            if (messagesSnap.val()!=null){
+                var messages = messagesSnap.val();
+                // console.log('messages ' + JSON.stringify(messages) );
+
+                const toPath = '/apps/'+app_id+'/users/' + member_id+'/messages/'+group_id;
+                // console.log("toPath", toPath);
+
+                console.log('duplicating messages ' + JSON.stringify(messages) + " from : " + fromPath + " to " + toPath);
+                return admin.database().ref(toPath).update(messages);
+            } else {
+                console.log("messages is null. Nothing to duplicate");
+            }
+        });
+    
+});
+
+
+// exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+    
+//      const member_id = event.params.member_id;
+//      const group_id = event.params.group_id;
+//      const app_id = event.params.app_id;;
+//      console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+     
+//      const member = event.data.current.val();
+//      console.log("member", member);
+
+
+
+//      var sender_id =  "system";
+
+//      var message = {};
+//      message.status = CHAT_MESSAGE_STATUS.DELIVERED;                                        
+//      message.sender = sender_id;
+//      message.recipient = group_id;
+//      message.recipient_fullname = group.name;
+//      message.timestamp = admin.database.ServerValue.TIMESTAMP;
+//      message.channel_type = "group";
+//      message.text = member_id + "Membro aggiunto";
+//      message.type = "text";
+//      console.log("message", message);
+
+
+//      return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
+    
+// });
+
+
+
+
 
 
 // START SUPPORT
@@ -231,7 +611,10 @@ exports.newRequestToFirestore = functions.database.ref('/apps/{app_id}/users/{se
 
     console.log("message.status : " + message.status);     
 
-    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+    if (message.status==null || message.status==CHAT_MESSAGE_STATUS.SENDING) {
+        return 0;
+    }
+    if (message.sender.indexOf("SUPPORT_GROUP_")==-1 ){
         return 0;
     }
 
@@ -283,36 +666,36 @@ exports.saveMessagesToFirestore = functions.database.ref('/apps/{app_id}/users/{
 });
 
 
-    exports.saveConversationToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-        const message_id = event.params.message_id;
-        // const sender_id = "jjXVZKQSzMhOhhyIjSVOGqy4cMd2";
-        const sender_id = event.params.sender_id; 
-        const recipient_id = event.params.recipient_id;
-        const app_id = event.params.app_id;;
-        console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
-        
-        const message = event.data.current.val();
-        console.log('message ' + JSON.stringify(message));
+exports.saveConversationToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+    const message_id = event.params.message_id;
+    // const sender_id = "jjXVZKQSzMhOhhyIjSVOGqy4cMd2";
+    const sender_id = event.params.sender_id; 
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-        console.log("message.status : " + message.status);     
+    const message = event.data.current.val();
+    console.log('message ' + JSON.stringify(message));
+
+    console.log("message.status : " + message.status);     
+
+    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+
+    console.log('it s a support message ');
+
+    // var conversationId = createConversationId(sender_id, recipient_id);
+    // console.log('conversationId', conversationId);
+    var groupId = recipient_id;
+
+    return admin.firestore().collection('conversations').doc(groupId).set(message).then(writeResult => {
+        // Send back a message that we've succesfully written the message
+        console.log(`Message with ID: ${writeResult.id} setted.`);
+        });
     
-        if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
-            return 0;
-        }
-    
-        console.log('it s a support message ');
-    
-        // var conversationId = createConversationId(sender_id, recipient_id);
-        // console.log('conversationId', conversationId);
-        var groupId = recipient_id;
-    
-        return admin.firestore().collection('conversations').doc(groupId).set(message).then(writeResult => {
-            // Send back a message that we've succesfully written the message
-            console.log(`Message with ID: ${writeResult.id} setted.`);
-          });
-        
-    
-    });
+
+});
 
     // function createConversationId(senderId, recipientId) {
     //     var conversationId = "";
@@ -434,407 +817,12 @@ exports.saveToNodeJs = functions.database.ref('/apps/{app_id}/users/{sender_id}/
 
 
 
-  exports.insertMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-   
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id;
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
-    
-    const message = event.data.current.val();
-    console.log('message ' + JSON.stringify(message));
 
-    const messageRef = event.data.ref;
-    //console.log('messageRef ' + messageRef );
 
-    var fixedMessageFields = {};
-    
-    fixedMessageFields.timestamp = admin.database.ServerValue.TIMESTAMP;
 
-    //set the status = 100 only if message.status is null. If message.status==200 (came form sendMessage) saveMessage not must modify the value
-    console.log("message.status : " + message.status);        
-    if (message.status==null || message.status==CHAT_MESSAGE_STATUS.SENDING) {
-        fixedMessageFields.status = CHAT_MESSAGE_STATUS.SENT; //MSG_STATUS_RECEIVED_ON_PERSIONAL_TIMELINE
-        fixedMessageFields.sender = sender_id; //for security set message.sender =  sender_id of the path
-        fixedMessageFields.recipient = recipient_id; //for security set message.recipient =  recipient_id of the path
-   //TODO se nn passo fullname di sender e recipient vado in contacts e prendo i nomi
-    }
 
-    if (message.channel_type==null) {
-        fixedMessageFields.channel_type = "direct";
-    }
 
-    return messageRef.update(fixedMessageFields);
-   
-  });
-  
-
-
-
-
-//se metto {uid} prende utente corrente
-exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-   
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id;    
-    const recipient_id = event.params.recipient_id;  
-    const app_id = event.params.app_id;;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
-
-   
-    const message = event.data.current.val();
-    console.log('message ' + JSON.stringify(message));
-
-    var conversation = {};
-    console.log("message.status : " + message.status);       
-
-    if (message.status == null || message.status==CHAT_MESSAGE_STATUS.SENDING) {
-        conversation.is_new = false;
-        conversation.sender = sender_id; //message.sender could be null because saveMessage could be called after
-        conversation.recipient = recipient_id;  ///message.recipient could be null because saveMessage could be called after  
-    }else {
-        conversation.is_new = true;
-        conversation.sender = message.sender;
-        conversation.recipient = message.recipient;  
-    }
-   
-    conversation.last_message_text = message.text;
-    if (message.sender_fullname){ //message potrebbe non avere il sender fullname perche la app non l'ha passato. in questo caso se nn c'è il fullname anche la conversation non ha il fullname
-        conversation.sender_fullname = message.sender_fullname;
-    }
-    if (message.recipient_fullname){        
-        conversation.recipient_fullname = message.recipient_fullname;
-    }
-
-    if (message.channel_type!=null) {
-        conversation.channel_type = message.channel_type;
-    }else {
-        conversation.channel_type = "direct";
-    }
-    
-
-    //conversation.status = message.status;
-    conversation.status = 2;
-    conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
-
-    console.log('conversation ' + JSON.stringify(conversation));
-
-    return admin.database().ref('/apps/'+app_id+'/users/'+sender_id+'/conversations/'+recipient_id).set(conversation);
-        
-   
-  });
-
-
-
-//only for direct message
-  exports.sendMessageReturnReceipt = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onUpdate(event => {
-   
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id;
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
-    
-    const message = event.data.current.val();
-    console.log('message ' + JSON.stringify(message));
-
-    const messageRef = event.data.ref;
-    //console.log('messageRef ' + messageRef );
-
-    console.log("message.status : " + message.status);      
-    //console.log("message.is_group : " + message.is_group);      
-    
-    var eventSnapshot = event.data;
-    var messageStatusSnapshot = eventSnapshot.child('status');
-    if (
-        (message.channel_type==null  || message.channel_type=="direct") //only for direct message
-        && messageStatusSnapshot.changed() && message.status==CHAT_MESSAGE_STATUS.RECEIVED
-        ) {
-
-
-            //TODO controlla prima se il nodo su cui stai facendo l'update esiste altrimenti si crea una spazzatura
-        return admin.database().ref('/apps/'+app_id+'/users/'+recipient_id+'/messages/'+sender_id + '/'+ message_id).update({"status":CHAT_MESSAGE_STATUS.RETURN_RECEIPT});
-    }
-
-       
-    
-    return 0;
-   
-  });
-  
-
-
-
-
-
-
-
-
-
-  exports.fanOutGroup = functions.database.ref('/apps/{tenantId}/groups/{groupId}').onWrite(event => {
-    
-     //console.log('event.data: ' +  event.data);
-   
-     const tenantId = event.params.tenantId;
-     console.log("tenantId : " + tenantId);
-   
-     const groupId = event.params.groupId;
-     console.log("groupId : " + groupId);
-   
-   
-     const group = event.data.current.val();
-     
-     console.log('group ' + JSON.stringify(group) );
-   
-    
-     if (group && group.owner) {
-           const owner = group.owner;
-       console.log('owner ' + owner);
-     }
-   
-    
-     if (group && group.name) {
-       const name = group.name;
-       console.log('group name ' + name);
-     }
-   
-     var members = null
-     var membersAsArray = [];
-     if (group && group.members) {
-       members = group.members;
-       //console.log('members ' + JSON.stringify(members));
-       membersAsArray = Object.keys(members);
-       console.log('membersAsArray ' + JSON.stringify(membersAsArray));
-     }
-   
-   
-     //POTREI ITERARE I PREVIES MEMBER E AGGIORNALI TUTTI CON IL NUOVO GRUPPO
-    
-     var previousMembers = null;
-     var previousMembersAsArray = [];
-     
-     //var deletedMembers = [];
-     if (event.data.previous.exists()) {
-       previousMembers = event.data.previous.val().members;
-       //console.log('previousMembers ' + JSON.stringify(previousMembers));
-       previousMembersAsArray = Object.keys(previousMembers);
-       console.log('previousMembersAsArray ' + JSON.stringify(previousMembersAsArray));
-     }
-   
-   
-     var membersToUpdate = membersAsArray.concat(previousMembersAsArray.filter(function (item) {
-       return membersAsArray.indexOf(item) < 0;
-      }));
-     console.log('membersToUpdate ' + JSON.stringify(membersToUpdate));
-     
-   
-     //aggiorno i gruppi replicati dei membri 
-     if (membersToUpdate)  {
-         //Object.keys(membersToUpdate).forEach(function(key) {
-         membersToUpdate.forEach(function(memberToUpdate) {
-         console.log('memberToUpdate ' + memberToUpdate);
-   
-           admin.database().ref('/apps/'+tenantId+'/users/'+memberToUpdate+'/groups/'+groupId).set(group).then(snapshot => {
-               console.log("snapshot",snapshot);   
-           });    
-         });
-     }
-
-     return 0;
-   });
-
-  
-
-   exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
-    
-     const group_id = event.params.group_id;
-     const app_id = event.params.app_id;;
-     console.log("group_id: "+ group_id + ", app_id: " + app_id);
-   
-     const group = event.data.current.val();
-     console.log("group",group);
-     
-     var sender_id =  "system";
-
-     var message = {};
-     message.status = CHAT_MESSAGE_STATUS.DELIVERED;                                        
-     message.sender = sender_id;
-     message.recipient = group_id;
-     message.recipient_fullname = group.name;
-     message.timestamp = admin.database.ServerValue.TIMESTAMP;
-     message.channel_type = "group";
-     message.text = "Gruppo creato";
-     message.type = "text";
-     console.log("message",message);
-
-
-     return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
-     
-});
-
-// exports.createInfoConversationOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
-    
-//      const group_id = event.params.group_id;
-//      const app_id = event.params.app_id;;
-//      console.log("group_id: "+ group_id + ", app_id: " + app_id);
-
-//      var conversation = {};
-//      var updates = {};
-    
-    
-//         admin.database().ref('/apps/' + app_id + '/groups/' + group_id).once('value').then(function(groupSnapshot) {
-//             console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
-//             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
-
-
-//             // https://stackoverflow.com/questions/42750060/getting-the-user-id-from-a-database-trigger-in-cloud-functions-for-firebase
-//             var isAdmin = event.auth.admin;
-//             var currentUserID = event.auth.variable ? event.auth.variable.uid : null;
-
-//             console.log("current user isAdmin: ", isAdmin);
-//             console.log("current user uid: ", currentUserID);
-
-//             if (groupSnapshot.val()!=null){ 
-
-//                 var group = groupSnapshot.val();
-//                 console.log("group", group);
-
-//                 var groupName = group.name;
-//                 console.log("groupName", groupName);
-                
-//                 var groupMembers = group.members;
-//                 var groupMembersAsArray = Object.keys(groupMembers);
-//                 console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
-
-//                 groupMembersAsArray.forEach(function(groupMember) {
-//                     console.log('groupMember ' + groupMember);
-
-//                     conversation = {}; //re-initialize
-
-//                     conversation.is_new = true; 
-//                     conversation.sender = currentUserID;
-//                     conversation.recipient = group_id;
-//                     conversation.recipient_fullname = groupName;
-//                     conversation.status = 2;
-//                     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
-//                     conversation.channel_type = "group";
-                   
-                    
-//                     if (groupMember==currentUserID) { 
-//                         conversation.last_message_text = "Hai creato il gruppo "+ groupName;                        
-//                     }else {
-//                         conversation.last_message_text = currentUserID + " ha creato il gruppo "+ groupName;   
-//                     }
-//                     console.log('conversation ', conversation);
-
-//                     updates['/'+groupMember+'/conversations/'+group_id] = conversation; 
-                    
-//                     // return admin.database().ref('/apps/'+app_id+'/users/'+groupMember+'/conversations/'+group_id).set(conversation);
-                    
-//                 });
-//             }else {
-//                 console.log('Warning: Group '+ group_id +' not found ' );
-//                 //recipient_id is NOT a group
-//                 return 0;
-//             }
-            
-//             console.log('updates ' + JSON.stringify(updates) );
-            
-//             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
-
-
-//         });
-
-    
-// });
-
-
-
-// exports.createInfoConversationOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
-    
-//      const member_id = event.params.member_id;
-//      const group_id = event.params.group_id;
-//      const app_id = event.params.app_id;;
-//      console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
-     
-//      const member = event.data.current.val();
-//      console.log("member", member);
-
-//      var conversation = {};
-//      var updates = {};
-//     //  var memberRef = member.ref();
-//     //  console.log("memberRef", memberRef);
-     
-//     //  var parentRef = memberRef.parent();
-//     //  console.log("parentRef", parentRef);
-     
-    
-//         admin.database().ref('/apps/'+app_id+'/groups/'+group_id).once('value').then(function(groupSnapshot) {
-//             console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
-//             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
-
-
-//             // https://stackoverflow.com/questions/42750060/getting-the-user-id-from-a-database-trigger-in-cloud-functions-for-firebase
-//             var isAdmin = event.auth.admin;
-//             var currentUserID = event.auth.variable ? event.auth.variable.uid : null;
-
-//             console.log("current user isAdmin: ", isAdmin);
-//             console.log("current user uid: ", currentUserID);
-
-//             if (groupSnapshot.val()!=null){ 
-
-//                 var group = groupSnapshot.val();
-//                 console.log("group", group);
-
-//                 var groupName = group.name;
-//                 console.log("groupName", groupName);
-                
-//                 var groupMembers = group.members;
-//                 var groupMembersAsArray = Object.keys(groupMembers);
-//                 console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
-
-//                 groupMembersAsArray.forEach(function(groupMember) {
-//                     console.log('groupMember ' + groupMember);
-
-//                     conversation = {}; //re-initialize
-
-//                     conversation.is_new = true; 
-//                     conversation.sender = currentUserID;
-//                     conversation.recipient = group_id;
-//                     conversation.recipient_fullname = groupName;
-//                     conversation.status = 2;
-//                     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
-//                     conversation.channel_type = "group";
-                   
-                    
-//                     // if (groupMember==member_id) { 
-//                         conversation.last_message_text = "Sei stato aggiunto al gruppo "+ groupName;                        
-//                     // }else {
-//                     //     conversation.last_message_text = groupMember + " è stato aggiunto al gruppo "+ groupName;   
-//                     // }
-//                     console.log('conversation ', conversation);
-
-//                     updates['/'+groupMember+'/conversations/'+group_id] = conversation; 
-                    
-//                     // return admin.database().ref('/apps/'+app_id+'/users/'+groupMember+'/conversations/'+group_id).set(conversation);
-                    
-//                 });
-//             }else {
-//                 console.log('Warning: Group '+ group_id +' not found ' );
-//                 //recipient_id is NOT a group
-//                 return 0;
-//             }
-            
-//             console.log('updates ' + JSON.stringify(updates) );
-            
-//             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
-
-
-//         });
-
-    
-// });
+//PUSH NOTIFICATION
 
  // invio di una singola notifica push ad un utente (direct)
 exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
