@@ -289,7 +289,6 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
 
     var fixedMessageFields = {};
     
-    fixedMessageFields.timestamp = admin.database.ServerValue.TIMESTAMP;
 
     //set the status = 100 only if message.status is null. If message.status==200 (came form sendMessage) saveMessage not must modify the value
     // console.log("message.status : " + message.status);        
@@ -298,15 +297,25 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
         fixedMessageFields.sender = sender_id; //for security set message.sender =  sender_id of the path
         fixedMessageFields.recipient = recipient_id; //for security set message.recipient =  recipient_id of the path
    //TODO se nn passo fullname di sender e recipient vado in contacts e prendo i nomi
+
+       
+        fixedMessageFields.timestamp = admin.database.ServerValue.TIMESTAMP;
+
+
+        if (message.channel_type==null) {
+          fixedMessageFields.channel_type = "direct";
+         }
+
+        console.log('inserting new message ' + JSON.stringify(message) + " updating with " + JSON.stringify(fixedMessageFields));
+
+        return messageRef.update(fixedMessageFields);
+
+    }else {
+        // DEBUG console.log("It's not a SENDING message. Nothing to update for insert");
+        return 0;
     }
 
-    if (message.channel_type==null) {
-        fixedMessageFields.channel_type = "direct";
-    }
-
-    console.log('updating message ' + JSON.stringify(message) + " with " + JSON.stringify(fixedMessageFields));
-
-    return messageRef.update(fixedMessageFields);
+   
    
   });
   
@@ -382,7 +391,7 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     const message = event.data.current.val();
     // DEBUG console.log('message ' + JSON.stringify(message));
 
-    const messageRef = event.data.ref;
+    // const messageRef = event.data.ref;
     //console.log('messageRef ' + messageRef );
 
     // DEBUG console.log("message.status : " + message.status);      
@@ -397,10 +406,10 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
 
         var path = '/apps/'+app_id+'/users/'+recipient_id+'/messages/'+sender_id + '/'+ message_id;
 
-        console.log("sending return receipt to  : " + path );      
+        console.log("sending return receipt for message " + JSON.stringify(message) + " to  : " + path );      
 
             //TODO controlla prima se il nodo su cui stai facendo l'update esiste altrimenti si crea una spazzatura
-        return admin.database().ref().update({"status":CHAT_MESSAGE_STATUS.RETURN_RECEIPT});
+        return admin.database().ref(path).update({"status":CHAT_MESSAGE_STATUS.RETURN_RECEIPT});
     }
 
        
