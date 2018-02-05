@@ -106,7 +106,7 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
   function sendMessageToGroupTimeline(group_id, message, message_id, app_id) {
     var updates = {};
     
-    updates['/messages/'+group_id + '/'+ message_id] = message;   
+    updates['/messages/' + group_id + '/'+ message_id] = message;   
     // console.log('updates ' + JSON.stringify(updates) );
     
     console.log('sendMessageToGroupTimeline with message' + JSON.stringify(message) + " TO: " + JSON.stringify(updates) );           
@@ -598,11 +598,11 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
 
 // START SUPPORT
 
-exports.newRequestToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}').onCreate(event => {
-    const sender_id = event.params.sender_id; 
+exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate(event => {
+    // const sender_id = event.params.sender_id; 
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id );
+    console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
     
     // const messageRef = event.data.ref;
     // console.log('messageRef ' + messageRef);
@@ -618,25 +618,33 @@ exports.newRequestToFirestore = functions.database.ref('/apps/{app_id}/users/{se
     const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
     console.log('message ' + JSON.stringify(message));
 
-    console.log("message.status : " + message.status);     
+    // console.log("message.status : " + message.status);     
 
-    if (message.status==null || message.status==CHAT_MESSAGE_STATUS.SENDING) {
+    // if (message.status!=null || message.status!=CHAT_MESSAGE_STATUS.SENDING) {  //createGroupForNewSupportRequest must run for message
+    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+        console.log('exit for status');
         return 0;
     }
-    if (message.sender.indexOf("SUPPORT_GROUP_")==-1 ){
+
+    if (recipient_id.indexOf("support-group")==-1 ){
+        console.log('exit for recipient');
         return 0;
     }
 
 
     console.log("new request!!! ");     
     
-    var group_id = sender_id; //sender_id is the group id
+    var group_id = recipient_id; //recipient is the group id
     var group_name = "Support Group";
     var group_owner = "system";
     var group_members = {};
         group_members.system = 1;
-        group_members[recipient_id] = 1;  //add customer
-        group_members.bot1 = 1;
+        group_members[message.sender] = 1;  //add customer
+        group_members["6qI3oekSwabW9w05JHd2SQlV2rz2"] = 1; //bot
+        group_members["9EBA3VLhNKMFIVa0IOco82TkIzk1"] = 1;
+        group_members["LmBT2IKjMzeZ3wqyU8up8KIRB6J3"] = 1;
+        group_members["U4HL3GWjBsd8zLX4Vva0s7W2FN92"] = 1; //andrealeo
+        
 
     console.log("group_members", group_members);     
 
@@ -727,23 +735,31 @@ const request = require('request-promise');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 
+
+//lasciare questo bot cosi come è per essere usato dalla app ios
 exports.botreply = functions.database.ref('/apps/{app_id}/users/6qI3oekSwabW9w05JHd2SQlV2rz2/messages/{recipient_id}/{message_id}').onCreate(event => {
+
+    // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
     const message_id = event.params.message_id;
     const sender_id = "6qI3oekSwabW9w05JHd2SQlV2rz2";
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+//    DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
     const message = event.data.current.val();
-    console.log('message ' + JSON.stringify(message));
+    // DEBUG console.log('message ' + JSON.stringify(message));
 
-    console.log("message.status : " + message.status);     
+    // DEBUG console.log("message.status : " + message.status);     
 
     if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
         return 0;
     }
+    if (message.sender == "system"){  //evita che il bot risponda a messaggi di system (es: Gruppo Creato)
+        return 0;
+    }
 
-    console.log('it s a message to bot ');
+
+    console.log('it s a message to bot ', message);
     
     return request({
         uri: "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/f486b8ed-b587-413a-948e-e02c9a129d12/generateAnswer",
@@ -770,10 +786,13 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/6qI3oekSwabW9w05
         console.log('question', question);        
 
         if (answer == "No good match found in the KB"){
-            answer = "Non ho trovato una risposta nella knowledge base. Vuoi parlare con un operatore?";
+            answer = "Non ho trovato una risposta nella knowledge base. Riformula la tua domanda";
         }
-        return sendDirectMessage(sender_id, message.recipient_fullname, recipient_id, message.sender_fullname, answer, app_id);            
-        
+        var sender_fullname = "Bot";
+        var recipient_group_fullname = message.recipient_fullname;
+        // return sendDirectMessage(sender_id, message.recipient_fullname, recipient_id, message.sender_fullname, answer, app_id);            
+        return sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, answer, app_id);
+
         });
 
     
