@@ -643,7 +643,9 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
         group_members["6qI3oekSwabW9w05JHd2SQlV2rz2"] = 1; //bot
         group_members["9EBA3VLhNKMFIVa0IOco82TkIzk1"] = 1;
         group_members["LmBT2IKjMzeZ3wqyU8up8KIRB6J3"] = 1;
-        group_members["U4HL3GWjBsd8zLX4Vva0s7W2FN92"] = 1; //andrealeo
+        group_members["U4HL3GWjBsd8zLX4Vva0s7W2FN92"] = 1; //andrea.leo@frontiere21.it
+        group_members["AHNfnoWiF7SDVy6iKVTmgsAjLOv2"] = 1; //andrea.leo2@frontiere21.it
+        
         
 
     console.log("group_members", group_members);     
@@ -653,13 +655,45 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
 });
 //   exports.sendToSupport = functions.database.ref('/apps/{app_id}/users/jjXVZKQSzMhOhhyIjSVOGqy4cMd2/messages/{recipient_id}/{message_id}').onCreate(event => {
-exports.saveMessagesToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+exports.saveSupportMessagesToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
     const message_id = event.params.message_id;
-    // const sender_id = "jjXVZKQSzMhOhhyIjSVOGqy4cMd2";
-    const sender_id = event.params.sender_id; 
+  
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+    console.log('message ' + JSON.stringify(message));
+
+    console.log("message.status : " + message.status);     
+
+    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+    if (recipient_id.indexOf("support-group")==-1 ){
+        console.log('exit for recipient');
+        return 0;
+    }
+
+
+    console.log('it s a support message ');
+    // var conversationId = recipient_id;
+    // message.conversationId = conversationId;
+
+    return admin.firestore().collection('messages').doc(message_id).set(message).then(writeResult => {
+        // Send back a message that we've succesfully written the message
+        console.log(`Message with ID: ${message_id} created.`);
+      });
+    
+
+});
+
+
+exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+    const message_id = event.params.message_id;
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+    console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
     const message = event.data.current.val();
     console.log('message ' + JSON.stringify(message));
@@ -670,33 +704,8 @@ exports.saveMessagesToFirestore = functions.database.ref('/apps/{app_id}/users/{
         return 0;
     }
 
-    console.log('it s a support message ');
-    var conversationId = recipient_id;
-    message.conversationId = conversationId;
-
-    return admin.firestore().collection('messages').doc(message_id).set(message).then(writeResult => {
-        // Send back a message that we've succesfully written the message
-        console.log(`Message with ID: ${writeResult.id} setted.`);
-      });
-    
-
-});
-
-
-exports.saveConversationToFirestore = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-    const message_id = event.params.message_id;
-    // const sender_id = "jjXVZKQSzMhOhhyIjSVOGqy4cMd2";
-    const sender_id = event.params.sender_id; 
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
-    
-    const message = event.data.current.val();
-    console.log('message ' + JSON.stringify(message));
-
-    console.log("message.status : " + message.status);     
-
-    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+    if (recipient_id.indexOf("support-group")==-1 ){
+        console.log('exit for recipient');
         return 0;
     }
 
@@ -708,11 +717,31 @@ exports.saveConversationToFirestore = functions.database.ref('/apps/{app_id}/use
 
     return admin.firestore().collection('conversations').doc(groupId).set(message).then(writeResult => {
         // Send back a message that we've succesfully written the message
-        console.log(`Message with ID: ${writeResult.id} setted.`);
+        console.log(`Message with ID: ${groupId} created.`);
         });
     
 
 });
+
+
+exports.saveMemberToRequestFirestoreOnMemberJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+    
+    const member_id = event.params.member_id;
+    const group_id = event.params.group_id;
+    const app_id = event.params.app_id;;
+   // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+    
+    var memberToAdd = {};
+    memberToAdd[member_id] = true;
+    console.log("memberToAdd ", memberToAdd);
+
+   return admin.firestore().collection('conversations').doc(group_id).set(memberToAdd).then(writeResult => {
+       // Send back a message that we've succesfully written the message
+       console.log(`Member with ID: ${memberToAdd} added.`);
+       });
+   
+});
+
 
     // function createConversationId(senderId, recipientId) {
     //     var conversationId = "";
@@ -727,7 +756,47 @@ exports.saveConversationToFirestore = functions.database.ref('/apps/{app_id}/use
     // }
 
 
-// END SUPPORT
+    exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+        const message_id = event.params.message_id;
+        const sender_id = event.params.sender_id; 
+        const recipient_id = event.params.recipient_id;
+        const app_id = event.params.app_id;;
+        console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+        
+        const message = event.data.current.val();
+        console.log('message ' + JSON.stringify(message));
+    
+        console.log("message.status : " + message.status);     
+    
+        if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+            return 0;
+        }
+    
+        console.log('it s a message to nodejs ');
+        
+        return request({
+            uri: "http://api.chat21.org/"+app_id+"/messages",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwic2VsZWN0ZWQiOnt9LCJnZXR0ZXJzIjp7fSwid2FzUG9wdWxhdGVkIjpmYWxzZSwiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0IiwiX192IjoiaW5pdCIsIl9pZCI6ImluaXQifSwic3RhdGVzIjp7Imlnbm9yZSI6e30sImRlZmF1bHQiOnt9LCJpbml0Ijp7Il9fdiI6dHJ1ZSwicGFzc3dvcmQiOnRydWUsInVzZXJuYW1lIjp0cnVlLCJfaWQiOnRydWV9LCJtb2RpZnkiOnt9LCJyZXF1aXJlIjp7fX0sInN0YXRlTmFtZXMiOlsicmVxdWlyZSIsIm1vZGlmeSIsImluaXQiLCJkZWZhdWx0IiwiaWdub3JlIl19LCJlbWl0dGVyIjp7ImRvbWFpbiI6bnVsbCwiX2V2ZW50cyI6e30sIl9ldmVudHNDb3VudCI6MCwiX21heExpc3RlbmVycyI6MH19LCJpc05ldyI6ZmFsc2UsIl9kb2MiOnsiX192IjowLCJwYXNzd29yZCI6IiQyYSQxMCQ5SjlIUHZCL29NOUxGMFdVaEtZWHRPcmhTZ2wyOEY0ZmtZcGZUVGU3ZGdwRWFZRnFRQlFtdSIsInVzZXJuYW1lIjoiYW5kcmVhIiwiX2lkIjoiNWE2YzU4MzVjM2VjNjU5M2I0ZDk2YjRmIn0sImlhdCI6MTUxNzA1MDcyOX0.OafV9nTa_O48RkRGt6WoFW26ZNNw6AN-HCETkaT3oFU'
+            },
+            method: 'POST',
+            json: true,
+            body: message,
+            //resolveWithFullResponse: true
+            }).then(response => {
+            if (response.statusCode >= 400) {
+                throw new Error(`HTTP Error: ${response.statusCode}`);
+            }
+    
+            console.log('SUCCESS! Posted', event.data.ref);        
+            console.log('SUCCESS! response', response);           
+            
+            });
+    
+        
+        
+    });
   
 
 const request = require('request-promise');  
@@ -801,49 +870,8 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/6qI3oekSwabW9w05
 
 
 
-exports.saveToNodeJs = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id; 
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
-    
-    const message = event.data.current.val();
-    console.log('message ' + JSON.stringify(message));
 
-    console.log("message.status : " + message.status);     
-
-    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
-        return 0;
-    }
-
-    console.log('it s a message to nodejs ');
-    
-    return request({
-        uri: "http://api.chat21.org/"+app_id+"/messages",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwic2VsZWN0ZWQiOnt9LCJnZXR0ZXJzIjp7fSwid2FzUG9wdWxhdGVkIjpmYWxzZSwiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0IiwiX192IjoiaW5pdCIsIl9pZCI6ImluaXQifSwic3RhdGVzIjp7Imlnbm9yZSI6e30sImRlZmF1bHQiOnt9LCJpbml0Ijp7Il9fdiI6dHJ1ZSwicGFzc3dvcmQiOnRydWUsInVzZXJuYW1lIjp0cnVlLCJfaWQiOnRydWV9LCJtb2RpZnkiOnt9LCJyZXF1aXJlIjp7fX0sInN0YXRlTmFtZXMiOlsicmVxdWlyZSIsIm1vZGlmeSIsImluaXQiLCJkZWZhdWx0IiwiaWdub3JlIl19LCJlbWl0dGVyIjp7ImRvbWFpbiI6bnVsbCwiX2V2ZW50cyI6e30sIl9ldmVudHNDb3VudCI6MCwiX21heExpc3RlbmVycyI6MH19LCJpc05ldyI6ZmFsc2UsIl9kb2MiOnsiX192IjowLCJwYXNzd29yZCI6IiQyYSQxMCQ5SjlIUHZCL29NOUxGMFdVaEtZWHRPcmhTZ2wyOEY0ZmtZcGZUVGU3ZGdwRWFZRnFRQlFtdSIsInVzZXJuYW1lIjoiYW5kcmVhIiwiX2lkIjoiNWE2YzU4MzVjM2VjNjU5M2I0ZDk2YjRmIn0sImlhdCI6MTUxNzA1MDcyOX0.OafV9nTa_O48RkRGt6WoFW26ZNNw6AN-HCETkaT3oFU'
-        },
-        method: 'POST',
-        json: true,
-        body: message,
-        //resolveWithFullResponse: true
-        }).then(response => {
-        if (response.statusCode >= 400) {
-            throw new Error(`HTTP Error: ${response.statusCode}`);
-        }
-
-        console.log('SUCCESS! Posted', event.data.ref);        
-        console.log('SUCCESS! response', response);           
-        
-        });
-
-    
-    
-});
-
-
+// END SUPPORT
 
 
 
@@ -867,7 +895,7 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
     
         // se esiste il parametro "recipientGroupId" allora si Ã¨ in presenza di un gruppo
         // la funzione termina se si tenta di mandare la notifica ad un gruppo
-        if (message.channel_type=="group") { //is a group message
+        if (message.channel_type!="direct") { //is a group message
             return 0;
         }
 
