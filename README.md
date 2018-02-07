@@ -8,10 +8,12 @@
 
 # Pre requisites
 
-It is assumed that you are using an existing Firebase project or that you have created a new one on the Firebase console. if it was not done, follow the Firebase Documentation to create a new app on the Firebase console
+It is assumed that you are using an existing Firebase project or that you have created a new one on the Firebase console. Follow the Firebase Documentation to create a new project on the Firebase console.
 
 # Build
-Checkout the project and run from the project folder ```npm install```
+Checkout the project and run from command line:
+* ```cd functions```
+* ```npm install```
 
 # Deploy
 
@@ -19,7 +21,7 @@ From the project folder run :
 * ```firebase deploy```
 
 # Security (optional)
-See the file database.rules.json to understand the databases security rules
+See the file database.rules.json to understand the databases security rules.
 
 
 # Database structure

@@ -13,8 +13,10 @@
     "firebase-functions": "^0.7.1",
 
     "request-promise": "^2.0.0",
-    "html-entities" : "1.2.1"
-    
+    "html-entities" : "1.2.1",
+
+    "cors": "^2.8.1"
+
   },
   "private": true
 }

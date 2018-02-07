@@ -14,6 +14,55 @@ const CHAT_MESSAGE_STATUS = {
 
 }
 
+const cors = require('cors')({origin: true});
+
+/**
+ * Send a message.
+ * Example request using URL query parameters:
+ *   https://us-central1-<project-id>.cloudfunctions.net/sendmessage?
+ * Example request using request body with cURL:
+ *   curl -H 'Content-Type: application/json' /
+ *        -d '{"format": "MMMM Do YYYY, h:mm:ss a"}' /
+ *        https://us-central1-<project-id>.cloudfunctions.net/sendmessage
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+exports.send = functions.https.onRequest((req, res) => {
+    // [END trigger]
+      // [START sendError]
+      // Forbidding PUT requests.
+      if (req.method === 'PUT') {
+        res.status(403).send('Forbidden!');
+      }
+      // [END sendError]
+    
+      // [START usingMiddleware]
+      // Enable CORS using the `cors` express middleware.
+      cors(req, res, () => {
+      // [END usingMiddleware]
+        // Reading date format from URL query parameter.
+        let sender_id = req.query.sender_id;
+        // Reading date format from request body query parameter
+        if (!sender_id) {
+          sender_id = req.body.sender_id;
+        }
+        let sender_fullname = req.query.sender_fullname;
+        let recipient_id = req.query.recipient_id;
+        let recipient_fullname = req.query.recipient_fullname;
+        let text = req.query.text;
+        let app_id = req.query.app_id;
+
+       var result =  sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id)
+        console.log('sendDirectMessage');
+        res.status(200).send(result);
+        // [END sendResponse]
+      });
+    });
+
+
+
+
 /*
 
 How to send a message (direct and group) from curl. It's work if the authentication is disabled for Firebase.
@@ -510,6 +559,11 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      const group = event.data.current.val();
      console.log("group",group);
      
+     if (group_id.indexOf("support-group")>-1 ){
+        console.log('dont send group creation message for support-group');
+        return 0;
+    }
+
      var sender_id =  "system";
      var sender_fullname = "Sistema";
 
@@ -715,7 +769,9 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
     // console.log('conversationId', conversationId);
     var groupId = recipient_id;
 
-    return admin.firestore().collection('conversations').doc(groupId).set(message).then(writeResult => {
+    
+     return admin.firestore().collection('conversations').doc(groupId).set(message, { merge: true }).then(writeResult => {
+    // return admin.firestore().collection('conversations').doc(groupId).update(message).then(writeResult => {
         // Send back a message that we've succesfully written the message
         console.log(`Message with ID: ${groupId} created.`);
         });
@@ -723,7 +779,38 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
 });
 
+function updateMembersCount(group_id) {
 
+       //update membersCount
+       var conversationDocRef = admin.firestore().collection("conversations").doc(group_id);
+    
+    
+       return admin.firestore().runTransaction(function(transaction) {
+           // This code may get re-run multiple times if there are conflicts.
+           return transaction.get(conversationDocRef).then(function(conversationDoc) {
+               if (!conversationDoc.exists) {
+                   throw "Document does not exist!";
+               }
+   
+               var oldMemberCount = 0;
+               if (conversationDoc.data().membersCount!=null){
+                   oldMemberCount=conversationDoc.data().membersCount;
+               }
+   
+               var newMembersCount = oldMemberCount + 1;
+   
+               var updates = {};    
+               updates.membersCount = newMembersCount;
+   
+               transaction.update(conversationDocRef, updates);
+           });
+       }).then(function() {
+           console.log("Transaction successfully committed!");
+       }).catch(function(error) {
+           console.log("Transaction failed: ", error);
+       });
+   
+}
 exports.saveMemberToRequestFirestoreOnMemberJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
     
     const member_id = event.params.member_id;
@@ -731,14 +818,22 @@ exports.saveMemberToRequestFirestoreOnMemberJoinGroup = functions.database.ref('
     const app_id = event.params.app_id;;
    // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
     
+  
     var memberToAdd = {};
     memberToAdd[member_id] = true;
     console.log("memberToAdd ", memberToAdd);
 
-   return admin.firestore().collection('conversations').doc(group_id).set(memberToAdd).then(writeResult => {
+//    return admin.firestore().collection('conversations').doc(group_id).update({members:memberToAdd}).then(writeResult => {
+     return admin.firestore().collection('conversations').doc(group_id).set({members:memberToAdd},{merge:true}).then(writeResult => {
        // Send back a message that we've succesfully written the message
-       console.log(`Member with ID: ${memberToAdd} added.`);
-       });
+       console.log(`Member with ID: ${JSON.stringify(memberToAdd)} added to ${group_id}.`);
+
+       return updateMembersCount(group_id);
+    });
+
+
+
+
    
 });
 
@@ -888,18 +983,17 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
         const app_id = event.params.app_id;
         const message = event.data.current.val();
 
-        console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+        // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
        
-        console.log('message ' + JSON.stringify(message));
+        // DEBUG console.log('message ' + JSON.stringify(message));
     
     
-        // se esiste il parametro "recipientGroupId" allora si Ã¨ in presenza di un gruppo
         // la funzione termina se si tenta di mandare la notifica ad un gruppo
-        if (message.channel_type!="direct") { //is a group message
-            return 0;
-        }
+        // if (message.channel_type!="direct") { //is a group message
+        //     return 0;
+        // }
 
-        console.log("message.status : " + message.status);     
+    //    DEBUG console.log("message.status : " + message.status);     
         if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
             return 0;
         }
@@ -915,7 +1009,7 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
         const text = message.text;
         const messageTimestamp = JSON.stringify(message.timestamp);
         
-        console.log(`--->/apps/${app_id}/users/${sender_id}/instanceId`);
+        // DEBUG console.log(`--->/apps/${app_id}/users/${sender_id}/instanceId`);
 
         return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
           
@@ -923,7 +1017,7 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
 
             var instanceId = instanceIdAsObj.val();
 
-            console.log('instanceId ' + instanceId); 
+            // DEBUG console.log('instanceId ' + instanceId); 
             
             //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
             const payload = {
@@ -933,7 +1027,7 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
                 icon : "ic_notification_small",
                 sound : "default",
                 //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
-                click_action: "ACTION_CUSTOM_CHAT_INTENT", // uncomment for intent filter in your custom project
+                click_action: "NEW_MESSAGE", // uncomment for intent filter in your custom project
             },
         
                 data: {
@@ -948,13 +1042,14 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
                 }
             };
             
-            console.log('payload ', payload);
+            // DEBUG console.log('payload ', payload);
 
             return admin.messaging().sendToDevice(instanceId, payload)
                  .then(function (response) {
-                console.log("Push notification sent with response ", response);
+                console.log("Push notification for message "+ JSON.stringify(message) + " with payload "+ JSON.stringify(payload) +" sent with response ",  JSON.stringify(response));
                 
-                console.log("Push notification sent with response as string ", JSON.stringify(response));
+                // console.log("Successfully sent message: stringifiedresponse: ", JSON.stringify(response));
+                console.log("Message.results[0]:", JSON.stringify(response.results[0]));
 
 
                 //             // For each message check if there was an error.
@@ -1006,132 +1101,132 @@ exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_
 
 
 
-exports.sendNotificationToGroup = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+// exports.sendNotificationToGroup = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
 
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id; 
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;
-    const message = event.data.current.val();
+//     const message_id = event.params.message_id;
+//     const sender_id = event.params.sender_id; 
+//     const recipient_id = event.params.recipient_id;
+//     const app_id = event.params.app_id;
+//     const message = event.data.current.val();
 
-    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+//     console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
    
-    console.log('message ' + JSON.stringify(message));
+//     console.log('message ' + JSON.stringify(message));
 
 
   
-    if (message.channel_type!="group") { 
-        console.log('it s not a message to a group. exit');
-        return 0;
-    }
+//     if (message.channel_type!="group") { 
+//         console.log('it s not a message to a group. exit');
+//         return 0;
+//     }
 
-    console.log("message.status : " + message.status);     
-    if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
-        console.log('it s not a message to a recipient timeline with status= '+CHAT_MESSAGE_STATUS.DELIVERED + ' . exit');
-        return 0;
-    }
+//     console.log("message.status : " + message.status);     
+//     if (message.status != CHAT_MESSAGE_STATUS.DELIVERED){
+//         console.log('it s not a message to a recipient timeline with status= '+CHAT_MESSAGE_STATUS.DELIVERED + ' . exit');
+//         return 0;
+//     }
   
-    const text = message.text;
-    //const messageTimestamp = JSON.stringify(message.timestamp);
-    const senderFullname = message.sender_fullname;
-    const recipient_group_id = recipient_id;
+//     const text = message.text;
+//     //const messageTimestamp = JSON.stringify(message.timestamp);
+//     const senderFullname = message.sender_fullname;
+//     const recipient_group_id = recipient_id;
   
-    const promises = [];
+//     const promises = [];
   
 
-    admin.database().ref(`/apps/${app_id}/groups/${recipient_group_id}/members`).once('value', function(groupMembersSnapshot) {
+//     admin.database().ref(`/apps/${app_id}/groups/${recipient_group_id}/members`).once('value', function(groupMembersSnapshot) {
 
-      var userInstanceIdPromises = [];
+//       var userInstanceIdPromises = [];
   
-      groupMembersSnapshot.forEach(function(groupMemberObj) {
-        // la mappa degli utenti Ã¨ nel formato Map<String, Integer>
-        // es. <test.monitoraggio, 1>
-        // dove: 
-        // String: Ã¨ il nome utente
-        // Integer: Ã¨ un valore di default utilizzato per poter create la mappa (scelta progettuale dettata dalle limitazioni di firebase)
-        var groupMemberUserId = groupMemberObj.key; // corrisponde allo userId dell'utente
-        console.log("groupMemberUserId: " + groupMemberUserId); 
+//       groupMembersSnapshot.forEach(function(groupMemberObj) {
+//         // la mappa degli utenti Ã¨ nel formato Map<String, Integer>
+//         // es. <test.monitoraggio, 1>
+//         // dove: 
+//         // String: Ã¨ il nome utente
+//         // Integer: Ã¨ un valore di default utilizzato per poter create la mappa (scelta progettuale dettata dalle limitazioni di firebase)
+//         var groupMemberUserId = groupMemberObj.key; // corrisponde allo userId dell'utente
+//         console.log("groupMemberUserId: " + groupMemberUserId); 
   
-        if(groupMemberUserId !== sender_id) {
-          const userInstanceIdPromise = admin.database().ref(`/apps/${app_id}/users/${groupMemberUserId}/instanceId`).once('value');
-          userInstanceIdPromises.push(userInstanceIdPromise);
-        }
-      });
+//         if(groupMemberUserId !== sender_id) {
+//           const userInstanceIdPromise = admin.database().ref(`/apps/${app_id}/users/${groupMemberUserId}/instanceId`).once('value');
+//           userInstanceIdPromises.push(userInstanceIdPromise);
+//         }
+//       });
   
-      console.log("userInstanceIdPromises: " + JSON.stringify(userInstanceIdPromises));
+//       console.log("userInstanceIdPromises: " + JSON.stringify(userInstanceIdPromises));
   
-      Promise.all(userInstanceIdPromises).then(usersInstancesId => {
+//       Promise.all(userInstanceIdPromises).then(usersInstancesId => {
 
-        console.log("usersInstancesId: ",  JSON.stringify(usersInstancesId));
+//         console.log("usersInstancesId: ",  JSON.stringify(usersInstancesId));
   
-        if (usersInstancesId.length==0) {
-            console.log("no members have an instanceId registered. usersInstancesId.length is 0. exit");
-            return 0;
-        }
+//         if (usersInstancesId.length==0) {
+//             console.log("no members have an instanceId registered. usersInstancesId.length is 0. exit");
+//             return 0;
+//         }
 
-        var usersInstancesIdToSend = [];
+//         var usersInstancesIdToSend = [];
   
-        usersInstancesId.forEach(function(userInstanceIdObj) {
-          // var usersId = instance.key; // corrisponde allo userId dell'utente
-          var userInstanceid = userInstanceIdObj.val(); // corrisponde al valore di defautl dell'utente
-          console.log("userInstanceid: " + userInstanceid);
+//         usersInstancesId.forEach(function(userInstanceIdObj) {
+//           // var usersId = instance.key; // corrisponde allo userId dell'utente
+//           var userInstanceid = userInstanceIdObj.val(); // corrisponde al valore di defautl dell'utente
+//           console.log("userInstanceid: " + userInstanceid);
   
-          if(userInstanceid !== null && userInstanceid !== undefined)
-             usersInstancesIdToSend.push(userInstanceid);
-          });
+//           if(userInstanceid !== null && userInstanceid !== undefined)
+//              usersInstancesIdToSend.push(userInstanceid);
+//           });
   
-          if (usersInstancesIdToSend.length==0){
-              console.log("usersInstancesIdToSend is 0. exit");
-              return 0;
-          }
+//           if (usersInstancesIdToSend.length==0){
+//               console.log("usersInstancesIdToSend is 0. exit");
+//               return 0;
+//           }
 
-          console.log("usersInstancesIdToSend", usersInstancesIdToSend);
+//           console.log("usersInstancesIdToSend", usersInstancesIdToSend);
 
-          const nodeGroupRef = admin.database().ref(`/apps/${app_id}/groups/${recipient_group_id}`).once('value', function(groupSnapshot) {
-            //console.log("nodeGroupRef-> groupSnapshot: " + groupSnapshot.key + ", groupSnapshot.val: " + groupSnapshot.val());
+//           const nodeGroupRef = admin.database().ref(`/apps/${app_id}/groups/${recipient_group_id}`).once('value', function(groupSnapshot) {
+//             //console.log("nodeGroupRef-> groupSnapshot: " + groupSnapshot.key + ", groupSnapshot.val: " + groupSnapshot.val());
   
-            var groupName = groupSnapshot.val().name;
-            console.log("groupName", groupName);
+//             var groupName = groupSnapshot.val().name;
+//             console.log("groupName", groupName);
 
-            //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
-            const payload = {
-              notification: {
-                title: groupName,
-                body: senderFullname + ": "+ text,
-                icon : "ic_notification_small",
-                sound : "default",
-                //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
-                click_action: "NEW_MESSAGE", // uncomment for intent filter in your custom project
-                badge : "1"
-              },
+//             //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
+//             const payload = {
+//               notification: {
+//                 title: groupName,
+//                 body: senderFullname + ": "+ text,
+//                 icon : "ic_notification_small",
+//                 sound : "default",
+//                 //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
+//                 click_action: "NEW_MESSAGE", // uncomment for intent filter in your custom project
+//                 badge : "1"
+//               },
   
-              data: {
-                recipient: recipient_group_id,
-                recipient_fullname: groupName,
-                channel_type: message.channel_type,                
-                sender: sender_id,
-                sender_fullname: senderFullname,     
-                text: text,
-                timestamp : new Date().getTime().toString()
-              }
-            };
+//               data: {
+//                 recipient: recipient_group_id,
+//                 recipient_fullname: groupName,
+//                 channel_type: message.channel_type,                
+//                 sender: sender_id,
+//                 sender_fullname: senderFullname,     
+//                 text: text,
+//                 timestamp : new Date().getTime().toString()
+//               }
+//             };
     
   
-            console.log("payload: " + JSON.stringify(payload));
+//             console.log("payload: " + JSON.stringify(payload));
   
-            admin.messaging().sendToDevice(usersInstancesIdToSend, payload)
-              .then(function (response) {
-                console.log("Successfully sent message:", response);
-                console.log("Successfully sent message: stringifiedresponse: ", JSON.stringify(response));
-                console.log("Successfully sent message.results[0]:", response.results[0]);
-              })
-              .catch(function (error) {
-                console.log("Error sending message:", error);
-              });
+//             admin.messaging().sendToDevice(usersInstancesIdToSend, payload)
+//               .then(function (response) {
+//                 console.log("Successfully sent message:", response);
+//                 console.log("Successfully sent message: stringifiedresponse: ", JSON.stringify(response));
+//                 console.log("Successfully sent message.results[0]:", response.results[0]);
+//               })
+//               .catch(function (error) {
+//                 console.log("Error sending message:", error);
+//               });
 
-            });
-        });
-      });
+//             });
+//         });
+//       });
 
-      return 0;
-  });
+//       return 0;
+//   });
