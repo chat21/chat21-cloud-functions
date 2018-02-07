@@ -8,19 +8,21 @@
 
 # Pre requisites
 
-It is assumed that you are using an existing Firebase project or that you have created a new one on the Firebase console. Follow the Firebase Documentation to create a new project on the Firebase console.
+* It is assumed that you are using an existing Firebase project or that you have created a new one on the Firebase console. Follow the Firebase Documentation to create a new project on the Firebase console.
+* Firebase CLI installed as described here https://firebase.google.com/docs/cli/
+
+You can find more info about Firebase Functions here https://firebase.google.com/docs/functions/get-started
 
 # Build
-Checkout the project and run from command line:
+* Checkout the project from github and run from command line:
 ```
 cd functions
 npm install
 ```
 
 # Deploy
-
-From the project folder run :
-* ```firebase deploy```
+* Login to Firebase CLI with ```firebase login```. More info here  https://firebase.google.com/docs/cli/
+* From the project folder run ```firebase deploy```
 
 # Security (optional)
 See the file database.rules.json to understand the databases security rules.
