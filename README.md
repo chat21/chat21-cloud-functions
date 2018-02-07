@@ -9,21 +9,19 @@
 # Pre requisites
 
 * NPM installed
-* It is assumed that you are using an existing Firebase project or that you have created a new one on the Firebase console. Follow the Firebase Documentation to create a new project on the Firebase console.
-* Install Firebase CLI running ```npm install -g firebase-tools``` (More info here https://firebase.google.com/docs/cli/). This installs the globally available firebase command. If the command fails, you may need to change npm permissions as described here https://docs.npmjs.com/getting-started/fixing-npm-permissions
+* Create a Firebase Project on https://console.firebase.google.com/. Follow the Firebase Documentation to create a new project on the Firebase console.
+* Install Firebase CLI running ```npm install -g firebase-tools``` (More info here https://firebase.google.com/docs/cli/). If the command fails, you may need to change npm permissions as described here https://docs.npmjs.com/getting-started/fixing-npm-permissions
+* Login to Firebase CLI with ```firebase login```. More info here  https://firebase.google.com/docs/cli/
+* Set up your Firebase project by running ```firebase use --add```, select your Project ID and follow the instructions.
 
 You can find more info about Firebase Functions here https://firebase.google.com/docs/functions/get-started
 
-# Build
+# Deploy
 * Checkout the project from github and run from command line:
 ```
-cd functions
-npm install
+cd functions && npm install; cd ..
 ```
-
-# Deploy
-* Login to Firebase CLI with ```firebase login```. More info here  https://firebase.google.com/docs/cli/
-* From the project folder run ```firebase deploy```
+* Deploy to Firebase using the following command: ```firebase deploy```
 
 # Security (optional)
 See the file database.rules.json to understand the databases security rules.
