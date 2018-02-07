@@ -8,8 +8,9 @@
 
 # Pre requisites
 
+* NPM installed
 * It is assumed that you are using an existing Firebase project or that you have created a new one on the Firebase console. Follow the Firebase Documentation to create a new project on the Firebase console.
-* Firebase CLI installed as described here https://firebase.google.com/docs/cli/
+* Install Firebase CLI running ```npm install -g firebase-tools``` (More info here https://firebase.google.com/docs/cli/). This installs the globally available firebase command. If the command fails, you may need to change npm permissions as described here https://docs.npmjs.com/getting-started/fixing-npm-permissions
 
 You can find more info about Firebase Functions here https://firebase.google.com/docs/functions/get-started
 
