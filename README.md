@@ -12,8 +12,10 @@ It is assumed that you are using an existing Firebase project or that you have c
 
 # Build
 Checkout the project and run from command line:
-* ```cd functions```
-* ```npm install```
+```
+cd functions
+npm install
+```
 
 # Deploy
 
