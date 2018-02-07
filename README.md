@@ -19,9 +19,10 @@ If the command fails, you may need to change npm permissions as described here h
 You can find more info about Firebase Functions here https://firebase.google.com/docs/functions/get-started
 
 # Deploy
-* Checkout the project from github and run from command line:
+* Clone or download this repo from github and run from command line:
 ```
-cd functions && npm install; cd ..
+cd functions 
+npm install
 ```
 * Deploy to Firebase using the following command: ```firebase deploy```
 
