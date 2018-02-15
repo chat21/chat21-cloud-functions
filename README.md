@@ -104,7 +104,7 @@ Example:
    curl -v -X POST \
        -H 'Content-Type: application/json' \
        -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImMxYTg1OWFmNjkxNTZjODMwMGY2NzllMGMxODJlMGJkMjBmNzA4MDEifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUxODYyNjA0MSwidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTE4NjI2MDQxLCJleHAiOjE1MTg2Mjk2NDEsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.jn4yBVdB3qjqaKe1VzEExKEp4RqJl72Uoa-5-z5gWbEaP7JqG51ljoKsjT22_kCbQl2GnOl2FJ5RX-ovL3w5nfixHKKKaK9fy-95YjfhX7aLZl7piEqxO-P64QpQfBCoALXlGHT7WT_P17CNetC3F3ojwiQuf9B4Yw_WM3FGUQJkAeC7nfOgD0JRw3miQADilSgM9y7MLGsxkwAR6e_Azf7DW9RHjGg2IyA4_F2oDh9kfyF4IHEe-Snl7EdvCMDFOv9poU25AKEAM08SZG3a4Am9TqaUD0Gs4mULnu4Z4lm4SflPzV16JWd5duG7CHE9C0qe30hYiI1MMJqaUUyH4g' \
-    -d '{"group_name": "TestGroup1", "group_members": {"y4QN01LIgGPGnoV6ql07hwPAQg23":1}, "app_id":"tilechat"}' https://us-central1-chat-v2-dev.cloudfunctions.net/api/groups
+       -d '{"group_name": "TestGroup1", "group_members": {"y4QN01LIgGPGnoV6ql07hwPAQg23":1}, "app_id":"tilechat"}' https://us-central1-chat-v2-dev.cloudfunctions.net/api/groups
 ```
 
 
@@ -124,7 +124,7 @@ Example:
     curl -X POST \
        -H 'Content-Type: application/json' \
        -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImMxYTg1OWFmNjkxNTZjODMwMGY2NzllMGMxODJlMGJkMjBmNzA4MDEifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUxODYzMDQ5MiwidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTE4NjMwNDkyLCJleHAiOjE1MTg2MzQwOTIsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.CvuvvkGeEl3m_xhBSEABAsPkqxmB6g5pjPMV8Ztai3_s35y6vwZleG38Tv7FO0aWo9XbwzrYhql-XYzihoMtsHF0TWn3ZL4QnbeIgC5FVCIbWFdz98OOySko9tbMq2IOdCpQGqUH_acwJJLmjJD8YL010tXBS3dgKBnf8000PubTZAIBBMMJwdqCG6AddMbcxvCwgBllyOqGVeryyrkfsEH4e-Zww7EFgLvMCff53Uz0-jU_0bST4Tk_IflNlOX1ov7g7UXzEC499DuOl8Vil5J1uwvBad5HoL7OBC_yGCZ0U_eICWYzjaJG3Zf9xwkmk1SbktTPJckfnMBW_ibnwA' \
-        -d '{"member_id": "81gLZhYmpTZM0GGuUI9ovD7RaCZ2", "app_id": "tilechat"}' \
+       -d '{"member_id": "81gLZhYmpTZM0GGuUI9ovD7RaCZ2", "app_id": "tilechat"}' \
         https://us-central1-chat-v2-dev.cloudfunctions.net/api/groups/-L5KLYXVUzMWj4Lbtu7F/members
 ```
 
@@ -144,6 +144,6 @@ Example:
     curl -X DELETE \
       -H 'Content-Type: application/json' \
        -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImMxYTg1OWFmNjkxNTZjODMwMGY2NzllMGMxODJlMGJkMjBmNzA4MDEifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUxODYzMDQ5MiwidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTE4NjMwNDkyLCJleHAiOjE1MTg2MzQwOTIsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.CvuvvkGeEl3m_xhBSEABAsPkqxmB6g5pjPMV8Ztai3_s35y6vwZleG38Tv7FO0aWo9XbwzrYhql-XYzihoMtsHF0TWn3ZL4QnbeIgC5FVCIbWFdz98OOySko9tbMq2IOdCpQGqUH_acwJJLmjJD8YL010tXBS3dgKBnf8000PubTZAIBBMMJwdqCG6AddMbcxvCwgBllyOqGVeryyrkfsEH4e-Zww7EFgLvMCff53Uz0-jU_0bST4Tk_IflNlOX1ov7g7UXzEC499DuOl8Vil5J1uwvBad5HoL7OBC_yGCZ0U_eICWYzjaJG3Zf9xwkmk1SbktTPJckfnMBW_ibnwA' \
-        -d '{"app_id": "tilechat"}' \
+       -d '{"app_id": "tilechat"}' \
         https://us-central1-chat-v2-dev.cloudfunctions.net/api/groups/-L5KLYXVUzMWj4Lbtu7F/members/81gLZhYmpTZM0GGuUI9ovD7RaCZ2
 ```
