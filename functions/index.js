@@ -27,24 +27,6 @@ exports.SupportBotreply = supportChat.botreply;
 
 
 
-/*
-
-How to send a message (direct and group) from curl. It's work if the authentication is disabled for Firebase.
-
-curl -v -X POST \
--d '{"channel_type":"direct", "sender_fullname" : "Andrea Leo", "type": "TEXT", "recipient_fullname": "Andrea Sponziello","text":"ciao"}' \
- 'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_leo/messages/andrea_sponziello.json'
-
-curl -v -X POST \
--d '{"channel_type":"direct", "sender_fullname" : "Andrea Sponziello", "type": "TEXT", "recipient_fullname": "Andrea Leo","text":"ciao2"}' \
- 'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_sponziello/messages/andrea_leo.json'
-
-curl -v -X POST  -d '{"channel_type":"group", "sender_fullname" : "Andrea Sponziello", "type": "TEXT", "recipient_fullname": "Gruppo1","text":"ciao gruppo"}' 'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_sponziello/messages/gruppo1.json'
-
-curl -v -X POST  -d '{"channel_type":"group", "sender_fullname" : "Andrea Leo", "type": "TEXT", "recipient_fullname": "Gruppo1","text":"ciao gruppo2"}' 'https://chat-v2-dev.firebaseio.com/apps/chat/users/andrea_leo/messages/gruppo1.json'
-
-*/
-
 //se metto {uid} prende utente corrente
 exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
 
