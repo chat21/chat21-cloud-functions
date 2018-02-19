@@ -50,21 +50,34 @@ const app = express();
 // when decoded successfully, the ID Token content will be added as `req.user`.
 const authenticate = (req, res, next) => {
     console.log('authenticate');
-  if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
-    res.status(403).send('Unauthorized');
-    return;
-  }
-  const idToken = req.headers.authorization.split('Bearer ')[1];
-  console.log('idToken', idToken);
 
-  admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
-    req.user = decodedIdToken;
-    console.log('req.user', req.user);
+    // if (req.method === `OPTIONS`) {
+    //   return next();
+    // }
 
-    return next();
-  }).catch(() => {
-    res.status(403).send('Unauthorized');
+    cors(req, res, () => {
+
+      if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+        console.log('authorization not present');
+        res.status(403).send('Unauthorized');
+        return;
+      }
+      const idToken = req.headers.authorization.split('Bearer ')[1];
+      console.log('idToken', idToken);
+
+      admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
+        req.user = decodedIdToken;
+        console.log('req.user', req.user);
+
+        return next();
+      }).catch(() => {
+        res.status(403).send('Unauthorized');
+      });
+
+
   });
+
+
 };
 
 app.use(authenticate);
@@ -77,7 +90,7 @@ app.use(authenticate);
  * This endpoint supports CORS.
  */
 
-app.post('/messages', (req, res) => {
+app.post('/:app_id/messages', (req, res) => {
   console.log('sendDirectMessage');
 
    
@@ -100,7 +113,7 @@ app.post('/messages', (req, res) => {
         if (!req.body.text) {
             res.status(405).send('text  is not present!');
         }
-        if (!req.body.app_id) {
+        if (!req.params.app_id) {
             res.status(405).send('app_id is not present!');
         }
 
@@ -108,7 +121,7 @@ app.post('/messages', (req, res) => {
         let recipient_id = req.body.recipient_id;
         let recipient_fullname = req.body.recipient_fullname;
         let text = req.body.text;
-        let app_id = req.body.app_id;
+        let app_id = req.params.app_id;
         let channel_type = req.body.channel_type;
 
 
@@ -146,7 +159,7 @@ app.post('/messages', (req, res) => {
  * This endpoint supports CORS.
  */
 // [START trigger]
-app.post('/groups', (req, res) => {
+app.post('/:app_id/groups', (req, res) => {
   console.log('create a group');
 
    
@@ -162,7 +175,7 @@ app.post('/groups', (req, res) => {
         // if (!req.body.group_members) {
         //     res.status(405).send('group_members is not present!');
         // }
-        if (!req.body.app_id) {
+        if (!req.params.app_id) {
             res.status(405).send('app_id is not present!');
         }
 
@@ -176,7 +189,7 @@ app.post('/groups', (req, res) => {
 
         group_members[req.user.uid] = 1;
 
-        let app_id = req.body.app_id;
+        let app_id = req.params.app_id;
 
 
         console.log('group_name', group_name);
@@ -209,7 +222,7 @@ app.post('/groups', (req, res) => {
  * This endpoint supports CORS.
  */
 // [START trigger]
-app.post('/groups/:group_id/members', (req, res) => {
+app.post('/:app_id/groups/:group_id/members', (req, res) => {
   console.log('join group');
 
    
@@ -225,13 +238,13 @@ app.post('/groups/:group_id/members', (req, res) => {
         if (!req.params.group_id) {
             res.status(405).send('group_id is not present!');
         }
-        if (!req.body.app_id) {
+        if (!req.params.app_id) {
             res.status(405).send('app_id is not present!');
         }
 
         let member_id = req.body.member_id;
         let group_id = req.params.group_id;
-        let app_id = req.body.app_id;
+        let app_id = req.params.app_id;
 
 
         console.log('member_id', member_id);
@@ -262,13 +275,14 @@ app.post('/groups/:group_id/members', (req, res) => {
  * This endpoint supports CORS.
  */
 // [START trigger]
-app.delete('/groups/:group_id/members/:member_id', (req, res) => {
+app.delete('/:app_id/groups/:group_id/members/:member_id', (req, res) => {
+  // app.delete('/groups/:group_id/members/:member_id', (req, res) => {
   console.log('leave group');
 
    
-    if (req.method !== 'DELETE') {
-      res.status(403).send('Forbidden!');
-    }
+    // if (req.method !== 'DELETE') {
+    //   res.status(403).send('Forbidden!');
+    // }
       
       cors(req, res, () => {
 
@@ -278,13 +292,13 @@ app.delete('/groups/:group_id/members/:member_id', (req, res) => {
         if (!req.params.group_id) {
             res.status(405).send('group_id is not present!');
         }
-        if (!req.body.app_id) {
+        if (!req.params.app_id) {
             res.status(405).send('app_id is not present!');
         }
 
         let member_id = req.params.member_id;
         let group_id = req.params.group_id;
-        let app_id = req.body.app_id;
+        let app_id = req.params.app_id;
 
 
         console.log('member_id', member_id);

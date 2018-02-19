@@ -24,7 +24,10 @@ exports.sendDirectMessage = function (sender_id, sender_fullname, recipient_id, 
     
     
         var message = {};
-        message.custom_data = custom_data;  //at first position because the following basic data will overwrite potencial inconsistence customdata
+
+        if (custom_data)
+            message.custom_data = custom_data;  //at first position because the following basic data will overwrite potencial inconsistence customdata
+
         // message.status = CHAT_MESSAGE_STATUS.SENDING;                                        
         message.sender = sender_id;
         message.sender_fullname = sender_fullname;
@@ -49,7 +52,10 @@ exports.sendGroupMessage = function(sender_id, sender_fullname, recipient_group_
 
 
     var message = {};
-    message.custom_data = custom_data;  //at first position because the following basic data will overwrite potencial inconsistence customdata
+
+    if (custom_data)
+        message.custom_data = custom_data;  //at first position because the following basic data will overwrite potencial inconsistence customdata
+        
     // message.status = CHAT_MESSAGE_STATUS.SENDING;                                        
     message.sender = sender_id;
     message.sender_fullname = sender_fullname;
