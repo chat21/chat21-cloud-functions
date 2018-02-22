@@ -22,6 +22,9 @@ exports.SupportSaveMessagesToNodeJs = supportChat.saveMessagesToNodeJs;
 exports.SupportBotreply = supportChat.botreply;
 
 
+const chatSupportHttpApi = require('./chat-support-http-api');
+exports.supportapi = functions.https.onRequest(chatSupportHttpApi.api);
+
 
 
 

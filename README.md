@@ -114,7 +114,7 @@ Example:
     curl -X POST \
        -H 'Content-Type: application/json' \
        -H "Authorization: Bearer <Firebase ID Token>" \
-       -d '{"member_id": "<member_id>", "app_id": "<app_id>"}' 
+       -d '{"member_id": "<member_id>"}' \
        https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members
 ```
 
@@ -144,4 +144,58 @@ Example:
       -H 'Content-Type: application/json' \
        -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImUxNmI4ZWFlNTczOTk2NGM1MWJjMTUyNWI1ZmU2ZmRjY2Y1ODJjZDQifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUxOTAzOTAwNywidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTE5MDM5MDA4LCJleHAiOjE1MTkwNDI2MDgsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.Ri3_R60-vTpSLd6uJBTo1d9inKhGppq3A3gONS0ZcMsFlGnqti_x55fC4h4O-GInLzUnCGt-dS6Pt89svIHxjz2cnZORj9dhrKU3AyMrYIniqiuzxqWSiUvRs3mhVCAoiUvWBSbiyhSb9fStH74ihqEVE9WIu4BzalqAQP7Q-d1fkRAoHqLH4T1HpRgyvOPlvP0mMiujai6Q3xkKzcahTD-3--Hl5RtYQzNLEhy-83k2YR4pbUzPRGlfJpjFZgWdPEyM2pLt1xK91wLBB3pHRa79ciTKhxUHqXpQCWXRErVPp6ELSx0bAu5_tsjWHfQjnsJ_aQDg4xiKcrhKDePoYQ' \
         https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/-L5hnLkBGQoW05ax9ehg/members/81gLZhYmpTZM0GGuUI9ovD7RaCZ2
+```
+
+
+ curl -X POST \
+       -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer J4U4z23lwf4xQEWE15Ok4cVG5MCQDZoalMjCA9Q2' \
+       -d '{"sender_fullname": "Andrea Leo", "recipient_id": "U4HL3GWjBsd8zLX4Vva0s7W2FN92", "recipient_fullname":"Andrea Leo","text":"hello from API"}' \
+       https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages
+
+
+
+
+
+## Set Group members
+
+```
+    curl -X PUT \
+       -H 'Content-Type: application/json' \
+       -H "Authorization: Bearer <Firebase ID Token>" \
+       -d '{"members": {"<member_id1>":1},{"<member_id2>":1}}' \
+       https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members
+```
+
+Example:
+
+```
+    curl -X PUT \
+       -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNGFiNTViNjc5OTE3Y2EwMzdkZmYwMDBlM2JjOTdkNmU0N2UxYjkifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUxOTMwOTQwMywidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTE5MzA5NDAzLCJleHAiOjE1MTkzMTMwMDMsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.bq7UINsCUGvTK1cLB_fHS-ekhyfgz_B8VUfjkrE0uhnsT1zzBBrXSfbqOp5vajYRgoAeekNlDKgIkQhLji7ttKEuJUK8jAIRQ81S3gVZvNeW1Ii4hP1uY1esszizJEKpsUCSzjbLDvf9ttXe-niBTVkcN4gzGUgZpNo6MZ9IpqbVsm7it3F97BMOA4c-muFu-6IgCnTfMpbUBRhFtIySU3DRcLv8v3hFFq0sVY6g7VAZ_ubK46vLtSvTTR18pHaWw7biiPbprk7NQLw6TbAEmWTrhd1R-XMpDoJGmHNKFVdfBeR68t3iDh0JPGmB_J0xpLpUjA9aQWxNhZFjqHWdew' \
+       -d '{"members": {"system":1}}' \
+        https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/groups/support-group-L5xro2P81zHs7YA7-DX/members
+```
+
+
+
+
+# REST API for Support
+
+## Close Support group
+
+```
+    curl -X PUT \
+       -H 'Content-Type: application/json' \
+       -H "Authorization: Bearer <Firebase ID Token>" \
+       https://us-central1-<project-id>.cloudfunctions.net/supportapi/<APP_ID>/groups/<GROUP_ID>
+```
+
+Example:
+
+```
+    curl -X PUT \
+       -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNGFiNTViNjc5OTE3Y2EwMzdkZmYwMDBlM2JjOTdkNmU0N2UxYjkifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUxOTMwOTQwMywidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTE5MzA5NDAzLCJleHAiOjE1MTkzMTMwMDMsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.bq7UINsCUGvTK1cLB_fHS-ekhyfgz_B8VUfjkrE0uhnsT1zzBBrXSfbqOp5vajYRgoAeekNlDKgIkQhLji7ttKEuJUK8jAIRQ81S3gVZvNeW1Ii4hP1uY1esszizJEKpsUCSzjbLDvf9ttXe-niBTVkcN4gzGUgZpNo6MZ9IpqbVsm7it3F97BMOA4c-muFu-6IgCnTfMpbUBRhFtIySU3DRcLv8v3hFFq0sVY6g7VAZ_ubK46vLtSvTTR18pHaWw7biiPbprk7NQLw6TbAEmWTrhd1R-XMpDoJGmHNKFVdfBeR68t3iDh0JPGmB_J0xpLpUjA9aQWxNhZFjqHWdew' \
+        https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/support-group-L5xro2P81zHs7YA7-DX/
 ```

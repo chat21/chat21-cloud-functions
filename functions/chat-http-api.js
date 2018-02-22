@@ -24,6 +24,8 @@ const express = require('express');
 const cors = require('cors')({origin: true});
 
 const app = express();
+const chatHttpAuth = require('./chat-http-auth');
+
 // const language = new Language({projectId: process.env.GCLOUD_PROJECT});
 
 // admin.initializeApp(functions.config().firebase);
@@ -44,43 +46,7 @@ const app = express();
 
 
 
-// Express middleware that validates Firebase ID Tokens passed in the Authorization HTTP header.
-// The Firebase ID token needs to be passed as a Bearer token in the Authorization HTTP header like this:
-// `Authorization: Bearer <Firebase ID Token>`.
-// when decoded successfully, the ID Token content will be added as `req.user`.
-const authenticate = (req, res, next) => {
-    console.log('authenticate');
-
-    // if (req.method === `OPTIONS`) {
-    //   return next();
-    // }
-
-    cors(req, res, () => {
-
-      if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
-        console.log('authorization not present');
-        res.status(403).send('Unauthorized');
-        return;
-      }
-      const idToken = req.headers.authorization.split('Bearer ')[1];
-      console.log('idToken', idToken);
-
-      admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
-        req.user = decodedIdToken;
-        console.log('req.user', req.user);
-
-        return next();
-      }).catch(() => {
-        res.status(403).send('Unauthorized');
-      });
-
-
-  });
-
-
-};
-
-app.use(authenticate);
+app.use(chatHttpAuth.authenticate);
 
 
 
@@ -315,6 +281,52 @@ app.delete('/:app_id/groups/:group_id/members/:member_id', (req, res) => {
     });
 
   
+ /**
+ * Set members of a group
+ 
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.put('/:app_id/groups/:group_id/members', (req, res) => {
+  console.log('set members group');
+
+   
+    if (req.method !== 'PUT') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+        if (!req.params.group_id) {
+            res.status(405).send('group_id is not present!');
+        }
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+
+        let members = req.body.members;
+        let group_id = req.params.group_id;
+        let app_id = req.params.app_id;
+
+
+        console.log('members', members);
+        console.log('group_id', group_id);
+        console.log('app_id', app_id);
+
+
+        var result =  chatApi.setMembersGroup(members, group_id, app_id);
+      
+        console.log('result', result);
+
+        res.status(200).send(result);
+      });
+    });
+
+
+
+    
+
 
 // Expose the API as a function
 exports.api = functions.https.onRequest(app);

@@ -144,6 +144,16 @@ exports.leaveGroup = function(member_id, group_id, app_id) {
 
 
 
+exports.setMembersGroup = function(members, group_id, app_id) {
+
+    var path = '/apps/'+app_id+'/groups/'+group_id+'/members/';
+    console.log("path", path);
+
+    
+    console.log("setting members " + JSON.stringify(members) + " for group " + path);
+    return admin.database().ref(path).set(members);
+}
+
 
 exports.sendDirectMessageToRecipientTimeline = function (sender_id, recipient_id, message, message_id, app_id) {
     var updates = {};

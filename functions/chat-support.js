@@ -94,6 +94,8 @@ exports.createSupportConversationToFirestore = functions.database.ref('/apps/{ap
     var newRequest = {};
     newRequest.created_on = admin.firestore.FieldValue.serverTimestamp();
     newRequest.support_status = 100; //UNSERVED
+    newRequest.requester_id = message.sender;
+    newRequest.requester_fullname = message.sender_fullname;
     
     // var conversationId = createConversationId(sender_id, recipient_id);
     // console.log('conversationId', conversationId);
