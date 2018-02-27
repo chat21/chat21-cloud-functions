@@ -20,6 +20,7 @@ exports.SupportSaveSupportConversationToFirestore = supportChat.saveSupportConve
 exports.SupportSaveMemberToReqFirestoreOnJoinGroup = supportChat.saveMemberToReqFirestoreOnJoinGroup;
 exports.SupportSaveMessagesToNodeJs = supportChat.saveMessagesToNodeJs;
 exports.SupportBotreply = supportChat.botreply;
+exports.SupportRemoveBotWhenTextContainsSlashAgent = supportChat.removeBotWhenTextContainsSlashAgent;
 
 
 const chatSupportHttpApi = require('./chat-support-http-api');
@@ -428,6 +429,7 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
 
 const pushNotificationsFunction = require('./push-notification');
 exports.sendNotification = pushNotificationsFunction.sendNotification;
+exports.sendEmailNotification = pushNotificationsFunction.sendEmailNotification;
 
 // exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
        

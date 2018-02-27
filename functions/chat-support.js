@@ -51,12 +51,12 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     var group_owner = "system";
     var group_members = {};
         group_members.system = 1;
-        group_members[message.sender] = 1;  //add customer
-        group_members["6qI3oekSwabW9w05JHd2SQlV2rz2"] = 1; //bot
-        group_members["9EBA3VLhNKMFIVa0IOco82TkIzk1"] = 1;
-        group_members["LmBT2IKjMzeZ3wqyU8up8KIRB6J3"] = 1;
-        group_members["U4HL3GWjBsd8zLX4Vva0s7W2FN92"] = 1; //andrea.leo@frontiere21.it
-        group_members["AHNfnoWiF7SDVy6iKVTmgsAjLOv2"] = 1; //andrea.leo2@frontiere21.it
+        group_members[message.sender] = 1;  //add system
+        group_members["bot_6qI3oekSwabW9w05JHd2SQlV2rz2"] = 1; //bot
+        // group_members["9EBA3VLhNKMFIVa0IOco82TkIzk1"] = 1;
+        // group_members["LmBT2IKjMzeZ3wqyU8up8KIRB6J3"] = 1;
+        // group_members["U4HL3GWjBsd8zLX4Vva0s7W2FN92"] = 1; //andrea.leo@frontiere21.it
+        // group_members["AHNfnoWiF7SDVy6iKVTmgsAjLOv2"] = 1; //andrea.leo2@frontiere21.it
         
         
 
@@ -93,9 +93,10 @@ exports.createSupportConversationToFirestore = functions.database.ref('/apps/{ap
 
     var newRequest = {};
     newRequest.created_on = admin.firestore.FieldValue.serverTimestamp();
-    newRequest.support_status = 100; //UNSERVED
+    newRequest.support_status = 0; //CREATED
     newRequest.requester_id = message.sender;
     newRequest.requester_fullname = message.sender_fullname;
+    newRequest.app_id = app_id;
     
     // var conversationId = createConversationId(sender_id, recipient_id);
     // console.log('conversationId', conversationId);
@@ -210,6 +211,10 @@ function updateMembersCount(group_id) {
                var newMembersCount = oldMemberCount + 1;
    
                var updates = {};    
+               if (newMembersCount>2) {
+                updates.support_status = 200; //SERVED
+               }
+
                updates.membersCount = newMembersCount;
    
                transaction.update(conversationDocRef, updates);
@@ -245,7 +250,6 @@ exports.saveMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app
 
     var dataToUpdate = {};
     dataToUpdate.members = memberToAdd;
-    dataToUpdate.support_status = 200; //SERVED
     console.log("dataToUpdate ", dataToUpdate);
 
 
@@ -258,6 +262,119 @@ exports.saveMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app
     });
    
 });
+
+exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+    
+    const message_id = event.params.message_id;
+      
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+    // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+    // DEBUG  console.log('message ' + JSON.stringify(message));
+
+    // DEBUG console.log("message.status : " + message.status);     
+
+    if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+    if (recipient_id.indexOf("support-group")==-1 ){
+        console.log('exit for recipient');
+        return 0;
+    }
+
+    // DEBUG console.log('it s a support message ');
+
+    var group_id = recipient_id;
+
+    //if contains \agent
+    if (message.text.indexOf("\\agent") > -1) {
+        console.log('message contains \\agent');
+
+        //remove bot from members
+        return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
+    
+            groupMembers.forEach(function(groupMember) {
+                console.log('groupMember ' + groupMember);
+    
+                if (groupMember.startsWith("bot_")) { 
+                    chatApi.leaveGroup(groupMember, group_id, app_id);
+                    console.log('removed bot with id  ' + groupMember + " from group with id " + group_id);
+    
+
+
+                    //update firestore
+                    var dataToUpdate = {};
+                    //TODO REMOVE BOT MEMBER
+                    var memberRemoved;
+                    // dataToUpdate.members = memberToAdd;
+                    dataToUpdate.support_status = 100; //UNSERVED
+                    console.log("dataToUpdate ", dataToUpdate);
+                
+                
+                //    return admin.firestore().collection('conversations').doc(group_id).update({members:memberToAdd}).then(writeResult => {
+                     return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
+                       // Send back a message that we've succesfully written the message
+                       console.log(`Member with ID: ${JSON.stringify(memberRemoved)} removed from ${group_id}.`);
+                        return 0;
+                    //    return updateMembersCount(group_id);
+                    });
+
+
+
+                    // return 0;
+    
+                }
+            });
+    
+            return 0;
+    
+        });
+    }
+          
+    });
+
+
+// exports.removeBotOnAgentJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+    
+//     const member_id = event.params.member_id;
+//     const group_id = event.params.group_id;
+//     const app_id = event.params.app_id;;
+//    // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+    
+
+//    if (group_id.indexOf("support-group")==-1 ){
+//     console.log('exit for recipient');
+//     return 0;
+//    }
+
+//     console.log('it s a support message ');
+
+//     if (member_id.startsWith("bot_"))
+//         return 0;
+   
+   
+//     //remove bot from members
+//     return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
+
+//         groupMembers.forEach(function(groupMember) {
+//             console.log('groupMember ' + groupMember);
+
+//             if (groupMember.startsWith("bot_")) { 
+//                 chatApi.leaveGroup(groupMember, group_id, app_id);
+//                 console.log('removed bot with id  ' + groupMember);
+
+//                 return 0;
+
+//             }
+//         });
+
+//         return 0;
+
+//     });
+      
+// });
 
 
     // function createConversationId(senderId, recipientId) {
@@ -328,11 +445,11 @@ const entities = new Entities();
 
 
 //lasciare questo bot cosi come è per essere usato dalla app ios
-exports.botreply = functions.database.ref('/apps/{app_id}/users/6qI3oekSwabW9w05JHd2SQlV2rz2/messages/{recipient_id}/{message_id}').onCreate(event => {
+exports.botreply = functions.database.ref('/apps/{app_id}/users/bot_6qI3oekSwabW9w05JHd2SQlV2rz2/messages/{recipient_id}/{message_id}').onCreate(event => {
 
     // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
     const message_id = event.params.message_id;
-    const sender_id = "6qI3oekSwabW9w05JHd2SQlV2rz2";
+    const sender_id = "bot_6qI3oekSwabW9w05JHd2SQlV2rz2";
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;;
 //    DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);

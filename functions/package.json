@@ -16,7 +16,10 @@
     "html-entities" : "1.2.1",
 
     "cors": "^2.8.1",
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+
+    "nodemailer": "^4.0.1",
+    "moment": "^2.19.1"
 
 
   },
