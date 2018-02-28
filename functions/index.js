@@ -387,35 +387,48 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
 });
 
 
-// exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
     
-//      const member_id = event.params.member_id;
-//      const group_id = event.params.group_id;
-//      const app_id = event.params.app_id;;
-//      console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+     const member_id = event.params.member_id;
+     const group_id = event.params.group_id;
+     const app_id = event.params.app_id;;
+     console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
      
-//      const member = event.data.current.val();
-//      console.log("member", member);
+     const member = event.data.current.val();
+     console.log("member", member);
 
 
+     if (member_id == "system"){
+         return 0;
+     }
 
-//      var sender_id =  "system";
-
-//      var message = {};
-//      message.status = chatApi.CHAT_MESSAGE_STATUS.DELIVERED;                                        
-//      message.sender = sender_id;
-//      message.recipient = group_id;
-//      message.recipient_fullname = group.name;
-//      message.timestamp = admin.database.ServerValue.TIMESTAMP;
-//      message.channel_type = "group";
-//      message.text = member_id + "Membro aggiunto";
-//      message.type = "text";
-//      console.log("message", message);
+     var sender_id =  "system";
+     var sender_fullname = "Sistema";
 
 
-//      return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
+     return chatApi.getGroupById(group_id, app_id).then(function (group) {
+        console.log("group", group);
+        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Nuovo membro aggiunto al gruppo", app_id);
+     });
+
+
+    //  var sender_id =  "system";
+
+    //  var message = {};
+    //  message.status = chatApi.CHAT_MESSAGE_STATUS.DELIVERED;                                        
+    //  message.sender = sender_id;
+    //  message.recipient = group_id;
+    //  message.recipient_fullname = group.name;
+    //  message.timestamp = admin.database.ServerValue.TIMESTAMP;
+    //  message.channel_type = "group";
+    //  message.text = member_id + "Membro aggiunto";
+    //  message.type = "text";
+    //  console.log("message", message);
+
+
+    //  return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
     
-// });
+});
 
 
 
