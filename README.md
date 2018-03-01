@@ -25,6 +25,7 @@ npm install
 ```
 * Login to Firebase CLI with ```firebase login```. More info here  https://firebase.google.com/docs/cli/
 * Set up your Firebase project by running ```firebase use --add```, select your Project ID and follow the instructions.
+* Optionally enable Support features with Google Cloud environment variables with: ```firebase functions:config:set support.enabled=true```
 
 # Test locally
 
@@ -39,7 +40,6 @@ This project comes with a web-based UI for testing the function. To test locally
 # Deploy
 * Deploy to Firebase using the following command: ```firebase deploy```. You can see the deployed functions on the Firebase Console under Functions menu.
 * Open the app using firebase open hosting:site, this will open a browser.
-
 
 # REST API
 

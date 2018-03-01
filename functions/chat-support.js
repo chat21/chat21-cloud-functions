@@ -213,8 +213,12 @@ function updateMembersCount(group_id, operation) {
                var newMembersCount = oldMemberCount + operation;
    
                var updates = {};    
+
                if (newMembersCount>2) {
                 updates.support_status = 200; //SERVED
+                
+                removeBotFromGroupMember(group_id, app_id);
+
                }else {
                 updates.support_status = 100; //UNSERVED
 
@@ -308,6 +312,26 @@ exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{
    
 });
 
+
+
+function removeBotFromGroupMember(group_id, app_id) {
+  //remove bot from members
+  return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
+    
+    groupMembers.forEach(function(groupMember) {
+        console.log('groupMember ' + groupMember);
+
+            if (groupMember.startsWith("bot_")) { 
+                console.log('removing bot with id  ' + groupMember + " from group with id " + group_id);
+                return chatApi.leaveGroup(groupMember, group_id, app_id);
+            }
+        });
+
+        return 0;
+
+    }); 
+}
+
 exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
     
     const message_id = event.params.message_id;
@@ -336,46 +360,7 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
     //if contains \agent
     if (message.sender.startsWith("bot_") == false && message.text.indexOf("\\agent") > -1) {
         console.log('message contains \\agent');
-
-        //remove bot from members
-        return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
-    
-            groupMembers.forEach(function(groupMember) {
-                console.log('groupMember ' + groupMember);
-    
-                if (groupMember.startsWith("bot_")) { 
-                    chatApi.leaveGroup(groupMember, group_id, app_id);
-                    console.log('removed bot with id  ' + groupMember + " from group with id " + group_id);
-    
-
-
-                //     //update firestore
-                //     var dataToUpdate = {};
-                //     //TODO REMOVE BOT MEMBER
-                //     var memberRemoved;
-                //     // dataToUpdate.members = memberToAdd;
-                //     dataToUpdate.support_status = 100; //UNSERVED
-                //     console.log("dataToUpdate ", dataToUpdate);
-                
-                
-                // //    return admin.firestore().collection('conversations').doc(group_id).update({members:memberToAdd}).then(writeResult => {
-                //      return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
-                //        // Send back a message that we've succesfully written the message
-                //        console.log(`Member with ID: ${JSON.stringify(memberRemoved)} removed from ${group_id}.`);
-                //         return 0;
-                //     //    return updateMembersCount(group_id);
-                //     });
-
-
-
-                    return 0;
-    
-                }
-            });
-    
-            return 0;
-    
-        });
+        return removeBotFromGroupMember(group_id, app_id);
     }else {
         return 0;
     }

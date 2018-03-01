@@ -11,23 +11,13 @@ const chatHttpApi = require('./chat-http-api');
 exports.api = functions.https.onRequest(chatHttpApi.api);
 
 
+if (functions.config().support && functions.config().support.enabled) {
+    var supportChat = require('./chat-support');
+    exports.support = supportChat;
 
-var supportChat = require('./chat-support');
-exports.support = supportChat;
-// exports.SupportCreateGroupForNewSupportRequest = supportChat.createGroupForNewSupportRequest;
-// exports.SupportCreateSupportConversationToFirestore = supportChat.createSupportConversationToFirestore;
-// exports.SupportSaveSupportMessagesToFirestore = supportChat.saveSupportMessagesToFirestore;
-// exports.SupportSaveSupportConversationToFirestore = supportChat.saveSupportConversationToFirestore;
-// exports.SupportAddMemberToReqFirestoreOnJoinGroup = supportChat.addMemberToReqFirestoreOnJoinGroup;
-// exports.SupportRemoveMemberToReqFirestoreOnLeaveGroup = supportChat.removeMemberToReqFirestoreOnLeaveGroup;
-// exports.SupportSaveMessagesToNodeJs = supportChat.saveMessagesToNodeJs;
-// exports.SupportBotreply = supportChat.botreply;
-// exports.SupportRemoveBotWhenTextContainsSlashAgent = supportChat.removeBotWhenTextContainsSlashAgent;
-
-
-const chatSupportHttpApi = require('./chat-support-http-api');
-exports.supportapi = functions.https.onRequest(chatSupportHttpApi.api);
-
+    const chatSupportHttpApi = require('./chat-support-http-api');
+    exports.supportapi = functions.https.onRequest(chatSupportHttpApi.api);
+}
 
 
 
@@ -425,9 +415,8 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
 
 
 
-const pushNotificationsFunction = require('./push-notification');
-exports.sendNotification = pushNotificationsFunction.sendNotification;
-exports.sendEmailNotification = pushNotificationsFunction.sendEmailNotification;
+const notificationsFunction = require('./push-notification');
+exports.notificationsFunction = notificationsFunction;
 
 // exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
        
