@@ -239,6 +239,68 @@ class ChatApi {
     }
 
 
+
+    //INTERNAL METHOD
+
+    insertAndSendMessageInternal(messageRef, message, sender_id, recipient_id, message_id, app_id) {
+        const timestamp = admin.database.ServerValue.TIMESTAMP
+
+    
+        this.insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp);
+
+        return this.sendMessageToTimelineInternal(message, sender_id, recipient_id, message_id, app_id, timestamp);
+
+        // return 0;
+    }
+
+    insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp) {
+       
+        var update = {};
+
+        update.sender = sender_id;
+        update.recipient = recipient_id;
+        update.timestamp = timestamp;
+
+        if (message.channel_type==null) {  //is a direct message
+            update.channel_type = "direct"; 
+        }
+    //set the status = 100 only if message.status is null. If message.status==200 (came form sendMessage) saveMessage not must modify the value
+    // console.log("message.status : " + message.status);        
+        update.status = chatApi.CHAT_MESSAGE_STATUS.SENT; //MSG_STATUS_RECEIVED_ON_PERSIONAL_TIMELINE
+      
+
+        console.log('inserting new message  with ' + JSON.stringify(update));
+
+        return messageRef.update(update);
+    }
+
+
+
+    sendMessageToTimelineInternal(message, sender_id, recipient_id, message_id, app_id, timestamp) {
+   
+        message.sender = sender_id;
+        message.recipient = recipient_id;
+        message.timestamp = timestamp;
+
+        if (message.channel_type==null) {  //is a direct message
+            message.channel_type = "direct"; 
+        }
+
+        message.status = chatApi.CHAT_MESSAGE_STATUS.DELIVERED;                                        
+
+        if (message.channel_type=="direct") {  //is a direct message            
+            // DEBUG console.log('sending direct message ' + JSON.stringify(message) );
+
+            return chatApi.sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id);            
+        }else {//is a group message
+            // DEBUG console.log('sending group message ' + JSON.stringify(message) );
+             //send to group timeline
+             chatApi.sendMessageToGroupTimeline(recipient_id, message, message_id, app_id);            
+            return chatApi.sendGroupMessageToMembersTimeline(sender_id, recipient_id, message, message_id, app_id);
+        }
+
+    }
+
     sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id) {
         var updates = {};
         

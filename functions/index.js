@@ -13,15 +13,16 @@ exports.api = functions.https.onRequest(chatHttpApi.api);
 
 
 var supportChat = require('./chat-support');
-exports.SupportCreateGroupForNewSupportRequest = supportChat.createGroupForNewSupportRequest;
-exports.SupportCreateSupportConversationToFirestore = supportChat.createSupportConversationToFirestore;
-exports.SupportSaveSupportMessagesToFirestore = supportChat.saveSupportMessagesToFirestore;
-exports.SupportSaveSupportConversationToFirestore = supportChat.saveSupportConversationToFirestore;
-exports.SupportAddMemberToReqFirestoreOnJoinGroup = supportChat.addMemberToReqFirestoreOnJoinGroup;
-exports.SupportRemoveMemberToReqFirestoreOnLeaveGroup = supportChat.removeMemberToReqFirestoreOnLeaveGroup;
-exports.SupportSaveMessagesToNodeJs = supportChat.saveMessagesToNodeJs;
-exports.SupportBotreply = supportChat.botreply;
-exports.SupportRemoveBotWhenTextContainsSlashAgent = supportChat.removeBotWhenTextContainsSlashAgent;
+exports.support = supportChat;
+// exports.SupportCreateGroupForNewSupportRequest = supportChat.createGroupForNewSupportRequest;
+// exports.SupportCreateSupportConversationToFirestore = supportChat.createSupportConversationToFirestore;
+// exports.SupportSaveSupportMessagesToFirestore = supportChat.saveSupportMessagesToFirestore;
+// exports.SupportSaveSupportConversationToFirestore = supportChat.saveSupportConversationToFirestore;
+// exports.SupportAddMemberToReqFirestoreOnJoinGroup = supportChat.addMemberToReqFirestoreOnJoinGroup;
+// exports.SupportRemoveMemberToReqFirestoreOnLeaveGroup = supportChat.removeMemberToReqFirestoreOnLeaveGroup;
+// exports.SupportSaveMessagesToNodeJs = supportChat.saveMessagesToNodeJs;
+// exports.SupportBotreply = supportChat.botreply;
+// exports.SupportRemoveBotWhenTextContainsSlashAgent = supportChat.removeBotWhenTextContainsSlashAgent;
 
 
 const chatSupportHttpApi = require('./chat-support-http-api');
@@ -33,68 +34,68 @@ exports.supportapi = functions.https.onRequest(chatSupportHttpApi.api);
 
 
 //se metto {uid} prende utente corrente
-exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+// exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
 
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id; 
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;
+//     const message_id = event.params.message_id;
+//     const sender_id = event.params.sender_id; 
+//     const recipient_id = event.params.recipient_id;
+//     const app_id = event.params.app_id;
    
-    // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+//     // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
   
    
-    const message = event.data.current.val();
-    // DEBUG console.log('message ' + JSON.stringify(message));
+//     const message = event.data.current.val();
+//     // DEBUG console.log('message ' + JSON.stringify(message));
 
-    // console.log("message.status : " + message.status);     
+//     // console.log("message.status : " + message.status);     
 
-    const messageRef = event.data.ref;
-    //console.log('messageRef ' + messageRef );
+//     const messageRef = event.data.ref;
+//     //console.log('messageRef ' + messageRef );
     
-    var sendMessageToRecipients = false;
-    //sendMessageToRecipient if i'm the sender (author) of the message and the message is not a self message
-    //if (messageSender_id==sender_id && sender_id!=recipient_id){
-    if (message.status==null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING){
-        sendMessageToRecipients=true;
-    }
+//     var sendMessageToRecipients = false;
+//     //sendMessageToRecipient if i'm the sender (author) of the message and the message is not a self message
+//     //if (messageSender_id==sender_id && sender_id!=recipient_id){
+//     if (message.status==null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING){
+//         sendMessageToRecipients=true;
+//     }
     
-    // console.log('sendMessageToRecipients ' + sendMessageToRecipients );
+//     // console.log('sendMessageToRecipients ' + sendMessageToRecipients );
 
-    if (sendMessageToRecipients==true){
+//     if (sendMessageToRecipients==true){
 
-        var updates = {};
+//         var updates = {};
    
-        message.status = chatApi.CHAT_MESSAGE_STATUS.DELIVERED;                                        
-        message.sender = sender_id;
-        message.recipient = recipient_id;
-        message.timestamp = admin.database.ServerValue.TIMESTAMP;
+//         message.status = chatApi.CHAT_MESSAGE_STATUS.DELIVERED;                                        
+//         message.sender = sender_id;
+//         message.recipient = recipient_id;
+//         message.timestamp = admin.database.ServerValue.TIMESTAMP;
         
 
-        if (message.channel_type==null || message.channel_type=="direct") {  //is a direct message
-            message.channel_type = "direct"; 
+//         if (message.channel_type==null || message.channel_type=="direct") {  //is a direct message
+//             message.channel_type = "direct"; 
             
-            // DEBUG console.log('sending direct message ' + JSON.stringify(message) );
+//             // DEBUG console.log('sending direct message ' + JSON.stringify(message) );
 
-            return chatApi.sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id);            
-        }else {//is a group message
-            // DEBUG console.log('sending group message ' + JSON.stringify(message) );
-             //send to group timeline
-             chatApi.sendMessageToGroupTimeline(recipient_id, message, message_id, app_id);            
-            return chatApi.sendGroupMessageToMembersTimeline(sender_id, recipient_id, message, message_id, app_id);
-        }
+//             return chatApi.sendDirectMessageToRecipientTimeline(sender_id, recipient_id, message, message_id, app_id);            
+//         }else {//is a group message
+//             // DEBUG console.log('sending group message ' + JSON.stringify(message) );
+//              //send to group timeline
+//              chatApi.sendMessageToGroupTimeline(recipient_id, message, message_id, app_id);            
+//             return chatApi.sendGroupMessageToMembersTimeline(sender_id, recipient_id, message, message_id, app_id);
+//         }
 
-    } else {
-        // DEBUG console.log('Nothing to send because message.status is not chatApi.CHAT_MESSAGE_STATUS.SENDING  ');
-    }
+//     } else {
+//         // DEBUG console.log('Nothing to send because message.status is not chatApi.CHAT_MESSAGE_STATUS.SENDING  ');
+//     }
 
-    return 0;
+//     return 0;
    
-  });
+//   });
 
 
 
 
-  exports.insertMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+  exports.insertAndSendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
    
     const message_id = event.params.message_id;
     const sender_id = event.params.sender_id;
@@ -108,29 +109,12 @@ exports.sendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/m
     const messageRef = event.data.ref;
     //console.log('messageRef ' + messageRef );
 
-    var fixedMessageFields = {};
     
 
     //set the status = 100 only if message.status is null. If message.status==200 (came form sendMessage) saveMessage not must modify the value
     // console.log("message.status : " + message.status);        
     if (message.status==null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING) {
-        fixedMessageFields.status = chatApi.CHAT_MESSAGE_STATUS.SENT; //MSG_STATUS_RECEIVED_ON_PERSIONAL_TIMELINE
-        fixedMessageFields.sender = sender_id; //for security set message.sender =  sender_id of the path
-        fixedMessageFields.recipient = recipient_id; //for security set message.recipient =  recipient_id of the path
-   //TODO se nn passo fullname di sender e recipient vado in contacts e prendo i nomi
-
-       
-        fixedMessageFields.timestamp = admin.database.ServerValue.TIMESTAMP;
-
-
-        if (message.channel_type==null) {
-          fixedMessageFields.channel_type = "direct";
-         }
-
-        console.log('inserting new message ' + JSON.stringify(message) + " updating with " + JSON.stringify(fixedMessageFields));
-
-        return messageRef.update(fixedMessageFields);
-
+        return chatApi.insertAndSendMessageInternal(messageRef, message, sender_id, recipient_id, message_id, app_id);
     }else {
         // DEBUG console.log("It's not a SENDING message. Nothing to update for insert");
         return 0;

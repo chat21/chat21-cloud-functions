@@ -215,13 +215,13 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
         var recipientEmail = snapshot.val();
   
         var formattedMessageTimestamp = formatTimestamp(messageTimestamp);
-        console.log("formattedMessageTimestamp : " + formattedMessageTimestamp);
+        // DEBUG console.log("formattedMessageTimestamp : " + formattedMessageTimestamp);
   
          // const mailingList = `${recipientEmail}, andrea.leo@frontiere21.it, andrea.sponziello@frontiere21.it, stefano.depascalis@frontiere21.it`; // list of receivers
         const mailingList = `${recipientEmail}`; // list of receivers
        
   
-        console.log("sendWelcomeEmail: mailingList == " + mailingList);
+        // DEBUG console.log("sendWelcomeEmail: mailingList == " + mailingList);
   
         /*
         const mailOptions = {
@@ -399,11 +399,11 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
 
   // it returns an user friendly representation of the timestamp
 function formatTimestamp(timestampMS) {
-    console.log("timestampMS: " + timestampMS);
+    // DEBUG console.log("timestampMS: " + timestampMS);
   
     // converts unix timestamp to normal
     var timestamp = timestampMS / 1000;
-    console.log("timestamp/1000: " + timestamp);
+     // DEBUG console.log("timestamp/1000: " + timestamp);
   
     // var pattern = 'dddd MMMM Do YYYY, h:mm:ss a'; // set the format pattern
     var pattern = 'dddd DD/MM/YYYY, HH:mm'; // set the format pattern
@@ -416,7 +416,7 @@ function formatTimestamp(timestampMS) {
     date = moment(startdate).add(1, 'hours');
   
     var userReadableTimestamp = date.format(pattern);
-    console.log("userReadableTimestamp: " + userReadableTimestamp);
+     // DEBUG  console.log("userReadableTimestamp: " + userReadableTimestamp);
    
     return userReadableTimestamp;
   }
