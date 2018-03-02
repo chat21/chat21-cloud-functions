@@ -110,7 +110,7 @@ app.post('/:app_id/messages', (req, res) => {
 
         console.log('result', result);
 
-        res.status(200).send(result);
+        res.status(201).send(result);
         // [END sendResponse]
       });
     });
@@ -168,7 +168,7 @@ app.post('/:app_id/groups', (req, res) => {
       
         console.log('result', result);
 
-        res.status(200).send(result);
+        res.status(201).send(result);
       });
     });
 
@@ -222,7 +222,7 @@ app.post('/:app_id/groups/:group_id/members', (req, res) => {
       
         console.log('result', result);
 
-        res.status(200).send(result);
+        res.status(201).send(result);
       });
     });
 
@@ -276,7 +276,7 @@ app.delete('/:app_id/groups/:group_id/members/:member_id', (req, res) => {
       
         console.log('result', result);
 
-        res.status(200).send(result);
+        res.status(204).send(result);
       });
     });
 

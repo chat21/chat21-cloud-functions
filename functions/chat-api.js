@@ -22,7 +22,7 @@ class ChatApi {
 
 // exports.CHAT_MESSAGE_STATUS = CHAT_MESSAGE_STATUS;
 
-    sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, custom_data) {
+    sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes) {
 
             var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_id;
             // console.log("path", path);
@@ -30,8 +30,8 @@ class ChatApi {
         
             var message = {};
 
-            if (custom_data)
-                message.custom_data = custom_data;  //at first position because the following basic data will overwrite potencial inconsistence customdata
+            if (attributes)
+                message.attributes = attributes;  //at first position because the following basic data will overwrite potencial inconsistence attributes
 
             // message.status = CHAT_MESSAGE_STATUS.SENDING;                                        
             message.sender = sender_id;
@@ -50,7 +50,7 @@ class ChatApi {
 
 
 
-    sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, custom_data) {
+    sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes) {
 
         var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_group_id;
         // console.log("path", path);
@@ -58,8 +58,8 @@ class ChatApi {
 
         var message = {};
 
-        if (custom_data)
-            message.custom_data = custom_data;  //at first position because the following basic data will overwrite potencial inconsistence customdata
+        if (attributes)
+            message.attributes = attributes;  //at first position because the following basic data will overwrite potencial inconsistence attributes
             
         // message.status = CHAT_MESSAGE_STATUS.SENDING;                                        
         message.sender = sender_id;

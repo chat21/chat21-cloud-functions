@@ -305,10 +305,10 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      const group = event.data.current.val();
      console.log("group",group);
      
-     if (group_id.indexOf("support-group")>-1 ){
-        console.log('dont send group creation message for support-group');
-        return 0;
-    }
+    //  if (group_id.indexOf("support-group")>-1 ){
+    //     console.log('dont send group creation message for support-group');
+    //     return 0;
+    // }
 
      var sender_id =  "system";
      var sender_fullname = "Sistema";
@@ -415,8 +415,14 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
 
 
 
-const notificationsFunction = require('./push-notification');
-exports.notificationsFunction = notificationsFunction;
+const pushNotificationsFunction = require('./push-notification');
+exports.pushNotificationsFunction = pushNotificationsFunction;
+
+
+if (functions.config().email && functions.config().email.enabled ) {
+    const emailNotificationsFunction = require('./email-notification');
+    exports.emailNotificationsFunction = emailNotificationsFunction;
+}
 
 // exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
        

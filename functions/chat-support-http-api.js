@@ -31,6 +31,8 @@ const app = express();
 const chatHttpAuth = require('./chat-http-auth');
 app.use(chatHttpAuth.authenticate);
 
+const chatSupportApi = require('./chat-support-api');
+
 
 
 
@@ -66,11 +68,8 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
         console.log('group_id', group_id);
         console.log('app_id', app_id);
 
-        var members = {"system":1};
-
-        var result =  chatApi.setMembersGroup(members, group_id, app_id);
-      
-        updateSupportStatus(group_id, 1000);
+       
+        var result =  chatSupportApi.closeChat(group_id, app_id);
 
         console.log('result', result);
 
@@ -80,19 +79,7 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
 
 
 
-    function updateSupportStatus(group_id, support_status) {
-     
-      var dataToUpdate = {
-        "support_status": support_status
-      }
-
-      return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
-        // Send back a message that we've succesfully written the message
-        console.log(`support_status updated with value: ${JSON.stringify(dataToUpdate)}`);
- 
-        return 0;
-     });
-  }
+   
 
 
 // Expose the API as a function

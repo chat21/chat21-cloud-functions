@@ -25,7 +25,11 @@ npm install
 ```
 * Login to Firebase CLI with ```firebase login```. More info here  https://firebase.google.com/docs/cli/
 * Set up your Firebase project by running ```firebase use --add```, select your Project ID and follow the instructions.
-* Optionally enable Support features with Google Cloud environment variables with: ```firebase functions:config:set support.enabled=true```
+
+## Setup Options
+* Enable Support features with Google Cloud environment variables with: ```firebase functions:config:set support.enabled=true```
+* Enable mail notification wiht: ```firebase functions:config:set email.enabled=true```
+
 
 # Test locally
 
