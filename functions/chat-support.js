@@ -15,7 +15,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     // const sender_id = event.params.sender_id; 
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;;
-    console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
+    // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
     
     // const messageRef = event.data.ref;
     // console.log('messageRef ' + messageRef);
@@ -26,10 +26,10 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
 
     const messageWithMessageId = event.data.current.val();
-    console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
+    // DEBUG console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
 
     const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
-    console.log('message ' + JSON.stringify(message));
+//    DEBUG console.log('message ' + JSON.stringify(message));
 
     // console.log("message.status : " + message.status);     
 
@@ -45,15 +45,36 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     }
 
 
-    console.log("new request!!! ");     
+    console.log("creating new request for message ", JSON.stringify(message));     
     
+    chatApi.typing("system", recipient_id, app_id);
+
+    var bot = "bot_6qI3oekSwabW9w05JHd2SQlV2rz2";
+
+    var source_page = null;
+    if (message.attributes && message.attributes.sourcePage) {
+        source_page = message.attributes.sourcePage;
+    }
+
+    console.log("source_page", source_page);     
+
+    if (source_page=="http://www.frontiere21.com/bppintranet/"){
+        bot="bot_5a9d77df34b9de00143716da";
+    }
+    if (source_page=="http://www.frontiere21.com/bppit/" || source_page=="http://www.frontiere21.com/bppitm/"){
+        bot="bot_5a9d77c834b9de00143716d9";
+    }
+    console.log("bot", bot);     
+
+
+
     var group_id = recipient_id; //recipient is the group id
     var group_name = "Support Group";
     var group_owner = "system";
     var group_members = {};
         group_members.system = 1;
         group_members[message.sender] = 1;  //add system
-        group_members["bot_6qI3oekSwabW9w05JHd2SQlV2rz2"] = 1; //bot
+        group_members[bot] = 1; //bot
         // group_members["9EBA3VLhNKMFIVa0IOco82TkIzk1"] = 1;
         // group_members["LmBT2IKjMzeZ3wqyU8up8KIRB6J3"] = 1;
         // group_members["U4HL3GWjBsd8zLX4Vva0s7W2FN92"] = 1; //andrea.leo@frontiere21.it
@@ -61,82 +82,264 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
         
         
 
-    console.log("group_members", group_members);     
+    // DEBUG console.log("group_members", group_members);     
 
 
-    return chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id);
-
-});
+    chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id);
 
 
 
-exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
-    
-    const group_id = event.params.group_id;
-    const app_id = event.params.app_id;;
-    console.log("group_id: "+ group_id + ", app_id: " + app_id);
-  
-    const group = event.data.current.val();
-    console.log("group",group);
-    
-    if (group_id.indexOf("support-group")==-1 ){
-       console.log('send group creation message for support-group');
-       return 0;
-   }
-
-    var sender_id =  "system";
-    var sender_fullname = "Sistema";
-
-    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Richiesta creata: " + group_id, app_id, {subtype:"info/support"});
-    
-});
-
-
-exports.createSupportConversationToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate(event => {
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
-    console.log("recipient_id : " + recipient_id + ", app_id: " + app_id);
-    
-
-    const messageWithMessageId = event.data.current.val();
-    console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
-
-    const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
-    console.log('message ' + JSON.stringify(message));
-
-    if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
-        return 0;
-    }
-
-    if (recipient_id.indexOf("support-group")==-1 ){
-        console.log('exit for recipient');
-        return 0;
-    }
-
-    console.log('it s a support message ');
-
-
+//creare firestore conversation
     var newRequest = {};
     newRequest.created_on = admin.firestore.FieldValue.serverTimestamp();
-    newRequest.support_status = 0; //CREATED
     newRequest.requester_id = message.sender;
     newRequest.requester_fullname = message.sender_fullname;
     newRequest.first_text = message.text;
+
+    // var members = {};
+    // members.system = true;
+    // members[requester_id] = true;
+
+    newRequest.members = group_members;
+    newRequest.membersCount = Object.keys(group_members).length;
+
+    if (newRequest.membersCount==2){
+     newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.UNSERVED;
+    }else {
+      newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.SERVED;
+    }
+
+
     newRequest.app_id = app_id;
     
-    // var conversationId = createConversationId(sender_id, recipient_id);
-    // console.log('conversationId', conversationId);
-    var groupId = recipient_id;
 
-    
-    return admin.firestore().collection('conversations').doc(groupId).set(newRequest, { merge: true }).then(writeResult => {
+    chatApi.stopTyping("system", recipient_id, app_id);
+
+    return admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true }).then(writeResult => {
     // return admin.firestore().collection('conversations').doc(groupId).update(message).then(writeResult => {
         // Send back a message that we've succesfully written the message
-        console.log(`Conversation with ID: ${groupId} created.`);
+        console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
       });
-    
 
 });
+
+
+
+
+
+
+// exports.createSupportConversationToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate(event => {
+//     const recipient_id = event.params.recipient_id;
+//     const app_id = event.params.app_id;;
+//     console.log("recipient_id : " + recipient_id + ", app_id: " + app_id);
+    
+
+//     const messageWithMessageId = event.data.current.val();
+//     console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
+
+//     const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
+//     console.log('message ' + JSON.stringify(message));
+
+//     if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+//         return 0;
+//     }
+
+//     if (recipient_id.indexOf("support-group")==-1 ){
+//         console.log('exit for recipient');
+//         return 0;
+//     }
+
+//     console.log('it s a support message ');
+
+
+//     var newRequest = {};
+//     newRequest.created_on = admin.firestore.FieldValue.serverTimestamp();
+//     newRequest.support_status = 0; //CREATED
+//     newRequest.requester_id = message.sender;
+//     newRequest.requester_fullname = message.sender_fullname;
+//     newRequest.first_text = message.text;
+
+//     // var members = {};
+//     // members.system = true;
+//     // members[requester_id] = true;
+
+//     // newRequest.members = members;
+//     // newRequest.membersCount = 2;
+
+//     newRequest.app_id = app_id;
+    
+//     // var conversationId = createConversationId(sender_id, recipient_id);
+//     // console.log('conversationId', conversationId);
+//     var groupId = recipient_id;
+
+    
+//     return admin.firestore().collection('conversations').doc(groupId).set(newRequest, { merge: true }).then(writeResult => {
+//     // return admin.firestore().collection('conversations').doc(groupId).update(message).then(writeResult => {
+//         // Send back a message that we've succesfully written the message
+//         console.log(`Conversation with ID: ${groupId} created.`);
+//       });
+    
+
+// });
+
+
+
+
+
+    // https://firebase.google.com/docs/firestore/manage-data/transactions
+function updateMembersCount(group_id, operation, app_id) {
+
+    // DEBUG console.log(`updatingMembersCount  for group ${group_id} with operation  ${operation}.`);
+
+       //update membersCount
+       var conversationDocRef = admin.firestore().collection("conversations").doc(group_id);
+    
+    
+       return admin.firestore().runTransaction(function(transaction) {
+           // This code may get re-run multiple times if there are conflicts.
+           return transaction.get(conversationDocRef).then(function(conversationDoc) {
+               if (!conversationDoc.exists) {
+                   throw "Document does not exist!";
+               }
+   
+               var oldMemberCount = 0; //default is 2
+               if (conversationDoc.data().membersCount!=null){
+                   oldMemberCount=conversationDoc.data().membersCount;
+                   console.log("oldMemberCount", oldMemberCount);
+
+               }
+   
+               var newMembersCount = oldMemberCount + operation;
+               console.log("newMembersCount", newMembersCount);
+
+               var updates = {};    
+
+               if (newMembersCount<=1) {
+                updates.support_status = chatSupportApi.CHATSUPPORT_STATUS.CLOSED; 
+               } else if (newMembersCount==2) {
+                updates.support_status = chatSupportApi.CHATSUPPORT_STATUS.UNSERVED; 
+               } else {  //>2
+                updates.support_status = chatSupportApi.CHATSUPPORT_STATUS.SERVED; 
+                
+                    if (newMembersCount> 3) {
+                        chatSupportApi.removeBotFromGroupMember(group_id, app_id);
+                    }
+
+               } 
+
+               updates.membersCount = newMembersCount;
+   
+               transaction.update(conversationDocRef, updates);
+
+               return newMembersCount;
+           });
+       }).then(function(membersCount) {
+           console.log("Transaction successfully committed with membersCount: ", membersCount);
+       }).catch(function(error) {
+           console.log("Transaction failed: ", error);
+       });
+   
+}
+exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+    
+    const member_id = event.params.member_id;
+    const group_id = event.params.group_id;
+    const app_id = event.params.app_id;;
+   // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+    
+
+   if (group_id.indexOf("support-group")==-1 ){
+    console.log('exit for recipient');
+    return 0;
+   }
+
+    // DEBUG console.log('it s a support message ');
+
+   
+
+    var memberToAdd = {};
+    memberToAdd[member_id] = true;
+    // DEBUG console.log("memberToAdd ", memberToAdd);
+
+
+    var dataToUpdate = {};
+    dataToUpdate.members = memberToAdd;
+//    DEBUG  console.log("dataToUpdate ", dataToUpdate);
+
+
+   return admin.firestore().collection("conversations").doc(group_id).get().then(docConvRef => {
+        if (docConvRef.exists) {
+
+            console.log("docConvRef", docConvRef);
+                
+                var docConv = docConvRef.data();
+
+                if (!docConv.members.hasOwnProperty(member_id)) {
+
+                    console.log("member_id not present into docConv");
+
+                    // return admin.firestore().collection('conversations').doc(group_id).update({members:dataToUpdate}).then(writeResult => {
+                        //  return admin.firestore().collection('conversations').doc(group_id).create(dataToUpdate).then(writeResult => {
+                        return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
+                
+                            
+                            // DEBUG console.log("writeResult ", writeResult);
+                    
+                                console.log(`Member with ID: ${JSON.stringify(memberToAdd)} added to ${group_id}.`);
+                    
+                                return updateMembersCount(group_id, 1, app_id);
+                        });
+
+                    // });
+                } else {
+                    console.log("member_id already present into docConv");
+
+                }
+        }
+//   
+    });
+});
+
+
+exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete(event => {
+    
+    const member_id = event.params.member_id;
+    const group_id = event.params.group_id;
+    const app_id = event.params.app_id;;
+   // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+    
+
+   if (group_id.indexOf("support-group")==-1 ){
+    console.log('exit for recipient');
+    return 0;
+   }
+
+    console.log('it s a support message ');
+
+   
+
+    // var memberToRemove = {};
+    // memberToRemove[member_id] = true;
+    // console.log("memberToRemove ", memberToRemove);
+
+
+    // var dataToUpdate = {};
+    // dataToUpdate.members = member_id;
+    // console.log("dataToUpdate ", dataToUpdate);
+
+
+//    return admin.firestore().collection('conversations').doc(group_id).update({members:memberToAdd}).then(writeResult => {
+     return admin.firestore().collection('conversations').doc(group_id).update({
+        ['members.' + member_id]: FieldValue.delete()
+      }).then(writeResult => {
+       // Send back a message that we've succesfully written the message
+       console.log(`Member with ID: ${JSON.stringify(member_id)} removed from ${group_id}.`);
+
+       return updateMembersCount(group_id, -1, app_id);
+    });
+   
+});
+
 
 
 
@@ -217,133 +420,6 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
 
 
-function updateMembersCount(group_id, operation, app_id) {
-
-    console.log(`updateMembersCount  ${group_id}   ${operation}.`);
-
-       //update membersCount
-       var conversationDocRef = admin.firestore().collection("conversations").doc(group_id);
-    
-    
-       return admin.firestore().runTransaction(function(transaction) {
-           // This code may get re-run multiple times if there are conflicts.
-           return transaction.get(conversationDocRef).then(function(conversationDoc) {
-               if (!conversationDoc.exists) {
-                   throw "Document does not exist!";
-               }
-   
-               var oldMemberCount = 0;
-               if (conversationDoc.data().membersCount!=null){
-                   oldMemberCount=conversationDoc.data().membersCount;
-               }
-   
-               var newMembersCount = oldMemberCount + operation;
-               console.log("newMembersCount", newMembersCount);
-
-               var updates = {};    
-
-               if (newMembersCount<=1) {
-                updates.support_status = chatSupportApi.CHATSUPPORT_STATUS.CLOSED; 
-               } else if (newMembersCount==2) {
-                updates.support_status = chatSupportApi.CHATSUPPORT_STATUS.UNSERVED; 
-               }else {  //>2
-                updates.support_status = chatSupportApi.CHATSUPPORT_STATUS.SERVED; 
-                
-                    if (newMembersCount> 3) {
-                        chatSupportApi.removeBotFromGroupMember(group_id, app_id);
-                    }
-
-               } 
-
-               updates.membersCount = newMembersCount;
-   
-               transaction.update(conversationDocRef, updates);
-           });
-       }).then(function() {
-           console.log("Transaction successfully committed!");
-       }).catch(function(error) {
-           console.log("Transaction failed: ", error);
-       });
-   
-}
-exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
-    
-    const member_id = event.params.member_id;
-    const group_id = event.params.group_id;
-    const app_id = event.params.app_id;;
-   // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
-    
-
-   if (group_id.indexOf("support-group")==-1 ){
-    console.log('exit for recipient');
-    return 0;
-   }
-
-    console.log('it s a support message ');
-
-   
-
-    var memberToAdd = {};
-    memberToAdd[member_id] = true;
-    console.log("memberToAdd ", memberToAdd);
-
-
-    var dataToUpdate = {};
-    dataToUpdate.members = memberToAdd;
-    console.log("dataToUpdate ", dataToUpdate);
-
-
-//    return admin.firestore().collection('conversations').doc(group_id).update({members:memberToAdd}).then(writeResult => {
-     return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
-       // Send back a message that we've succesfully written the message
-       console.log(`Member with ID: ${JSON.stringify(memberToAdd)} added to ${group_id}.`);
-
-       return updateMembersCount(group_id, 1, app_id);
-    });
-   
-});
-
-
-exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete(event => {
-    
-    const member_id = event.params.member_id;
-    const group_id = event.params.group_id;
-    const app_id = event.params.app_id;;
-   // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
-    
-
-   if (group_id.indexOf("support-group")==-1 ){
-    console.log('exit for recipient');
-    return 0;
-   }
-
-    console.log('it s a support message ');
-
-   
-
-    // var memberToRemove = {};
-    // memberToRemove[member_id] = true;
-    // console.log("memberToRemove ", memberToRemove);
-
-
-    // var dataToUpdate = {};
-    // dataToUpdate.members = member_id;
-    // console.log("dataToUpdate ", dataToUpdate);
-
-
-//    return admin.firestore().collection('conversations').doc(group_id).update({members:memberToAdd}).then(writeResult => {
-     return admin.firestore().collection('conversations').doc(group_id).update({
-        ['members.' + member_id]: FieldValue.delete()
-      }).then(writeResult => {
-       // Send back a message that we've succesfully written the message
-       console.log(`Member with ID: ${JSON.stringify(member_id)} removed from ${group_id}.`);
-
-       return updateMembersCount(group_id, -1, app_id);
-    });
-   
-});
-
-
 
 
 
@@ -373,7 +449,8 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
     var group_id = recipient_id;
 
     //if contains \agent
-    if (message.sender.startsWith("bot_") == false && message.text.indexOf("\\agent") > -1) {
+    // if (message.sender.startsWith("bot_") == false && message.text.indexOf("\\agent") > -1) {
+    if (message.text.indexOf("\\agent") == 0) {
         console.log('message contains \\agent');
         chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", "La stiamo mettendo in contatto con un operatore. Attenda...", app_id, {subtype:"info/support"});
 
@@ -423,61 +500,31 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 });
 
 
-
-
-
-// exports.removeBotOnAgentJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
     
-//     const member_id = event.params.member_id;
-//     const group_id = event.params.group_id;
-//     const app_id = event.params.app_id;;
-//    // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+    const group_id = event.params.group_id;
+    const app_id = event.params.app_id;;
+    console.log("group_id: "+ group_id + ", app_id: " + app_id);
+  
+    const group = event.data.current.val();
+    console.log("group",group);
     
+    if (group_id.indexOf("support-group")==-1 ){
+       console.log('send group creation message for support-group');
+       return 0;
+   }
 
-//    if (group_id.indexOf("support-group")==-1 ){
-//     console.log('exit for recipient');
-//     return 0;
-//    }
+    var sender_id =  "system";
+    var sender_fullname = "Sistema";
 
-//     console.log('it s a support message ');
-
-//     if (member_id.startsWith("bot_"))
-//         return 0;
-   
-   
-//     //remove bot from members
-//     return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
-
-//         groupMembers.forEach(function(groupMember) {
-//             console.log('groupMember ' + groupMember);
-
-//             if (groupMember.startsWith("bot_")) { 
-//                 chatApi.leaveGroup(groupMember, group_id, app_id);
-//                 console.log('removed bot with id  ' + groupMember);
-
-//                 return 0;
-
-//             }
-//         });
-
-//         return 0;
-
-//     });
-      
-// });
+    // chatApi.typing(sender_id, group_id, app_id);
 
 
-    // function createConversationId(senderId, recipientId) {
-    //     var conversationId = "";
+    var displaySupportGroup = group_id.replace("support_group")
+    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Richiesta creata: " + group_id, app_id, {subtype:"info/support"});
+    
+});
 
-    //     if (senderId<=recipientId){
-    //         conversationId = senderId + "-" + recipientId;
-    //     }else {
-    //         conversationId = recipientId + "-" + senderId;
-    //     }
-
-    //     return conversationId;
-    // }
 
 
     exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
@@ -534,6 +581,9 @@ const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 
 
+// curl -X POST -H "Ocp-Apim-Subscription-Key: 59c2511b9825415eb4254ab8a7d4b094" -H "Content-Type: application/json" -d '{"question":"quanto costa Smatt21?"}' https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/f486b8ed-b587-413a-948e-e02c9a129d12/generateAnswer
+
+
 //lasciare questo bot cosi come è per essere usato dalla app ios
 exports.botreply = functions.database.ref('/apps/{app_id}/users/bot_6qI3oekSwabW9w05JHd2SQlV2rz2/messages/{recipient_id}/{message_id}').onCreate(event => {
 
@@ -563,6 +613,8 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/bot_6qI3oekSwabW
 
     console.log('it s a message to bot ', message);
     
+    chatApi.typing(sender_id, recipient_id, app_id);
+
     // chatApi.sendGroupMessage(sender_id, "Bot", recipient_id, "Support Group", "Ciao sono il Bot, sto cercado una risposta alla tua domanda. Un attimo di pazienza...", app_id);
 
 
@@ -600,13 +652,13 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/bot_6qI3oekSwabW
         var response_options;
 
         if (answer == "No good match found in the KB"){
-            answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita <b>\\agent</b> per parlare con un operatore oppure formula un nuova domanda.";
+            answer = "Non ho trovato una risposta nella knowledge base. \n Riformula la tua domanda oppure digita <b>\\agent</b> per parlare con un operatore.";
 
             response_options = { "question" : "Vuoi parlare con un operatore?",
             "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
         }else {
 
-            answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita <b>\\close</b> per chiudere la chat di supporto oppure <b>\\agent</b> per parlare con un operatore.";
+            answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita <b>\\close</b> per chiudere la chat di supporto oppure <b>\\agent</b> per parlare con un operatore oppure formula una nuova domanda.";
             response_options = { "question" : "Sei soddisfatto della risposta?",
             "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
 
@@ -614,6 +666,7 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/bot_6qI3oekSwabW
        
 
         
+        chatApi.stopTyping(sender_id, recipient_id, app_id);
 
         return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, answer, app_id, response_options);
 
@@ -623,6 +676,118 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/bot_6qI3oekSwabW
     
 });
 
+// curl -X POST -H "Ocp-Apim-Subscription-Key: 5e9c35eada754400852ccfb34e6711cb" -H "Content-Type: application/json" -d '{"question":"come si apre un conto corrente?"}' https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/608f7647-2608-4600-b1e2-c7d4baf21e77/generateAnswer
+exports.bppitbotreply = functions.database.ref('/apps/{app_id}/users/bot_5a9d77c834b9de00143716d9/messages/{recipient_id}/{message_id}').onCreate(event => {
+
+    // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
+    const message_id = event.params.message_id;
+    const sender_id = "bot_5a9d77c834b9de00143716d9";
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+//    DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+
+    return replayWithBot(message_id, sender_id, recipient_id, message, app_id, "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/608f7647-2608-4600-b1e2-c7d4baf21e77/generateAnswer", "5e9c35eada754400852ccfb34e6711cb");
+
+});
+
+exports.bppintranetbotreply = functions.database.ref('/apps/{app_id}/users/bot_5a9d77df34b9de00143716da/messages/{recipient_id}/{message_id}').onCreate(event => {
+
+    // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
+    const message_id = event.params.message_id;
+    const sender_id = "bot_5a9d77df34b9de00143716da";
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;;
+//    DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = event.data.current.val();
+
+    return replayWithBot(message_id, sender_id, recipient_id, message, app_id, "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/4561aabb-8e3d-4925-8f43-3ee0693ed4bb/generateAnswer", '59c2511b9825415eb4254ab8a7d4b094');
+
+});
+
+function replayWithBot(message_id, sender_id, recipient_id, message, app_id, qnaServiceUrl, qnaKey) {
+    if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+    if (message.sender == "system"){  //evita che il bot risponda a messaggi di system (es: Gruppo Creato)
+        return 0;
+    }
+
+    if (message.text.indexOf("\\agent") > -1) { //not reply to a message containing \\agent
+        return 0;
+    }
+
+
+    console.log('it s a message to bot ', message);
+
+    chatApi.typing(sender_id, recipient_id, app_id);
+
+
+    console.log('qnaServiceUrl', qnaServiceUrl);
+    console.log('qnaKey', qnaKey);
+
+    
+    // chatApi.sendGroupMessage(sender_id, "Bot", recipient_id, "Support Group", "Ciao sono il Bot, sto cercado una risposta alla tua domanda. Un attimo di pazienza...", app_id);
+
+
+    return request({
+        //uri: "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/f486b8ed-b587-413a-948e-e02c9a129d12/generateAnswer",
+
+        uri :  qnaServiceUrl,
+        headers: {
+            //'Ocp-Apim-Subscription-Key': '59c2511b9825415eb4254ab8a7d4b094',
+            'Ocp-Apim-Subscription-Key': qnaKey,
+            'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        json: true,
+        body: {"question": message.text},
+        //resolveWithFullResponse: true
+        }).then(response => {
+        if (response.statusCode >= 400) {
+            throw new Error(`HTTP Error: ${response.statusCode}`);
+        }
+
+        // console.log('SUCCESS! Posted', event.data.ref);        
+        console.log('SUCCESS! response', response);
+
+        var answer = entities.decode(response.answers[0].answer);
+        console.log('answer', answer);    
+
+        var question = response.answers[0].questions[0];
+        console.log('question', question);        
+
+        var sender_fullname = "Bot";
+        var recipient_group_fullname = message.recipient_fullname;
+
+
+        var response_options;
+
+        if (answer == "No good match found in the KB"){
+            answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita <b>\\agent</b> per parlare con un operatore oppure formula un nuova domanda.";
+
+            response_options = { "question" : "Vuoi parlare con un operatore?",
+            "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
+        }else if (answer == "\\agent"){ //if \\agent dont append se sei siddisfatto...
+
+        }else {
+            answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita <b>\\close</b> per chiudere la chat di supporto oppure <b>\\agent</b> per parlare con un operatore.";
+            response_options = { "question" : "Sei soddisfatto della risposta?",
+            "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
+
+        }
+       
+
+        
+        chatApi.stopTyping(sender_id, recipient_id, app_id);
+
+        return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, answer, app_id, response_options);
+
+        });
+
+}
 
 
 

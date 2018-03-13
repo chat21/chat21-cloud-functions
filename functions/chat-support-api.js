@@ -34,13 +34,13 @@ class ChatSupportApi {
 
 
     removeBotFromGroupMember(group_id, app_id) {
-        console.log('removeBotFromGroupMember ' + group_id);
+        // DEBUG console.log('removeBotFromGroupMember for group : ' + group_id);
       
         //remove bot from members
         return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
           
           groupMembers.forEach(function(groupMember) {
-              console.log('groupMember ' + groupMember);
+            //   DEBUG console.log('groupMember ' + groupMember);
       
                   if (groupMember.startsWith("bot_")) { 
                       console.log('removing bot with id  ' + groupMember + " from group with id " + group_id);

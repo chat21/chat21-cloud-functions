@@ -50,6 +50,7 @@ class ChatApi {
 
 
 
+
     sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes) {
 
         var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_group_id;
@@ -84,32 +85,10 @@ class ChatApi {
 
     }
 
-    // exports.getGroupById = function(group_id, app_id, callback) {
-    //     console.log("getting group with id " + group_id + " and app_id "+ app_id);
 
-    //     return admin.database().ref('/apps/'+app_id+'/groups/'+group_id).once('value').then(function(groupSnapshot) {
-    //         // DEBUG console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
-    //         //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
-
-            
-    //         if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
-    //             var group = groupSnapshot.val();
-    //             console.log('group ' + JSON.stringify(group) );
-
-                
-    //            return group;
-    //         }else {
-    //             console.log('Warning: Group '+ group_id +' not found ' );
-    //             //recipient_id is NOT a group
-    //             return 0;
-    //         }
-
-
-    //     });
-    // }
 
     getGroupById(group_id, app_id) {
-        console.log("getting group with id " + group_id + " and app_id "+ app_id);
+        // DEBUG console.log("getting group with id " + group_id + " and app_id "+ app_id);
 
         return new Promise(function(resolve, reject) {
             // Do async job
@@ -120,7 +99,7 @@ class ChatApi {
                 
                 if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
                     var group = groupSnapshot.val();
-                    console.log('group ' + JSON.stringify(group) );
+                    // DEBUG console.log('group ' + JSON.stringify(group) );
         
                     
                     return resolve(group);
@@ -138,7 +117,7 @@ class ChatApi {
     }
 
     getGroupMembers(group_id, app_id) {
-        console.log('getGroupMembers ', this );
+        // DEBUG console.log('getGroupMembers ', this );
         var that = this;
 
         return new Promise(function(resolve, reject) {
@@ -204,13 +183,13 @@ class ChatApi {
     joinGroup(member_id, group_id, app_id) {
 
         var path = '/apps/'+app_id+'/groups/'+group_id+'/members/';
-        console.log("path", path);
+        // DEBUG console.log("path", path);
 
 
         var member = {};
         member[member_id] = 1;
         
-        console.log("adding member " + JSON.stringify(member) + " is joining group " + path);
+        console.log("member " + JSON.stringify(member) + " is joining group " + path);
         return admin.database().ref(path).update(member);
     }
 
@@ -218,7 +197,7 @@ class ChatApi {
     leaveGroup(member_id, group_id, app_id) {
 
         var path = '/apps/'+app_id+'/groups/'+group_id+'/members/'+member_id;
-        console.log("path", path);
+        // DEBUG console.log("path", path);
 
         
         console.log("leaving member from " + path);
@@ -231,13 +210,36 @@ class ChatApi {
     setMembersGroup(members, group_id, app_id) {
 
         var path = '/apps/'+app_id+'/groups/'+group_id+'/members/';
-        console.log("path", path);
+        // DEBUG console.log("path", path);
 
         
         console.log("setting members " + JSON.stringify(members) + " for group " + path);
         return admin.database().ref(path).set(members);
     }
 
+
+    typing(writer_id, group_id, app_id) {
+
+        var path = '/apps/'+app_id+'/typings/'+group_id;
+        // DEBUG  console.log("path", path);
+    
+    
+        var typing = {};
+        typing[writer_id] = 1;
+
+        console.log("typing typing " + typing  + " to " + path);
+        return admin.database().ref(path).update(typing);
+    }
+
+    stopTyping(writer_id, group_id, app_id) {
+
+        var path = '/apps/'+app_id+'/typings/'+group_id+"/"+ writer_id;
+        // DEBUG  console.log("path", path);
+    
+    
+        console.log("stopTyping for " + path);
+        return admin.database().ref(path).remove();
+    }
 
 
     //INTERNAL METHOD
