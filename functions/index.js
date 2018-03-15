@@ -251,7 +251,7 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      var sender_fullname = "Sistema";
 
 
-     return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Gruppo creato", app_id);
+     return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Gruppo creato", app_id,{subtype:"info"});
     //  return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
      
 });
@@ -308,14 +308,47 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
 
      return chatApi.getGroupById(group_id, app_id).then(function (group) {
         console.log("group", group);
-        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Nuovo membro aggiunto al gruppo", app_id);
+        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Nuovo membro aggiunto al gruppo", app_id, {subtype:"info"});
      });
     
 });
 
+if (functions.config().group && functions.config().group.general && functions.config().group.general.autojoin ) {
+    exports.addToGeneralMembersOnContantCreation = functions.database.ref('/apps/{app_id}/contacts/{contact_id}').onCreate(event => {
+        
+        const contact_id = event.params.contact_id;
+        const app_id = event.params.app_id;;
+        // DEBUG console.log("contact_id: "+ contact_id + ", app_id: " + app_id);
+    
+        var group_id = "general_group";
 
+        return chatApi.getGroupById(group_id, app_id).then(function (group) {
+            // DEBUG console.log("group", group);
 
+            if (group){
+                var groupMembersAsArray = Object.keys(group.members);
+                if (groupMembersAsArray.indexOf(contact_id) == -1) {
+                    console.log("contact_id is joinig general group");
+                    return chatApi.joinGroup(contact_id, group_id, app_id);
+                }else {
+                    console.log("contact_id " + contact_id + " already present");
+                }
+            }else {
+                console.log("error group is null");
 
+            }
+        }, function (error) {
+            var group_members = {};
+            group_members.system = 1;
+            group_members[contact_id] = 1;
+
+            console.log("general group not exist. Creating general group with members", group_members);
+
+            return chatApi.createGroupWithId(group_id, "General", "system", group_members, app_id);
+        });
+
+    });
+}
 
 
 

@@ -520,8 +520,8 @@ exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/
     // chatApi.typing(sender_id, group_id, app_id);
 
 
-    var displaySupportGroup = group_id.replace("support_group")
-    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Richiesta creata: " + group_id, app_id, {subtype:"info/support"});
+    var displaySupportGroup = group_id.replace("support_group","");
+    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Richiesta creata: " + displaySupportGroup, app_id, {subtype:"info/support"});
     
 });
 

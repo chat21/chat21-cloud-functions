@@ -40,6 +40,14 @@ const chatApi = require('./chat-api');
         return 0;
     }
 
+    // if (functions.config().push && functions.config().push.disabled && functions.config().push.mute.for ) {
+
+    if (recipient_id == "general_group" ) {
+        console.log('dont send push notification for mute recipient');
+        //if sender is receiver, don't send notification
+        return 0;
+    }
+
     const text = message.text;
     const messageTimestamp = JSON.stringify(message.timestamp);
     

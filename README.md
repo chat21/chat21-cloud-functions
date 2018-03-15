@@ -29,6 +29,8 @@ npm install
 ## Setup Options
 * Enable Support features with Google Cloud environment variables with: ```firebase functions:config:set support.enabled=true```
 * Enable mail notification wiht: ```firebase functions:config:set email.enabled=true```
+* Disable the option "Automatically join the General Group on signup" with ```firebase functions:config:set group.general.autojoin=false```
+
 
 
 # Test locally
@@ -203,3 +205,9 @@ Example:
        -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjQzZTFiMGIyOTllNDIxZjU2ZWI1YTQ2NjhkMWNmMjNmNGFjNjk2NGMifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyMDg2Njk4MywidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTIwODY2OTgzLCJleHAiOjE1MjA4NzA1ODMsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.zzdAPcqr8aGWQ-i_2kejYZz5mvE92zk-UxsrLN1Wm8VbfgwyvC9X3C-vR46fkXhcBO96GsU4U6sJoQIzy8XPiENMmACSbtZsQBkWV7Dlcij08TqBO_HOYA7LVk4fCOCdJ_jaL8DgmbbaP6uYIy_fkBg43-FSLV7x21TqAGIT8f-IDSUAfU_J9jbdy3bcwl2Rpr7P8PbmK8RgKgFNXwoY8T1g2PXM4fUzZU2MszLycRMzP4eoDQPgGEB7Kk2RdDDdez2i5fxJtashYQ5tWy5jAf6bSMR1wm3Ng-27YzeEmZ-rW0ve3liRqNhSJJ_KPp-2dHfTNsgL-odw_3cP_lvSWw' \
         https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/support-group-L5xro2P81zHs7YA7-DX/
 ```
+
+
+# BOT Setup
+* Create a bot user with the mobile app or web app. Ex: email:bot@chat21.org, firstname: Bot, lastname: Chat21,etc.
+* Retrieve the bot user id (<BOT_UID>) from the profile tab of the mobile app or from firebase autentication tab
+* Set the bot user id <BOT_UID> parameter with ```firebase functions:config:set bot.uid=<BOT_UID>```

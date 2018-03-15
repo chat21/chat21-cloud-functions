@@ -108,7 +108,7 @@ class ChatApi {
                     console.log(error );
                     //recipient_id is NOT a group
                     // return 0;
-                    return reject(err);
+                    return reject(error);
                 }
         
         
@@ -330,6 +330,7 @@ class ChatApi {
 
         var updates = {};
         
+
         return admin.database().ref('/apps/'+app_id+'/groups/'+recipient_group_id).once('value').then(function(groupSnapshot) {
                 // DEBUG console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
                 //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
@@ -369,6 +370,50 @@ class ChatApi {
 
             });
     }
+
+    // sendGroupMessageToMembersTimeline(sender_id, recipient_group_id, message, message_id, app_id) {
+
+    //     var updates = {};
+        
+    //     return admin.database().ref('/apps/'+app_id+'/groups/'+recipient_group_id).once('value').then(function(groupSnapshot) {
+    //             // DEBUG console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
+    //             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
+
+    //             if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
+    //                 var group = groupSnapshot.val();
+    //                 console.log('group ' + JSON.stringify(group) );
+
+    //                 var groupMembers = group.members;
+    //                 var groupMembersAsArray = Object.keys(groupMembers);
+    //                 // DEBUG console.log('groupMembers ' + JSON.stringify(groupMembersAsArray) );
+                
+                
+    //                 //TODO check se sender è membro del gruppo
+    //                 // if (groupMembersAsArray.indexOf(sender_id)<0) {
+    //                 //     errore non sei membro del gruppo
+    //                 // }
+
+
+    //                 groupMembersAsArray.forEach(function(groupMember) {
+    //                     // console.log('groupMember ' + groupMember);
+
+    //                     //DON'T send a message to the sender of the message 
+    //                     if (groupMember!=sender_id) { 
+    //                         updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
+    //                     }
+    //                 });
+    //             }else {
+    //                 console.log('Warning: Group '+ recipient_group_id +' not found ' );
+    //                 //recipient_id is NOT a group
+    //                 return 0;
+    //             }
+
+    //             console.log('sendGroupMessageToMembersTimeline with message ' + JSON.stringify(message) + " TO: " + JSON.stringify(updates) );
+                
+    //             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
+
+    //         });
+    // }
 
 
 
