@@ -155,15 +155,6 @@ Example:
 ```
 
 
- curl -X POST \
-       -H 'Content-Type: application/json' \
-       -H 'Authorization: Bearer J4U4z23lwf4xQEWE15Ok4cVG5MCQDZoalMjCA9Q2' \
-       -d '{"sender_fullname": "Andrea Leo", "recipient_id": "U4HL3GWjBsd8zLX4Vva0s7W2FN92", "recipient_fullname":"Andrea Leo","text":"hello from API"}' \
-       https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages
-
-
-
-
 
 ## Set Group members
 
