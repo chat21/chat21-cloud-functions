@@ -527,17 +527,16 @@ exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/
 
 
 
-    exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+    exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
         const message_id = event.params.message_id;
-        const sender_id = event.params.sender_id; 
         const recipient_id = event.params.recipient_id;
-        const app_id = event.params.app_id;;
-        console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+        const app_id = event.params.app_id;
+        // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
         
         const message = event.data.current.val();
-        console.log('message ' + JSON.stringify(message));
+        // DEBUG console.log('message ' + JSON.stringify(message));
     
-        console.log("message.status : " + message.status);     
+        // DEBUG console.log("message.status : " + message.status);     
     
         if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
             return 0;
@@ -554,7 +553,8 @@ exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/
             uri: "http://api.chat21.org/"+app_id+"/messages",
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwic2VsZWN0ZWQiOnt9LCJnZXR0ZXJzIjp7fSwid2FzUG9wdWxhdGVkIjpmYWxzZSwiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0IiwiX192IjoiaW5pdCIsIl9pZCI6ImluaXQifSwic3RhdGVzIjp7Imlnbm9yZSI6e30sImRlZmF1bHQiOnt9LCJpbml0Ijp7Il9fdiI6dHJ1ZSwicGFzc3dvcmQiOnRydWUsInVzZXJuYW1lIjp0cnVlLCJfaWQiOnRydWV9LCJtb2RpZnkiOnt9LCJyZXF1aXJlIjp7fX0sInN0YXRlTmFtZXMiOlsicmVxdWlyZSIsIm1vZGlmeSIsImluaXQiLCJkZWZhdWx0IiwiaWdub3JlIl19LCJlbWl0dGVyIjp7ImRvbWFpbiI6bnVsbCwiX2V2ZW50cyI6e30sIl9ldmVudHNDb3VudCI6MCwiX21heExpc3RlbmVycyI6MH19LCJpc05ldyI6ZmFsc2UsIl9kb2MiOnsiX192IjowLCJwYXNzd29yZCI6IiQyYSQxMCQ5SjlIUHZCL29NOUxGMFdVaEtZWHRPcmhTZ2wyOEY0ZmtZcGZUVGU3ZGdwRWFZRnFRQlFtdSIsInVzZXJuYW1lIjoiYW5kcmVhIiwiX2lkIjoiNWE2YzU4MzVjM2VjNjU5M2I0ZDk2YjRmIn0sImlhdCI6MTUxNzA1MDcyOX0.OafV9nTa_O48RkRGt6WoFW26ZNNw6AN-HCETkaT3oFU'
+                // 'Authorization': 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwic2VsZWN0ZWQiOnt9LCJnZXR0ZXJzIjp7fSwid2FzUG9wdWxhdGVkIjpmYWxzZSwiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0IiwiX192IjoiaW5pdCIsIl9pZCI6ImluaXQifSwic3RhdGVzIjp7Imlnbm9yZSI6e30sImRlZmF1bHQiOnt9LCJpbml0Ijp7Il9fdiI6dHJ1ZSwicGFzc3dvcmQiOnRydWUsInVzZXJuYW1lIjp0cnVlLCJfaWQiOnRydWV9LCJtb2RpZnkiOnt9LCJyZXF1aXJlIjp7fX0sInN0YXRlTmFtZXMiOlsicmVxdWlyZSIsIm1vZGlmeSIsImluaXQiLCJkZWZhdWx0IiwiaWdub3JlIl19LCJlbWl0dGVyIjp7ImRvbWFpbiI6bnVsbCwiX2V2ZW50cyI6e30sIl9ldmVudHNDb3VudCI6MCwiX21heExpc3RlbmVycyI6MH19LCJpc05ldyI6ZmFsc2UsIl9kb2MiOnsiX192IjowLCJwYXNzd29yZCI6IiQyYSQxMCQ5SjlIUHZCL29NOUxGMFdVaEtZWHRPcmhTZ2wyOEY0ZmtZcGZUVGU3ZGdwRWFZRnFRQlFtdSIsInVzZXJuYW1lIjoiYW5kcmVhIiwiX2lkIjoiNWE2YzU4MzVjM2VjNjU5M2I0ZDk2YjRmIn0sImlhdCI6MTUxNzA1MDcyOX0.OafV9nTa_O48RkRGt6WoFW26ZNNw6AN-HCETkaT3oFU'
+                'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
             },
             method: 'POST',
             json: true,

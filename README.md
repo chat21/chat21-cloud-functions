@@ -27,8 +27,9 @@ npm install
 * Set up your Firebase project by running ```firebase use --add```, select your Project ID and follow the instructions.
 
 ## Setup Options
-* Enable Support features with Google Cloud environment variables with: ```firebase functions:config:set support.enabled=true```
-* Enable mail notification wiht: ```firebase functions:config:set email.enabled=true```
+Use with Google Cloud environment to configure the platform.
+* Enable Support features with: ```firebase functions:config:set support.enabled=true```
+* Enable email notification with: ```firebase functions:config:set email.enabled=true```
 * Disable the option "Automatically join the General Group on signup" with ```firebase functions:config:set group.general.autojoin=false```
 
 
@@ -91,6 +92,7 @@ Example:
        -d '{"sender_fullname": "Andrea Leo", "recipient_id": "U4HL3GWjBsd8zLX4Vva0s7W2FN92", "recipient_fullname":"Andrea Leo","text":"hello from API"}' \
        https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages
 ```
+
 
 
 ## Create a Group
@@ -184,6 +186,42 @@ Example:
 ```
 
 
+## Delete a my message
+
+```
+    curl  -X DELETE \
+       -H 'Content-Type: application/json' \
+       -H "Authorization: Bearer <Firebase ID Token>" \
+       https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/messages/<RECIPIENT_ID>/<MESSAGE_ID>
+```
+
+Example:
+
+```
+    curl -X DELETE \
+      -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImRhNWZiMGJkZTJlMzUwMmZkZTE1YzAwMWE0MWIxYzkxNDc4MTI0NzYifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyMTE5NTM1MSwidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTIxMTk1MzUxLCJleHAiOjE1MjExOTg5NTEsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.EOfzeeAWjhTJfI16TyR8e1JRkk_N1ix16AFbaqw6l6YiMBwhxsIya5ZZ4lgIFByKpm0ZUqBvMZ6jbhG368w_wRDNJCDE_08eVGKRGq_428A8f5D6nUB57rRRI1umxj4y50LJ66Px5F7mekcBSPOfPEDrCzn9K7kPj3r1pd-Yc0nhWxTqDKiR_kAFitvmT1ptQGojEfeoIRLoPsv4XtTkWp7NJi-jLZp3dlRAJWp3483lsce3nX2oy4v7OleYIXEzPbJNFW7-qXf04Ovc6__mEShj2RoMntcntxNUsu3rO9ZpJtDIlUK-BMB5XPdEoQ1G9GBcoLRKc76WCqeGKikZIA' \
+        https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages/y4QN01LIgGPGnoV6ql07hwPAQg23/-L7iJ5QljBP7sPkN73Km
+```
+
+## Delete a group message for me and other users
+
+```
+    curl  -X DELETE \
+       -H 'Content-Type: application/json' \
+       -H "Authorization: Bearer <Firebase ID Token>" \
+       'https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/messages/<RECIPIENT_ID>/<MESSAGE_ID>?all=true&channel_type=group'
+```
+Example:
+
+```
+    curl -v -X DELETE \
+      -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImRhNWZiMGJkZTJlMzUwMmZkZTE1YzAwMWE0MWIxYzkxNDc4MTI0NzYifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyMTE5NTM1MSwidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTIxMTk1MzUxLCJleHAiOjE1MjExOTg5NTEsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.EOfzeeAWjhTJfI16TyR8e1JRkk_N1ix16AFbaqw6l6YiMBwhxsIya5ZZ4lgIFByKpm0ZUqBvMZ6jbhG368w_wRDNJCDE_08eVGKRGq_428A8f5D6nUB57rRRI1umxj4y50LJ66Px5F7mekcBSPOfPEDrCzn9K7kPj3r1pd-Yc0nhWxTqDKiR_kAFitvmT1ptQGojEfeoIRLoPsv4XtTkWp7NJi-jLZp3dlRAJWp3483lsce3nX2oy4v7OleYIXEzPbJNFW7-qXf04Ovc6__mEShj2RoMntcntxNUsu3rO9ZpJtDIlUK-BMB5XPdEoQ1G9GBcoLRKc76WCqeGKikZIA' \
+        'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages/-L7iM75Pweqz2Atl7w1z/-L7iMFJKt06ixZFG_p4e?all=true&channel_type=group'
+
+
+```
 
 
 # REST API for Support

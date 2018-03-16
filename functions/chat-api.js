@@ -85,6 +85,55 @@ class ChatApi {
 
     }
 
+    deleteMessageForAll(sender_id, recipient_id, message_id, app_id) {
+        this.deleteMessage(sender_id, recipient_id, message_id, app_id);
+        return this.deleteMessage(recipient_id, sender_id, message_id, app_id);
+    }
+
+
+
+    deleteMessage(sender_id, recipient_id, message_id, app_id) {
+        var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_id+'/'+message_id;
+        // console.log("path", path);
+
+        console.log("deleteMessage from " + path);
+        return admin.database().ref(path).remove()   
+
+    }
+
+
+    deleteMessageGroupForAll(group_id, message_id, app_id) {
+        this.deleteMessageFromGroupTimeline(group_id, message_id, app_id);
+        return  this.deleteMessageFromMembersTimeline(group_id, message_id, app_id);
+    }
+
+    deleteMessageFromGroupTimeline(group_id, message_id, app_id) {
+        var path = '/apps/'+app_id+'/messages/'+group_id+'/'+message_id;
+        // console.log("path", path);
+
+        console.log("deleteMessageFromGroupTimeline from " + path);
+        return admin.database().ref(path).remove()   
+
+    }
+
+    deleteMessageFromMembersTimeline(group_id, message_id, app_id) {
+
+        var updates = {};
+
+        return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
+            
+            groupMembers.forEach(function(groupMember) {
+            //   DEBUG console.log('groupMember ' + groupMember);            
+                        updates['/'+groupMember+'/messages/'+group_id + '/'+ message_id] = null; 
+                   
+                });
+        
+                console.log('deleteMessageFromMembersTimeline with message  FROM ' + JSON.stringify(updates) );
+                
+                return admin.database().ref('/apps/'+app_id+'/users').update(updates);        
+            }); 
+    }
+
 
 
     getGroupById(group_id, app_id) {
@@ -330,45 +379,21 @@ class ChatApi {
 
         var updates = {};
         
-
-        return admin.database().ref('/apps/'+app_id+'/groups/'+recipient_group_id).once('value').then(function(groupSnapshot) {
-                // DEBUG console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
-                //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
-
-                if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
-                    var group = groupSnapshot.val();
-                    console.log('group ' + JSON.stringify(group) );
-
-                    var groupMembers = group.members;
-                    var groupMembersAsArray = Object.keys(groupMembers);
-                    // DEBUG console.log('groupMembers ' + JSON.stringify(groupMembersAsArray) );
-                
-                
-                    //TODO check se sender è membro del gruppo
-                    // if (groupMembersAsArray.indexOf(sender_id)<0) {
-                    //     errore non sei membro del gruppo
-                    // }
-
-
-                    groupMembersAsArray.forEach(function(groupMember) {
-                        // console.log('groupMember ' + groupMember);
-
-                        //DON'T send a message to the sender of the message 
-                        if (groupMember!=sender_id) { 
-                            updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
-                        }
-                    });
-                }else {
-                    console.log('Warning: Group '+ recipient_group_id +' not found ' );
-                    //recipient_id is NOT a group
-                    return 0;
-                }
-
+        return chatApi.getGroupMembers(recipient_group_id, app_id).then(function (groupMembers) {
+          
+            groupMembers.forEach(function(groupMember) {
+              //   DEBUG console.log('groupMember ' + groupMember);
+        
+                    //DON'T send a message to the sender of the message 
+                    if (groupMember!=sender_id) { 
+                        updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
+                    }
+                });
+        
                 console.log('sendGroupMessageToMembersTimeline with message ' + JSON.stringify(message) + " TO: " + JSON.stringify(updates) );
                 
-                return admin.database().ref('/apps/'+app_id+'/users').update(updates);
-
-            });
+                return admin.database().ref('/apps/'+app_id+'/users').update(updates);        
+            }); 
     }
 
     // sendGroupMessageToMembersTimeline(sender_id, recipient_group_id, message, message_id, app_id) {
@@ -418,45 +443,45 @@ class ChatApi {
 
 
 
-    sendBroadcastChannelMessageToRecipientsTimeline(sender_id, recipient_channel_id, message, message_id, app_id) {
-        var updates = {};
+    // sendBroadcastChannelMessageToRecipientsTimeline(sender_id, recipient_channel_id, message, message_id, app_id) {
+    //     var updates = {};
         
-            admin.database().ref('/apps/'+app_id+'/groups/'+recipient_channel_id).once('value').then(function(groupSnapshot) {
-                console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
-                //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
+    //         admin.database().ref('/apps/'+app_id+'/groups/'+recipient_channel_id).once('value').then(function(groupSnapshot) {
+    //             console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
+    //             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
 
-                if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
-                    var isBroadcastGroup = groupSnapshot.val().broadcast;
-                    if (isBroadcastGroup==1) {
+    //             if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
+    //                 var isBroadcastGroup = groupSnapshot.val().broadcast;
+    //                 if (isBroadcastGroup==1) {
 
-                    }
-                    var groupMembers = groupSnapshot.val().members;
-                    var groupMembersAsArray = Object.keys(groupMembers);
-                    console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
-                    //TODO check se sender è membro del gruppo
-                    // if (groupMembersAsArray.indexOf(sender_id)<0) {
-                    //     errore non sei membro del gruppo
-                    // }
-                    groupMembersAsArray.forEach(function(groupMember) {
-                        console.log('groupMember ' + groupMember);
-                        //DON'T send a message to the sender of the message 
-                        if (groupMember!=sender_id) { 
-                            //here recipient_id is the group_id
-                            updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
-                        }
-                    });
-                }else {
-                    console.warn('Warning: Group '+ recipient_group_id +' not found ' );
-                    //recipient_id is NOT a group
+    //                 }
+    //                 var groupMembers = groupSnapshot.val().members;
+    //                 var groupMembersAsArray = Object.keys(groupMembers);
+    //                 console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
+    //                 //TODO check se sender è membro del gruppo
+    //                 // if (groupMembersAsArray.indexOf(sender_id)<0) {
+    //                 //     errore non sei membro del gruppo
+    //                 // }
+    //                 groupMembersAsArray.forEach(function(groupMember) {
+    //                     console.log('groupMember ' + groupMember);
+    //                     //DON'T send a message to the sender of the message 
+    //                     if (groupMember!=sender_id) { 
+    //                         //here recipient_id is the group_id
+    //                         updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
+    //                     }
+    //                 });
+    //             }else {
+    //                 console.warn('Warning: Group '+ recipient_group_id +' not found ' );
+    //                 //recipient_id is NOT a group
                                 
-                }
+    //             }
 
-                console.log('updates ' + JSON.stringify(updates) );
+    //             console.log('updates ' + JSON.stringify(updates) );
                 
-                return admin.database().ref('/apps/'+app_id+'/users').update(updates);
+    //             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
 
-            });
-    }
+    //         });
+    // }
 
 
 

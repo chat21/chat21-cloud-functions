@@ -117,6 +117,83 @@ app.post('/:app_id/messages', (req, res) => {
 
 
 
+    /**
+ * Delete a message
+ * 
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.delete('/:app_id/messages/:recipient_id/:message_id', (req, res) => {
+  // app.delete('/groups/:group_id/members/:member_id', (req, res) => {
+  console.log('delete a message');
+
+   
+    // if (req.method !== 'DELETE') {
+    //   res.status(403).send('Forbidden!');
+    // }
+      
+      cors(req, res, () => {
+
+        let sender_id = req.user.uid;
+
+        if (!req.params.recipient_id) {
+          res.status(405).send('recipient_id is not present!');
+        }
+
+        if (!req.params.message_id) {
+            res.status(405).send('message_id is not present!');
+        }
+    
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+
+        let recipient_id = req.params.recipient_id;
+        let message_id = req.params.message_id;
+        let app_id = req.params.app_id;
+
+        let all = false;
+        if (req.query.all) {
+          all = true;
+        }
+
+        let channel_type = "direct";
+        if (req.query.channel_type) {
+          channel_type = req.query.channel_type;
+        }
+
+        console.log('recipient_id', recipient_id);
+        console.log('message_id', message_id);
+        console.log('app_id', app_id);
+        console.log('all', all);
+        console.log('channel_type', channel_type);
+
+
+        var result;
+        if (channel_type=="direct") {
+          if (all==false) {
+            result =  chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id);
+          }else {
+            result =  chatApi.deleteMessageForAll(sender_id, recipient_id, message_id, app_id);
+          }
+        }else if (channel_type=="group") {
+          if (all==false) {
+            result =  chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id);
+          }else {
+            result =  chatApi.deleteMessageGroupForAll(recipient_id, message_id, app_id);
+          }
+        }else {
+          res.status(405).send('channel_type error');
+        }
+        
+      
+        console.log('result', result);
+
+        res.status(204).send(result);
+      });
+    });
+
 
 
     /**
