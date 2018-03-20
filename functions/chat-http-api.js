@@ -100,7 +100,7 @@ app.post('/:app_id/messages', (req, res) => {
         console.log('channel_type', channel_type);
 
 
-        if (channel_type==null || message.channel_type=="direct") {  //is a direct message
+        if (channel_type==null || channel_type=="direct") {  //is a direct message
           var result =  chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id);
         }else if (channel_type=="group") {
           var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id);
@@ -402,6 +402,26 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
 
 
 
+    /**
+ * Auth check
+ 
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.get('/verifytoken', (req, res) => {
+  console.log('verifytoken');
+
+   
+    if (req.method !== 'GET') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+        res.status(200).send();
+      });
+    });
     
 
 

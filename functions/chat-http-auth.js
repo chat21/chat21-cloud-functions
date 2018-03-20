@@ -21,14 +21,34 @@ module.exports = {
 
         cors(req, res, () => {
 
-            if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+            console.log('req.headers.authorization', req.headers.authorization);
+            console.log('req.query.token', req.query.token);
+            let authHeader = false;
+            let authQueryStr = false;
+
+            if (req.headers.authorization && req.headers.authorization.startsWith('Bearer '))  {
+                authHeader = true;
+            }
+
+            if (req.query.token) {
+                authQueryStr = true;
+            }
+
+            if (authHeader==false && authQueryStr==false){
                 console.log('authorization not present');
                 res.status(403).send('Unauthorized');
                 return;
             }
-            const idToken = req.headers.authorization.split('Bearer ')[1];
-            console.log('idToken', idToken);
+            let idToken;
+            if (authHeader) {
+                idToken = req.headers.authorization.split('Bearer ')[1];  
+            }
+           
+            if (authQueryStr) {
+                idToken = req.query.token;  
+            }
 
+            console.log('idToken', idToken);
             admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
                 req.user = decodedIdToken;
                 console.log('req.user', req.user);

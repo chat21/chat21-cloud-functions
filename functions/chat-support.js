@@ -488,7 +488,8 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
     var group_id = recipient_id;
 
     //if contains \agent
-    if (message.sender.startsWith("bot_") == false && message.text.indexOf("\\close") > -1) {
+    // if (message.sender.startsWith("bot_") == false && message.text.indexOf("\\close") > -1) {
+    if (message.text.indexOf("\\close") == 0) {
         console.log('message contains \\close');
         chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", "Grazie per aver utilizzato il nostro sistema di supporto", app_id, {subtype:"info/support"});
 
@@ -500,30 +501,30 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 });
 
 
-exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
+// exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
     
-    const group_id = event.params.group_id;
-    const app_id = event.params.app_id;;
-    console.log("group_id: "+ group_id + ", app_id: " + app_id);
+//     const group_id = event.params.group_id;
+//     const app_id = event.params.app_id;;
+//     console.log("group_id: "+ group_id + ", app_id: " + app_id);
   
-    const group = event.data.current.val();
-    console.log("group",group);
+//     const group = event.data.current.val();
+//     console.log("group",group);
     
-    if (group_id.indexOf("support-group")==-1 ){
-       console.log('send group creation message for support-group');
-       return 0;
-   }
+//     if (group_id.indexOf("support-group")==-1 ){
+//        console.log('send group creation message for support-group');
+//        return 0;
+//    }
 
-    var sender_id =  "system";
-    var sender_fullname = "Sistema";
+//     var sender_id =  "system";
+//     var sender_fullname = "Sistema";
 
-    // chatApi.typing(sender_id, group_id, app_id);
+//     // chatApi.typing(sender_id, group_id, app_id);
 
 
-    var displaySupportGroup = group_id.replace("support_group","");
-    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Richiesta creata: " + displaySupportGroup, app_id, {subtype:"info/support"});
+//     var displaySupportGroup = group_id.replace("support_group","");
+//     return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Richiesta creata: " + displaySupportGroup, app_id, {subtype:"info/support"});
     
-});
+// });
 
 
 
