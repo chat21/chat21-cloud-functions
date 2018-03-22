@@ -57,7 +57,7 @@ app.use(chatHttpAuth.authenticate);
  */
 
 app.post('/:app_id/messages', (req, res) => {
-  console.log('sendDirectMessage');
+  console.log('sendMessage');
 
    
       if (req.method !== 'POST') {
@@ -81,6 +81,10 @@ app.post('/:app_id/messages', (req, res) => {
         }
         if (!req.params.app_id) {
             res.status(405).send('app_id is not present!');
+        }
+
+        if (req.body.sender_id) {
+          sender_id = req.body.sender_id;
         }
 
         let sender_fullname = req.body.sender_fullname;
@@ -147,6 +151,10 @@ app.delete('/:app_id/messages/:recipient_id/:message_id', (req, res) => {
     
         if (!req.params.app_id) {
             res.status(405).send('app_id is not present!');
+        }
+
+        if (req.body.sender_id) {
+          sender_id = req.body.sender_id;
         }
 
         let recipient_id = req.params.recipient_id;
@@ -223,14 +231,20 @@ app.post('/:app_id/groups', (req, res) => {
         }
 
         let group_name = req.body.group_name;
-        let group_owner = req.user.uid;
+        let current_user = req.user.uid;
+
+        if (req.body.current_user) {
+          current_user = req.body.current_user;
+        }
+
+        let group_owner = current_user;
 
         let group_members = {};
         if (req.body.group_members) {
           group_members = req.body.group_members;
         }
 
-        group_members[req.user.uid] = 1;
+        group_members[current_user] = 1;
 
         let app_id = req.params.app_id;
 
