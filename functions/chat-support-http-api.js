@@ -70,6 +70,10 @@ app.post('/:app_id/requests', (req, res) => {
             res.status(405).send('app_id is not present!');
         }
 
+        if (!req.body.projectid) {
+          res.status(405).send('projectid is not present!');
+         }
+
         if (req.body.sender_id) {
           sender_id = req.body.sender_id;
         }
@@ -80,7 +84,9 @@ app.post('/:app_id/requests', (req, res) => {
         let recipient_fullname = "Support Group";
         let text = req.body.text;
         let app_id = req.params.app_id;
+        let projectid = req.body.projectid;
 
+        
 
         console.log('sender_id', sender_id);
         console.log('sender_fullname', sender_fullname);
@@ -88,12 +94,14 @@ app.post('/:app_id/requests', (req, res) => {
         console.log('recipient_fullname', recipient_fullname);
         console.log('text', text);
         console.log('app_id', app_id);
+        console.log('projectid', projectid);
+
 
         let hased_request_id = "support-group-"+md5(request_id);
         console.log('hased_request_id', hased_request_id);
 
       
-        var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, hased_request_id, recipient_fullname, text, app_id);
+        var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, hased_request_id, recipient_fullname, text, app_id, null, projectid);
        
 
         console.log('result', result);

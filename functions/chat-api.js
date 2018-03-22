@@ -51,7 +51,7 @@ class ChatApi {
 
 
 
-    sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes) {
+    sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid) {
 
         var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_group_id;
         // console.log("path", path);
@@ -71,6 +71,10 @@ class ChatApi {
         message.channel_type = "group";
         message.text = text;
         message.type = "text";
+
+        if (projectid) {
+            message.projectid = projectid;
+        }
 
         console.log("sendGroupMessage with  message " + JSON.stringify(message)  + " to " + path);
         return admin.database().ref(path).push(message);   //send message to group timeline
