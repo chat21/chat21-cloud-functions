@@ -88,7 +88,7 @@ Example:
 ```
    curl -X POST \
        -H 'Content-Type: application/json' \
-       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImUxNmI4ZWFlNTczOTk2NGM1MWJjMTUyNWI1ZmU2ZmRjY2Y1ODJjZDQifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUxOTAzOTAwNywidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTE5MDM5MDA4LCJleHAiOjE1MTkwNDI2MDgsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.Ri3_R60-vTpSLd6uJBTo1d9inKhGppq3A3gONS0ZcMsFlGnqti_x55fC4h4O-GInLzUnCGt-dS6Pt89svIHxjz2cnZORj9dhrKU3AyMrYIniqiuzxqWSiUvRs3mhVCAoiUvWBSbiyhSb9fStH74ihqEVE9WIu4BzalqAQP7Q-d1fkRAoHqLH4T1HpRgyvOPlvP0mMiujai6Q3xkKzcahTD-3--Hl5RtYQzNLEhy-83k2YR4pbUzPRGlfJpjFZgWdPEyM2pLt1xK91wLBB3pHRa79ciTKhxUHqXpQCWXRErVPp6ELSx0bAu5_tsjWHfQjnsJ_aQDg4xiKcrhKDePoYQ' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImRhNWZiMGJkZTJlMzUwMmZkZTE1YzAwMWE0MWIxYzkxNDc4MTI0NzYifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyMTQ1NjY3NSwidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTIxNDU2Njc1LCJleHAiOjE1MjE0NjAyNzUsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.U6oVwcSu1IWqUxPahnjr-kfAojWtTN0mofQRB_VYibgWJohhK_p4acuncPNCyOchgulydVfNTkF_7b_OV5GrpO5Nu305R_F7smhtwZSoJcSB1TVpDzclH47jYU0uUCDmo5G-bKPlreN730qDnLB0zBW7a-pB3xecWqyxQ-eBOsQDaLvyYBUYeqGckgNyfiLM_V8eMbBpL35sHJAz6bokUkkq3WWC5v3MtdusfsFWv4u9LaVUuenGUDu6ilcsGPoa1gGwr1KbeoWkUGgZTIt_RNM01g4vhtdJwX-sIyau9lpJnOlMatjVekQVD3nLrb3SPUxuMrx-ZjrPTEvIflWO_w' \
        -d '{"sender_fullname": "Andrea Leo", "recipient_id": "U4HL3GWjBsd8zLX4Vva0s7W2FN92", "recipient_fullname":"Andrea Leo","text":"hello from API"}' \
        https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages
 ```
@@ -216,6 +216,24 @@ Example:
 
 
 # REST API for Support
+
+## Create support request
+
+```
+  curl -X POST \
+      -H 'Content-Type: application/json' \
+      -H "Authorization: Bearer <Firebase ID Token>" \
+       -d '{"sender_fullname": "<FULLNAME>", "request_id": "<ID>", "recipient_fullname":"<FULLNAME>","text":"helo from API"}' \
+      https://us-central1-<project-id>.cloudfunctions.net/supportapi/<APP_ID>/requests
+```
+
+Example: 
+```
+   curl -X POST \
+       -H 'Content-Type: application/json' \
+       -d '{"sender_fullname": "Andrea Leo", "request_id": "andrea.leo@f21.it-subject", "recipient_fullname":"Andrea Leo","text":"hello from API"}' \
+       'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/requests?token=chat21-secret-orgAa,'
+```
 
 ## Close Support group
 

@@ -659,7 +659,7 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/bot_6qI3oekSwabW
             "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
         }else {
 
-            answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita <b>\\close</b> per chiudere la chat di supporto oppure <b>\\agent</b> per parlare con un operatore oppure formula una nuova domanda.";
+            answer = answer + " Soddisfatto della risposta?. \n Digita <b>\\close</b> per chiudere la chat oppure <b>\\agent</b> per parlare con un operatore. Oppure formula una nuova domanda.";
             response_options = { "question" : "Sei soddisfatto della risposta?",
             "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
 
