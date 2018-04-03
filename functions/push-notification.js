@@ -53,11 +53,20 @@ const chatApi = require('./chat-api');
     
     // DEBUG console.log(`--->/apps/${app_id}/users/${sender_id}/instanceId`);
 
-    return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
+return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instances`).once('value').then(function(instancesIdAsObj) {
+    // return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
       
-        //console.log('instanceIdAsObj ' + instanceIdAsObj); 
+        console.log('instancesIdAsObj ' + instancesIdAsObj); 
 
-        var instanceId = instanceIdAsObj.val();
+        // var instancesId = instancesIdAsObj.val();
+
+        // Check if there are any device tokens.
+        if (!instancesIdAsObj.hasChildren()) {
+            return console.log('There are no notification tokens to send to.');
+        }
+
+        const tokens = Object.keys(instancesIdAsObj.val());
+        console.log('tokens',tokens);
 
         // DEBUG console.log('instanceId ' + instanceId); 
         
@@ -86,7 +95,7 @@ const chatApi = require('./chat-api');
         
         // DEBUG console.log('payload ', payload);
 
-        return admin.messaging().sendToDevice(instanceId, payload)
+        return admin.messaging().sendToDevice(tokens, payload)
              .then(function (response) {
             console.log("Push notification for message "+ JSON.stringify(message) + " with payload "+ JSON.stringify(payload) +" sent with response ",  JSON.stringify(response));
             
@@ -94,20 +103,20 @@ const chatApi = require('./chat-api');
             console.log("Message.results[0]:", JSON.stringify(response.results[0]));
 
 
-            //             // For each message check if there was an error.
-            // const tokensToRemove = [];
-            // response.results.forEach((result, index) => {
-            //     const error = result.error;
-            //     if (error) {
-            //     console.error('Failure sending notification to', tokens[index], error);
-            //     // Cleanup the tokens who are not registered anymore.
-            //     if (error.code === 'messaging/invalid-registration-token' ||
-            //         error.code === 'messaging/registration-token-not-registered') {
-            //         tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
-            //     }
-            //     }
-            // });
-            // return Promise.all(tokensToRemove);
+                        // For each message check if there was an error.
+            const tokensToRemove = [];
+            response.results.forEach((result, index) => {
+                const error = result.error;
+                if (error) {
+                console.error('Failure sending notification to', tokens[index], error);
+                // Cleanup the tokens who are not registered anymore.
+                    if (error.code === 'messaging/invalid-registration-token' ||
+                        error.code === 'messaging/registration-token-not-registered') {
+                        tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
+                    }
+                }
+            });
+            return Promise.all(tokensToRemove);
 
         })
         .catch(function (error) {
