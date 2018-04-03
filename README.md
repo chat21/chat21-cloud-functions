@@ -1,5 +1,7 @@
 # Introduction
 
+Chat21-cloud function is the backend module required for the operation of the other chat21 modules.
+
 * Send a direct message
 * Send a group message
 * Create a conversation for each message
@@ -48,7 +50,10 @@ This project comes with a web-based UI for testing the function. To test locally
 * Deploy to Firebase using the following command: ```firebase deploy```. You can see the deployed functions on the Firebase Console under Functions menu.
 * Open the app using firebase open hosting:site, this will open a browser.
 
+
+
 # REST API
+Below are described the REST API of Chat21:
 
 ## Authentication
 
