@@ -19,9 +19,9 @@ class ChatBotSupportApi {
 'http://ec2-52-47-168-118.eu-west-3.compute.amazonaws.com/qnamaker/v2.0/knowledgebases/2f5d6f6e-fb26-4ba2-b705-91d24b96cf79/generateAnswer'
 
 */
-    askToInternalQnaBot (question) {
+    askToInternalQnaBot (kq_id, question) {
 
-        let qnaServiceUrl = "http://ec2-52-47-168-118.eu-west-3.compute.amazonaws.com/qnamaker/v2.0/knowledgebases/2f5d6f6e-fb26-4ba2-b705-91d24b96cf79/generateAnswer";
+        let qnaServiceUrl = "http://ec2-52-47-168-118.eu-west-3.compute.amazonaws.com/qnamaker/v2.0/knowledgebases/"+kq_id+"/generateAnswer";
         
         console.log('qnaServiceUrl', qnaServiceUrl);
 

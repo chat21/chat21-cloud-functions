@@ -60,7 +60,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
     //var departmentid = "5a96f03e832cb40014bb74e1";
     var departmentid = "default";
-    if (message.attributes){
+    if (message.attributes && message.attributes.departmentId && !message.attributes.departmentId==""){
         departmentid =  message.attributes.departmentId;
     }
     console.log('departmentid', departmentid);
@@ -86,9 +86,9 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 group_members[message.sender] = 1;  //add system                
 
 
-            if (response.statusCode >= 400) {
+            if (!response) {
                 // throw new Error(`HTTP Error: ${response.statusCode}`);
-                console.log(`HTTP Error: ${response.statusCode}`);
+                console.log(`Error getting department.`);
             }else {
                 console.log('SUCCESS! response', response);
 
@@ -509,7 +509,6 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
             uri: "http://api.chat21.org/"+app_id+"/messages",
             headers: {
                 'Content-Type': 'application/json',
-                // 'Authorization': 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwic2VsZWN0ZWQiOnt9LCJnZXR0ZXJzIjp7fSwid2FzUG9wdWxhdGVkIjpmYWxzZSwiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0IiwiX192IjoiaW5pdCIsIl9pZCI6ImluaXQifSwic3RhdGVzIjp7Imlnbm9yZSI6e30sImRlZmF1bHQiOnt9LCJpbml0Ijp7Il9fdiI6dHJ1ZSwicGFzc3dvcmQiOnRydWUsInVzZXJuYW1lIjp0cnVlLCJfaWQiOnRydWV9LCJtb2RpZnkiOnt9LCJyZXF1aXJlIjp7fX0sInN0YXRlTmFtZXMiOlsicmVxdWlyZSIsIm1vZGlmeSIsImluaXQiLCJkZWZhdWx0IiwiaWdub3JlIl19LCJlbWl0dGVyIjp7ImRvbWFpbiI6bnVsbCwiX2V2ZW50cyI6e30sIl9ldmVudHNDb3VudCI6MCwiX21heExpc3RlbmVycyI6MH19LCJpc05ldyI6ZmFsc2UsIl9kb2MiOnsiX192IjowLCJwYXNzd29yZCI6IiQyYSQxMCQ5SjlIUHZCL29NOUxGMFdVaEtZWHRPcmhTZ2wyOEY0ZmtZcGZUVGU3ZGdwRWFZRnFRQlFtdSIsInVzZXJuYW1lIjoiYW5kcmVhIiwiX2lkIjoiNWE2YzU4MzVjM2VjNjU5M2I0ZDk2YjRmIn0sImlhdCI6MTUxNzA1MDcyOX0.OafV9nTa_O48RkRGt6WoFW26ZNNw6AN-HCETkaT3oFU'
                 'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
             },
             method: 'POST',
@@ -572,17 +571,44 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
 
     chatApi.typing(sender_id, recipient_id, app_id);
 
-    // return chatBotSupportApi.askToQnaBot(message.text, "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/608f7647-2608-4600-b1e2-c7d4baf21e77/generateAnswer", "5e9c35eada754400852ccfb34e6711cb").then(function(qnaresp) {
-    return chatBotSupportApi.askToInternalQnaBot(message.text).then(function(qnaresp) {
+
+
+    return request({
+        uri: "http://api.chat21.org/"+app_id+"/faq_kb/"+bot_id,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+        },
+        method: 'GET',
+        json: true,
+        //resolveWithFullResponse: true
+        }).then(response => {
+            if (!response) {
+                throw new Error(`HTTP Error`);
+            }
+
+            console.log('SUCCESS! response', response);           
+            
+            let kbkey_remote = response.kbkey_remote;
+            console.log('kbkey_remote', kbkey_remote); 
+            
+            
+            // return chatBotSupportApi.askToQnaBot(message.text, "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/608f7647-2608-4600-b1e2-c7d4baf21e77/generateAnswer", "5e9c35eada754400852ccfb34e6711cb").then(function(qnaresp) {
+            return chatBotSupportApi.askToInternalQnaBot(kbkey_remote, message.text).then(function(qnaresp) {
+            
+                chatApi.stopTyping(sender_id, recipient_id, app_id);
         
-        chatApi.stopTyping(sender_id, recipient_id, app_id);
+                var sender_fullname = "Bot";
+                var recipient_group_fullname = message.recipient_fullname;
+        
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, qnaresp.answer, app_id, qnaresp.response_options);
+        
+            });
 
-        var sender_fullname = "Bot";
-        var recipient_group_fullname = message.recipient_fullname;
+        });
 
-        return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, qnaresp.answer, app_id, qnaresp.response_options);
 
-    });
+
 
 
 });
