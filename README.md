@@ -57,6 +57,7 @@ Below are described the REST API of Chat21:
 
 ## Authentication
 
+### JWT Authentication
 Generate a Firebase token with:
 
 ```
@@ -77,6 +78,9 @@ curl 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?
 
 More info here : https://firebase.google.com/docs/reference/rest/auth/#section-sign-in-email-password
 
+### Secret Authentication (for admin)
+
+Add this query parameter to the following endpoints : ```?token=chat21-secret-orgAa,```
 
 
 ## Send a message
