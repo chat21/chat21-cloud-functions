@@ -272,3 +272,8 @@ Example:
 * Create a bot user with the mobile app or web app. Ex: email:bot@chat21.org, firstname: Bot, lastname: Chat21,etc.
 * Retrieve the bot user id (<BOT_UID>) from the profile tab of the mobile app or from firebase autentication tab
 * Set the bot user id <BOT_UID> parameter with ```firebase functions:config:set bot.uid=<BOT_UID>```
+
+# FB Messenger
+* Create an FB APP 
+* Enable FB webhook with ```firebase functions:config:set webhook.enabled=true```
+* Set FB secret with ```firebase functions:config:set webhook.secret=EAANskcQny4cBAIpgGUvuHNoHCpgIcyTTJpzZBZCjlZAxaMtTnJcfEBQZBniOUnNr92ThWbTOtMEZCfAazxaFhVnq1WpLmZBUhnTfJUlmO4xF37telaUZCpCECqaObMeyumZB4UGP0BZChSER9ce3uVA8HBMIJTAHa097V3bnNcLACB7qVTCySNg3c```

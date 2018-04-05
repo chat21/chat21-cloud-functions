@@ -90,13 +90,16 @@ app.post('/:app_id/requests', (req, res) => {
 
         console.log('sender_id', sender_id);
         console.log('sender_fullname', sender_fullname);
+        
+        // request_id=request_id.replace("-Re: ","-");
         console.log('request_id', request_id);
+        
         console.log('recipient_fullname', recipient_fullname);
         console.log('text', text);
         console.log('app_id', app_id);
         console.log('projectid', projectid);
 
-
+        
         let hased_request_id = "support-group-"+md5(request_id);
         console.log('hased_request_id', hased_request_id);
 

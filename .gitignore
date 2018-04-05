@@ -1,2 +1,5 @@
 node_modules
 .firebaserc
+.gradle
+functions/firebase-debug.log
+firebase-debug.log

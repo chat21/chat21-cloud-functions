@@ -67,4 +67,7 @@ chatSupportApi.CHATSUPPORT_STATUS = {
             SERVED : 200, 
             CLOSED : 1000, 
         }
+
+chatSupportApi.SUPPORT_APP_ID = "tiledesk";
+
 module.exports = chatSupportApi;

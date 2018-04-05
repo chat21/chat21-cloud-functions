@@ -20,7 +20,13 @@ if (functions.config().support && functions.config().support.enabled) {
 }
 
 
+if (functions.config().webhook && functions.config().webhook.enabled) {
+    const chatWebHookHttpApi = require('./chat-webhook-http-api');
+    exports.webhookapi = functions.https.onRequest(chatWebHookHttpApi.api);
 
+    var chatWebHook = require('./chat-webhook');
+    exports.webhook = chatWebHook;
+}
 
   exports.insertAndSendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
    
@@ -251,8 +257,10 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      var sender_fullname = "Sistema";
 
 
-     return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Gruppo creato", app_id,{subtype:"info"});
-    //  return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
+     if (group && group.name) {
+        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Gruppo creato", app_id,{subtype:"info"});
+        //  return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
+     }
      
 });
 
@@ -308,7 +316,9 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
 
      return chatApi.getGroupById(group_id, app_id).then(function (group) {
         console.log("group", group);
-        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Nuovo membro aggiunto al gruppo", app_id, {subtype:"info"});
+        if (group) {
+            return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Nuovo membro aggiunto al gruppo", app_id, {subtype:"info"});
+        }
      });
     
 });
