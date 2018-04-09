@@ -31,9 +31,11 @@ npm install
 ## Setup Options
 Use with Google Cloud environment to configure the platform.
 * Enable Support features with: ```firebase functions:config:set support.enabled=true```
-* Enable email notification with: ```firebase functions:config:set email.enabled=true```
-* Disable the option "Automatically join the General Group on signup" with ```firebase functions:config:set group.general.autojoin=false```
 
+* Enable email notification with: ```firebase functions:config:set email.enabled=true```
+    Set STMP URI endpoint with : ```firebase functions:config:set email.endpoint=smtp://<Username>:<password>@smtp.mailgun.org```
+
+* Disable the option "Automatically join the General Group on signup" with ```firebase functions:config:set group.general.autojoin=false```
 
 
 # Test locally

@@ -21,15 +21,17 @@ const nodemailer = require('nodemailer');
 //get existing properties with: firebase functions:config:get
 var moment = require('moment');
 
-var gmailEmail=null;
-var gmailPassword=null;
-if (functions.config().gmail) {
-     gmailEmail = encodeURIComponent(functions.config().gmail.email);
-     gmailPassword = encodeURIComponent(functions.config().gmail.password);
+if (functions.config().email && functions.config().email.enabled) {
+     //gmailEmail = encodeURIComponent(functions.config().email.email);
+     //gmailPassword = encodeURIComponent(functions.config().gmail.password);
     //const mailTransport = nodemailer.createTransport(`smtps://${gmailEmail}:${gmailPassword}@smtp.gmail.com`);
     // ################ END EMAIL ################ //  
+
+    //const mailTransport = nodemailer.createTransport(`smtp://postmaster@mg.frontiere21.it:bd2324866fa29bae0a4553c069bdd279@smtp.mailgun.org`);
+    console.log('enabling mailTrasport with ',functions.config().email.endpoint);
+    const mailTransport = nodemailer.createTransport(functions.config().email.endpoint);
+
 }
-const mailTransport = nodemailer.createTransport(`smtp://postmaster@mg.frontiere21.it:bd2324866fa29bae0a4553c069bdd279@smtp.mailgun.org`);
 
 
 
