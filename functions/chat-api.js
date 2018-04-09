@@ -271,6 +271,25 @@ class ChatApi {
     }
 
 
+    createContactWithId(uid, firstname, lastname, email, app_id) {
+
+        var path = '/apps/'+app_id+'/contacts/'+uid;
+        console.log("path", path);
+
+
+        var contact = {};
+        contact.firstname = firstname;
+        contact.lastname = lastname;
+        contact.uid = uid;
+        contact.email = email;
+        contact.imageurl = "";
+        contact.timestamp = admin.database.ServerValue.TIMESTAMP;
+        
+        console.log("creating contact " + JSON.stringify(contact) + " to "+ path);
+        return admin.database().ref(path).set(contact);
+    }
+
+
     typing(writer_id, group_id, app_id) {
 
         var path = '/apps/'+app_id+'/typings/'+group_id;

@@ -225,6 +225,28 @@ Example:
 
 ```
 
+## Create a Contact
+
+```
+
+  curl -X POST \
+      -H 'Content-Type: application/json' \
+      -H "Authorization: Bearer <Firebase ID Token>" \
+      -d '{"firstname": "firstname", "lastname": "lastname","email": "email"}' \
+      https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/contacts
+```
+
+Example:
+
+```
+   curl -v -X POST \
+       -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImMwNmEyMTQ5YjdmOTU3MjgwNTJhOTg1YWRlY2JmNWRlMDQ3Y2RhNmYifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyMzI2NTgwNiwidXNlcl9pZCI6ImZBSUR4dTAzTnNWUXZQbG9Eb2M2VDdtbVdSNDMiLCJzdWIiOiJmQUlEeHUwM05zVlF2UGxvRG9jNlQ3bW1XUjQzIiwiaWF0IjoxNTIzMjY1ODA2LCJleHAiOjE1MjMyNjk0MDYsImVtYWlsIjoic0BzLml0IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbInNAcy5pdCJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.kjyCaKs9o5xYVt92gnvGn-7bkI0-HuChU7LxcDFiQ8rz5gJT0B5-R-qHIzifJ42socqWPC-N8hH-ZSiDO8I9PYNaCOcfWuyIw5Fo487MTNJK9pmkjujq8F254zZmhTWPVF1jdWmZg241Z2KoWZckpXThHMbfVPuVH6kENBfqw7vFXXB_blm7kqn2vuzsMYuFyUd7vlUour2KXHVsY5pDagv_EmDcPUhS0akynf1dn8N6j1WK9JV26XMY3yy1t-bMKXq-GPJ5uw-_rmritndqVTea2MS7o5cynFdlrPsqeVMX68hgBBnb-6ZdQMrmOo1nErclbuSZpAqsuQDXEjWhUQ' \
+        -d '{"firstname": "firstname", "lastname": "lastname","email": "email"}' \
+    https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts
+```
+
+
 ## Webhook
 
 ```
