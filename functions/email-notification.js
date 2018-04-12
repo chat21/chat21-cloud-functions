@@ -83,10 +83,10 @@ exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{se
 
 // Sends a welcome email to the given user.
 function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_fullname, messageText, tenant, messageTimestamp) {
-    console.log("sendWelcomeEmail: sender_fullname == " + sender_fullname + ", recipient == "+ recipient + ", recipient_fullname == " + recipient_fullname + ", messageText == " + messageText + ", tenant == " + tenant + ", messageTimestamp == " + messageTimestamp);
+    // DEBUG console.log("sendWelcomeEmail: sender_fullname == " + sender_fullname + ", recipient == "+ recipient + ", recipient_fullname == " + recipient_fullname + ", messageText == " + messageText + ", tenant == " + tenant + ", messageTimestamp == " + messageTimestamp);
   
     return admin.database().ref(`/apps/${tenant}/contacts/${recipient}/email`).once('value', function(snapshot) {
-      console.log("nodeContacts-> snapshotKey: " + snapshot.key + ", snapshotVal: " + snapshot.val());
+      // DEBUG console.log("nodeContacts-> snapshotKey: " + snapshot.key + ", snapshotVal: " + snapshot.val());
   
         var recipientEmail = snapshot.val();
   
@@ -97,7 +97,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
         const mailingList = `${recipientEmail}`; // list of receivers
        
   
-        // DEBUG console.log("sendWelcomeEmail: mailingList == " + mailingList);
+        console.log("sendWelcomeEmail: mailingList == " + mailingList);
   
         /*
         const mailOptions = {
@@ -111,7 +111,8 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
   
         // setup email data with unicode symbols
         let mailOptions = {
-            from: `${tenant} <postmaster@mg.frontiere21.it>`, // sender address
+            // from: `${tenant} <postmaster@mg.frontiere21.it>`, // sender address
+            from: `${tenant} <frontiere21@gmail.com>`, // sender address
            
             to: mailingList, // list of receivers,
             bcc: "andrea.leo@frontiere21.it",
@@ -267,21 +268,44 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
         };
 
         if (functions.config().email && functions.config().email.enabled) {
-          //gmailEmail = encodeURIComponent(functions.config().email.email);
-          //gmailPassword = encodeURIComponent(functions.config().gmail.password);
-         //const mailTransport = nodemailer.createTransport(`smtps://${gmailEmail}:${gmailPassword}@smtp.gmail.com`);
-         // ################ END EMAIL ################ //  
-     
-         //const mailTransport = nodemailer.createTransport(`smtp://postmaster@mg.frontiere21.it:bd2324866fa29bae0a4553c069bdd279@smtp.mailgun.org`);
-         console.log('enabling mailTrasport with ',functions.config().email.endpoint);
-         const mailTransport = nodemailer.createTransport(functions.config().email.endpoint);
-     
-         return mailTransport.sendMail(mailOptions).then(() => {
-          console.log('New email sent to:' +  mailingList);
-          });
+            //gmailEmail = encodeURIComponent(functions.config().email.email);
+            //gmailPassword = encodeURIComponent(functions.config().gmail.password);
+          //const mailTransport = nodemailer.createTransport(`smtps://${gmailEmail}:${gmailPassword}@smtp.gmail.com`);
+          // ################ END EMAIL ################ //  
+      
+          //const mailTransport = nodemailer.createTransport(`smtp://postmaster@mg.frontiere21.it:bd2324866fa29bae0a4553c069bdd279@smtp.mailgun.org`);
+          let mailTransport = null;
+
+          if (functions.config().email.endpoint) {
+            console.log('mail enabled with mailTrasport endpoint ',functions.config().email.endpoint);
+            mailTransport = nodemailer.createTransport(functions.config().email.endpoint);
+          }
+
+          if (functions.config().email.gmail && functions.config().email.gmail.user  && functions.config().email.gmail.password) {
+            console.log('mail enabled with mailTrasport gmail user',functions.config().email.gmail.user);
+            console.log('mail enabled with mailTrasport gmail password',functions.config().email.gmail.password);
+
+            mailTransport = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                  user: functions.config().email.gmail.user,
+                  pass:functions.config().email.gmail.password
+                }
+              });
+          }
+
+          if (!mailTransport) {
+            throw "mailTransport is not defined";
+          }
+
+          console.log('mailOptions', mailOptions);
+
+          return mailTransport.sendMail(mailOptions).then(() => {
+            console.log('New email sent to:' +  mailingList);
+            });
         }else {
           console.log('Email not enabled');
-
+          return 0;
         }
   
        

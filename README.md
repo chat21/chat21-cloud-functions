@@ -33,7 +33,8 @@ Use with Google Cloud environment to configure the platform.
 * Enable Support features with: ```firebase functions:config:set support.enabled=true```
 
 * Enable email notification with: ```firebase functions:config:set email.enabled=true```
-    Set STMP URI endpoint with : ```firebase functions:config:set email.endpoint=smtp://<Username>:<password>@smtp.mailgun.org```
+    Set STMP URI endpoint with : ```firebase functions:config:set email.endpoint=smtp://<Username>:<password>@smtp.mailgun.org``` (Unset with ```firebase functions:config:unset email.endpoint```)
+    Set Gmail account with  : ```firebase functions:config:set email.gmail.user=frontiere21@gmail.com``` and ```firebase functions:config:set email.gmail.password=ft21gmail```
 
 * Disable the option "Automatically join the General Group on signup" with ```firebase functions:config:set group.general.autojoin=false```
 
