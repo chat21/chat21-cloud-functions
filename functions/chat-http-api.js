@@ -417,6 +417,58 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
 
 
     /**
+ * Create a contact
+ 
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.post('/:app_id/contacts', (req, res) => {
+  console.log('create a contact');
+
+   
+    if (req.method !== 'POST') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+        if (!req.body.firstname) {
+            res.status(405).send('firstname is not present!');
+        }
+        if (!req.body.lastname) {
+          res.status(405).send('lastname is not present!');
+        }
+       
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+
+        let firstname = req.body.firstname;
+        let lastname = req.body.lastname;
+        let email = req.body.email;
+
+        let current_user = req.user.uid;
+
+        let app_id = req.params.app_id;
+
+
+        console.log('firstname', firstname);
+        console.log('lastname', lastname);
+        console.log('current_user', current_user);
+        console.log('app_id', app_id);
+
+
+        var result =  chatApi.createContactWithId(current_user, firstname, lastname, email, app_id);
+      
+        console.log('result', result);
+
+        res.status(201).send(result);
+      });
+    });
+
+
+
+    /**
  * Auth check
  
  *
