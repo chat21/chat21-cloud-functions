@@ -42,7 +42,10 @@ This project comes with a web-based UI for testing the function. To test locally
 * Deploy to Firebase using the following command: ```firebase deploy```. You can see the deployed functions on the Firebase Console under Functions menu.
 * Open the app using firebase open hosting:site, this will open a browser.
 
+# Setup Options
+[Read the Setup Options page](docs/setup_options.md)
 
+# REST API
 [Read the REST API page](docs/api.md)
 
-[Read the Setup Options page](docs/setup_options.md)
+
