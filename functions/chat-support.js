@@ -58,7 +58,6 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     console.log('projectId',projectid);
 
 
-    //var departmentid = "5a96f03e832cb40014bb74e1";
     var departmentid = "default";
     if (message.attributes && message.attributes.departmentId && !message.attributes.departmentId==""){
         departmentid =  message.attributes.departmentId;
@@ -92,7 +91,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             }else {
                 console.log('SUCCESS! response', response);
 
-                if (response && response.id_bot) {
+                if (response && response.routing && response.routing =="fixed" && response.id_bot) {
                     var id_bot = "bot_"+response.id_bot;
     
                     group_members[id_bot] = 1; //bot
@@ -550,11 +549,11 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
     if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
         return 0;
     }
-    if (message.sender == "system"){  //evita che il bot risponda a messaggi di system (es: Gruppo Creato)
+    if (message.sender == "system") {  //evita che il bot risponda a messaggi di system (es: Gruppo Creato)
         return 0;
     }
 
-    if (!sender_id.startsWith("bot_")){
+    if (!sender_id.startsWith("bot_")) {
         return 0;
     }
 

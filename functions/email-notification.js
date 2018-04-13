@@ -41,7 +41,7 @@ exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{se
     // }
 
 //    DEBUG console.log("message.status : " + message.status);     
-    if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+    if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED) {
         return 0;
     }
     
@@ -51,6 +51,12 @@ exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{se
         console.log('not send push notification for the same user');
         //if sender is receiver, don't send notification
         return 0;
+    }
+
+    if (message.sender == "system"){
+      console.log('not send email notification for system user');
+
+      return 0;
     }
 
     const text = message.text;
@@ -103,6 +109,10 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
        
         console.log("sendWelcomeEmail: mailingList == " + mailingList);
   
+        if (!mailingList){
+          console.log("mailingList is null");
+          return 0;
+        }
         /*
         const mailOptions = {
           from: `${tenant} <noreply@firebase.com>`,
