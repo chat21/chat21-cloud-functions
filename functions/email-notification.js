@@ -311,7 +311,11 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
 
             // send the email if the email subscription is enabled
             var isEnabled = snapshot.val();
-            if(isEnabled) {
+            console.log("sendNewMessageNotificationEmail: isEnabled == " + isEnabled);
+
+            if(isEnabled === false || isEnabled === "false" ) {
+              return 0;
+            } else  {
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New email sent to:' + mailingList);
               });
