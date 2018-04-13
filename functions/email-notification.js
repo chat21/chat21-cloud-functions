@@ -96,7 +96,10 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
          // const mailingList = `${recipientEmail}, andrea.leo@frontiere21.it, andrea.sponziello@frontiere21.it, stefano.depascalis@frontiere21.it`; // list of receivers
         const mailingList = `${recipientEmail}`; // list of receivers
        
-        var unsubscribe_url = "http://script.smart21.it/bpp/mobile-intranet/unsubscription/unsubscribe.php?user_id=" + recipient;
+        // var unsubscribe_url = "http://script.smart21.it/bpp/mobile-intranet/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
+        
+        // var unsubscribe_url = "http://script.smart21.it/chat21/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
+        var unsubscribe_url = "http://script.smart21.it/chat21/dev/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
        
         console.log("sendWelcomeEmail: mailingList == " + mailingList);
   
