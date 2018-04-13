@@ -492,6 +492,60 @@ app.get('/verifytoken', (req, res) => {
 
 
 
+
+
+/**
+  * subscribe/unsubscribe user to receive email 
+  * This endpoint supports CORS.
+  */
+app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
+  console.log('===== BEGIN email - unsubscribe =====');
+
+  if (req.method !== 'POST') {
+    res.status(403).send('Forbidden!');
+  }
+
+  cors(req, res, () => {
+
+    if (!req.params.app_id) {
+      res.status(405).send('app_id is not present!');
+    }
+
+    if (!req.body.user_id) {
+      res.status(405).send('user_id is not present!');
+    }
+
+    if (!req.body.is_subscribed) {
+      res.status(405).send('is_subscribed is not present!');
+    }
+
+    let app_id = req.params.app_id;
+    console.log('app_id', app_id);
+
+    let user_id = req.body.user_id;
+    console.log('user_id', user_id);
+
+    let is_subscribed = req.body.is_subscribed;
+    console.log('is_subscribed', is_subscribed);
+
+    var result = chatApi.subscribeEmail(user_id, is_subscribed, app_id); // its a promise
+    // console.log('result', result);
+
+    result.then(function (data) {
+      console.log("email subscriptions setting saved successfully. " + JSON.stringify(data['snapshot']));
+      console.log('===== END email - unsubscribe =====');
+      res.status(201).send(JSON.stringify(data['snapshot']));
+    }).catch(function (error) {
+      console.log("email subscriptions setting could not be saved. " + error);
+      console.log('===== END email - unsubscribe =====');
+      res.status(405).send(JSON.stringify(error));
+    });
+  });
+});
+
+
+
+
 // Expose the API as a function
 exports.api = functions.https.onRequest(app);
 

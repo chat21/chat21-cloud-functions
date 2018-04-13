@@ -506,8 +506,22 @@ class ChatApi {
     //         });
     // }
 
+    subscribeEmail(user_id, is_subscribed, app_id) {
+        // console.log("===== BEGIN subscribeEmail =====")
+
+        var firebaseUserSettingsRef = admin.database().ref('/apps/' + app_id + '/users/' + user_id + '/settings/');
+
+        var updates = {};
+
+        updates['email'] = is_subscribed;
+        // console.log('email settings have been updated: ' + JSON.stringify(updates) );
+
+        // console.log("===== END subscribeEmail =====")        
+        return firebaseUserSettingsRef.transaction(data => updates);
+    }
 
 
+    
 }
 
 
