@@ -550,11 +550,11 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
     if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
         return 0;
     }
-    if (message.sender == "system"){  //evita che il bot risponda a messaggi di system (es: Gruppo Creato)
+    if (message.sender == "system") {  //evita che il bot risponda a messaggi di system (es: Gruppo Creato)
         return 0;
     }
 
-    if (!sender_id.startsWith("bot_")){
+    if (!sender_id.startsWith("bot_")) {
         return 0;
     }
 
