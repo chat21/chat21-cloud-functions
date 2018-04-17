@@ -47,13 +47,19 @@ exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{se
     
     const promises = [];
 
-    if (sender_id == recipient_id) {
+    if (sender_id == recipient_id || message.sender == sender_id) {
         console.log('not send push notification for the same user');
         //if sender is receiver, don't send notification
         return 0;
     }
 
     if (message.sender == "system"){
+      console.log('not send email notification for message with system as sender');
+
+      return 0;
+    }
+
+    if (sender_id == "system"){
       console.log('not send email notification for system user');
 
       return 0;
@@ -100,14 +106,14 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
         // DEBUG console.log("formattedMessageTimestamp : " + formattedMessageTimestamp);
   
          // const mailingList = `${recipientEmail}, andrea.leo@frontiere21.it, andrea.sponziello@frontiere21.it, stefano.depascalis@frontiere21.it`; // list of receivers
-        const mailingList = `${recipientEmail}`; // list of receivers
+        // const mailingList = `${recipientEmail}`; // list of receivers
        
         var unsubscribe_url = "http://script.smart21.it/bpp/mobile-intranet/unsubscription/unsubscribe.php?user_id=" + recipient;
        
-        console.log("sendWelcomeEmail: mailingList == " + mailingList);
+        console.log("sendWelcomeEmail: recipientEmail == " + recipientEmail);
   
-        if (!mailingList){
-          console.log("mailingList is null");
+        if (!recipientEmail){
+          console.log("recipientEmail is null");
           return 0;
         }
         /*
@@ -125,7 +131,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
             // from: `${tenant} <postmaster@mg.frontiere21.it>`, // sender address
             from: `${tenant} <frontiere21@gmail.com>`, // sender address
            
-            to: mailingList, // list of receivers,
+            to: recipientEmail, // list of receivers,
             bcc: "andrea.leo@frontiere21.it",
             subject: `Nuovo messaggio da ${tenant}`, // Subject line
             // text: `${messageText}`, // plain text body
@@ -327,7 +333,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
               return 0;
             } else  {
               return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New email sent to:' + mailingList);
+                console.log('New email sent to:' + recipientEmail);
               });
             }
           }, function (error) {

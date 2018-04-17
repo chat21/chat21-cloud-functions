@@ -91,12 +91,10 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             }else {
                 console.log('SUCCESS! response', response);
 
-                if (response && response.routing && response.routing =="fixed" && response.id_bot) {
+                if (response && response.routing && response.routing == "fixed" && response.id_bot) {
                     var id_bot = "bot_"+response.id_bot;
     
                     group_members[id_bot] = 1; //bot
-
-                    // return chatApi.joinGroup(id_bot, group_id, app_id);
                 }
             }
         
