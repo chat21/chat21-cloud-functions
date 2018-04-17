@@ -105,7 +105,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
         // var unsubscribe_url = "http://script.smart21.it/bpp/mobile-intranet/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
         
         // var unsubscribe_url = "http://script.smart21.it/chat21/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
-        var unsubscribe_url = "http://script.smart21.it/chat21/dev/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
+        var unsubscribe_url = "http://script.smart21.it/chat21/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
        
         console.log("sendWelcomeEmail: mailingList == " + mailingList);
   
