@@ -67,7 +67,8 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     var group_id = recipient_id; //recipient is the group id
 
     return request({
-        uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid,
+        //uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid,
+        uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid+"/operators",
         headers: {
             'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
             'Content-Type': 'application/json'
@@ -78,7 +79,15 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
         }).then(response => {
            
            
-            var group_name = "Support Group";
+            var group_name = " Support Group";
+
+            if (message.sender_fullname) {
+                group_name = message.sender_fullname + group_name;
+            }else {
+                group_name = "Guest" + group_name;
+
+            }
+
             var group_owner = "system";
             var group_members = {};
                 group_members.system = 1;
@@ -91,16 +100,27 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             }else {
                 console.log('SUCCESS! response', response);
 
-                if (response && response.routing && response.routing == "fixed" && response.id_bot) {
-                    var id_bot = "bot_"+response.id_bot;
-    
+                // if (response && response.routing && response.routing == "fixed" && response.id_bot) {
+                if (response && response.operators  && response.operators.length>0) {
+                    // var id_bot = "bot_"+response.id_bot;
+                    var id_bot = response.operators[0].id_user;
+                    console.log('id_bot', id_bot);
+
                     group_members[id_bot] = 1; //bot
                 }
             }
         
         
             console.log("group_members", group_members);     
-            chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id);
+
+            var gAttributes = null;
+            if (message.attributes){
+                gAttributes =  message.attributes;
+            }
+            console.log('gAttributes', gAttributes);
+
+            
+            chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, gAttributes);
 
             
 
