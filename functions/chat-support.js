@@ -66,6 +66,8 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
     var group_id = recipient_id; //recipient is the group id
 
+    var group_members = {};
+
     return request({
         //uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid,
         uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid+"/operators",
@@ -78,22 +80,6 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
         //resolveWithFullResponse: true
         }).then(response => {
            
-           
-            var group_name = " Support Group";
-
-            if (message.sender_fullname) {
-                group_name = message.sender_fullname + group_name;
-            }else {
-                group_name = "Guest" + group_name;
-
-            }
-
-            var group_owner = "system";
-            var group_members = {};
-                group_members.system = 1;
-                group_members[message.sender] = 1;  //add system                
-
-
             if (!response) {
                 // throw new Error(`HTTP Error: ${response.statusCode}`);
                 console.log(`Error getting department.`);
@@ -109,6 +95,28 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                     group_members[id_bot] = 1; //bot
                 }
             }
+        
+
+        })
+        .catch(function(error) { 
+            console.log("Error getting department.", error); 
+        })
+        .finally(function() { 
+            console.log("finally"); 
+
+            var group_name = " Support Group";
+
+            if (message.sender_fullname) {
+                group_name = message.sender_fullname + group_name;
+            }else {
+                group_name = "Guest" + group_name;
+
+            }
+
+            var group_owner = "system";
+            group_members.system = 1;
+            group_members[message.sender] = 1;  //add system                
+
         
         
             console.log("group_members", group_members);     
@@ -153,7 +161,9 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
             });
 
-        });
+
+
+        });;
 
 });
 
