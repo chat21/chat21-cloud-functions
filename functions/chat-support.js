@@ -102,7 +102,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             console.log("Error getting department.", error); 
         })
         .finally(function() { 
-            console.log("finally"); 
+            // console.log("finally"); 
 
             var group_name = " Support Group";
 

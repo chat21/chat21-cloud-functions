@@ -34,10 +34,10 @@ if (functions.config().webhook && functions.config().webhook.enabled) {
     const sender_id = event.params.sender_id;
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;;
-    // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
     const message = event.data.current.val();
-    // DEBUG console.log('message ' + JSON.stringify(message));
+    console.log('message ' + JSON.stringify(message));
 
     const messageRef = event.data.ref;
     //console.log('messageRef ' + messageRef );
