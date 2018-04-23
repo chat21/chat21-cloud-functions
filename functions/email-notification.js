@@ -71,7 +71,7 @@ exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{se
 
   
 
-    if (functions.config().gmail) {
+    if (functions.config().email && functions.config().email.enabled && functions.config().email.enabled==true) {
        return sendNewMessageNotificationEmail(message.sender_fullname, sender_id, message.recipient_fullname, text, app_id, messageTimestamp);
     }else {
         console.log('email is not configured. skip');

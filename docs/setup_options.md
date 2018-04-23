@@ -5,7 +5,7 @@ Use with Google Cloud environment to configure the platform.
 ## Email Notification
 * Enable email notification with: ```firebase functions:config:set email.enabled=true```
 
-### MailGun
+### Generic SMTP (Ex. MailGun)
 * Set STMP URI endpoint with : ```firebase functions:config:set email.endpoint=smtp://<Username>:<password>@smtp.mailgun.org``` 
         (Unset with ```firebase functions:config:unset email.endpoint```)
 ### Gmail
