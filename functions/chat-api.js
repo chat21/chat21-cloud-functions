@@ -511,19 +511,22 @@ class ChatApi {
     // }
 
     subscribeEmail(user_id, is_subscribed, app_id) {
-        // console.log("===== BEGIN subscribeEmail =====")
 
-        var firebaseUserSettingsRef = admin.database().ref('/apps/' + app_id + '/users/' + user_id + '/settings/');
+        return new Promise(function (resolve, reject) {
 
-        var updates = {};
+            var updates = { email: is_subscribed };
 
-        updates['email'] = is_subscribed;
-        // console.log('email settings have been updated: ' + JSON.stringify(updates) );
+            var firebaseUserSettingsRef = admin.database().ref('/apps/' + app_id + '/users/' + user_id + '/settings/');
 
-        // console.log("===== END subscribeEmail =====")        
-        return firebaseUserSettingsRef.transaction(data => updates);
+            firebaseUserSettingsRef.update(updates).then(function () {
+                console.log("Write completed");
+                return resolve(updates);
+            }).catch(function (error) {
+                console.error("Write failed: " , error);
+                return reject(error);
+            });
+        });
     }
-
 
     
 }

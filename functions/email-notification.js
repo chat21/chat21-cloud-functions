@@ -105,12 +105,10 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
         var formattedMessageTimestamp = formatTimestamp(messageTimestamp);
         // DEBUG console.log("formattedMessageTimestamp : " + formattedMessageTimestamp);
   
-         // const mailingList = `${recipientEmail}, andrea.leo@frontiere21.it, andrea.sponziello@frontiere21.it, stefano.depascalis@frontiere21.it`; // list of receivers
+        // const mailingList = `${recipientEmail}, andrea.leo@frontiere21.it, andrea.sponziello@frontiere21.it, stefano.depascalis@frontiere21.it`; // list of receivers
         // const mailingList = `${recipientEmail}`; // list of receivers
-       
-        // var unsubscribe_url = "http://script.smart21.it/bpp/mobile-intranet/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
         
-        // var unsubscribe_url = "http://script.smart21.it/chat21/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
+        // var unsubscribe_url = "http://script.smart21.it/chat21/dev/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
         var unsubscribe_url = "http://script.smart21.it/chat21/unsubscription/unsubscribe.php?user_id=" + recipient + "&app_id=" + tenant;
        
         console.log("sendWelcomeEmail: recipientEmail == " + recipientEmail);
@@ -215,9 +213,9 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
                         <table class="main" width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; background-color: #fff; margin: 0; border: 1px solid #e9e9e9;" bgcolor="#fff">
                           <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
   
-                            <td class="alert alert-warning" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #1976d2; margin: 0;" align="center" bgcolor="#1976d2" valign="top">
+                            <td class="alert alert-warning" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #3A699B; margin: 0;" align="center" bgcolor="#3A699B" valign="top">
                               <div>
-                                <p style="float: left;"><img src="http://script.smart21.it/bpp/mobile-intranet/ic_hedear_email.png" height="48px" width="48px" border="1px"></p>
+                                <p style="float: left;"><img src="http://script.smart21.it/chat21/header_logo.png" height="48px" width="48px" border="1px"></p>
                                 <h2>Nuovo messaggio da</h2>
                                 <h1>${tenant}</h1>
                               </div>
@@ -270,7 +268,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
                           <table width="100%" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                             <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                               <td class="aligncenter content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; color: #999; text-align: center; margin: 0; padding: 0 0 20px;" align="center" valign="top">
-                                <span><a href="http://www.chat21.org" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;" > Banca Popolare Pugliese </a> - Società Cooperativa per Azioni - p.IVA 02848590754</span>
+                                <span><a href="http://www.chat21.org" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;" > Chat21 </a> - Open Source chat SDK build on Firebase.</span>
                                 <br><span>Powered by <a href="http://www.frontiere21.com" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;">Frontiere21</a></span>
                                 <br><span>Se non desideri ricevere i messaggi di chat tramite email <a href="${unsubscribe_url}">clicca qui</a></span>                  
                               </td>
