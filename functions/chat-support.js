@@ -182,9 +182,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 if (response.statusCode >= 400) {
                     throw new Error(`HTTP Error: ${response.statusCode}`);
                 }
-        
-                console.log('SUCCESS! Posted', event.data.ref);        
-                console.log('SUCCESS! response', response);           
+                console.log('Saved successfully to backend with response', response);           
                 
             });
 
