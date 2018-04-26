@@ -57,12 +57,12 @@ class ChatBotSupportApi {
                         // var question = response.hits[0].questions[0].document.question;
                         // console.log('question', question);   
 
-                        answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita <b>\\close</b> per chiudere la chat di supporto oppure <b>\\agent</b> per parlare con un operatore.";
+                        answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.";
                         response_options = { "question" : "Sei soddisfatto della risposta?",
                         "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
 
                     }else {
-                        answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita <b>\\agent</b> per parlare con un operatore oppure formula un nuova domanda.";
+                        answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.";
             
                         response_options = { "question" : "Vuoi parlare con un operatore?",
                         "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
@@ -122,14 +122,14 @@ class ChatBotSupportApi {
                     var response_options;
             
                     if (answer == "No good match found in the KB"){
-                        answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita <b>\\agent</b> per parlare con un operatore oppure formula un nuova domanda.";
+                        answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.";
             
                         response_options = { "question" : "Vuoi parlare con un operatore?",
                         "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
                     }else if (answer == "\\agent"){ //if \\agent dont append se sei siddisfatto...
             
                     }else {
-                        answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita <b>\\close</b> per chiudere la chat di supporto oppure <b>\\agent</b> per parlare con un operatore.";
+                        answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.";
                         response_options = { "question" : "Sei soddisfatto della risposta?",
                         "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
             

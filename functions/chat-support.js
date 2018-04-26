@@ -155,12 +155,36 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
             chatApi.stopTyping("system", recipient_id, app_id);
 
-            return admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true }).then(writeResult => {
-            // return admin.firestore().collection('conversations').doc(groupId).update(message).then(writeResult => {
+
+
+
+
+
+
+            admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true }).then(writeResult => {
                 // Send back a message that we've succesfully written the message
                 console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
+                return 0;
             });
 
+
+            return request({
+                uri: "http://api.chat21.org/"+app_id+"/requests",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+                },
+                method: 'POST',
+                json: true,
+                body: newRequest,
+                //resolveWithFullResponse: true
+                }).then(response => {
+                if (response.statusCode >= 400) {
+                    throw new Error(`HTTP Error: ${response.statusCode}`);
+                }
+                console.log('Saved successfully to backend with response', response);           
+                
+            });
 
 
         });;
