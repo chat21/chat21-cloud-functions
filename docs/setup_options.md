@@ -2,6 +2,9 @@
 # Setup Options
 Use with Google Cloud environment to configure the platform.
 
+# Retrieve your configuration
+Run the follow command to retrieve your environment variables ``` firebase functions:config:get``` 
+
 ## Email Notification
 * Enable email notification with: ```firebase functions:config:set email.enabled=true```
 
