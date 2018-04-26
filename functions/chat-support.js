@@ -89,10 +89,10 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 // if (response && response.routing && response.routing == "fixed" && response.id_bot) {
                 if (response && response.operators  && response.operators.length>0) {
                     // var id_bot = "bot_"+response.id_bot;
-                    var id_bot = response.operators[0].id_user;
-                    console.log('id_bot', id_bot);
+                    var id_new_operator = response.operators[0].id_user;
+                    console.log('id_new_operator', id_new_operator);
 
-                    group_members[id_bot] = 1; //bot
+                    group_members[id_new_operator] = 1; //bot
                 }
             }
         
