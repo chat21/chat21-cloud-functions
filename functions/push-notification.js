@@ -40,6 +40,19 @@ const chatApi = require('./chat-api');
         return 0;
     }
 
+    if (message.sender == "system"){
+        console.log('not send push notification for message with system as sender');
+  
+        return 0;
+    }
+  
+    if (sender_id == "system"){
+        console.log('not send push notification for system user');
+  
+        return 0;
+    }
+
+
     // if (functions.config().push && functions.config().push.disabled && functions.config().push.mute.for ) {
 
     if (recipient_id == "general_group" ) {
