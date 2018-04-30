@@ -61,6 +61,8 @@ class ChatBotSupportApi {
                         response_options = { "question" : "Sei soddisfatto della risposta?",
                         "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
 
+                    }else if (answer == "\\agent"){ //if \\agent dont append se sei siddisfatto...
+            
                     }else {
                         answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.";
             
