@@ -52,6 +52,7 @@ appWebHook.post('/:project_id', (req, res) => {
   let body = req.body;
 
   let project_id = req.params.project_id;
+  console.log("project_id",project_id);
 
 
   // Checks this is an event from a page subscription
@@ -68,7 +69,7 @@ appWebHook.post('/:project_id', (req, res) => {
       var sender_id = "fb_"+webhook_event.sender.id;
       console.log("sender_id",sender_id);
 
-      var sender_fullname = "Utente Facebook";
+      var sender_fullname = "Utente Facebook"; //TODO get fb user name with lookup 
       console.log("sender_fullname",sender_fullname);
 
       let recipient_fullname = "Support Group";
@@ -103,8 +104,11 @@ appWebHook.post('/:project_id', (req, res) => {
 
 
 // Adds support for GET requests to our webhook
-appWebHook.get('/', (req, res) => {
+appWebHook.get('/:project_id', (req, res) => {
 
+  let project_id = req.params.project_id;
+  console.log("project_id",project_id);
+  
   // Your verify token. Should be a random string.
   let VERIFY_TOKEN = "webhooksecret"
     
