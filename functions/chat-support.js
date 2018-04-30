@@ -169,7 +169,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
 
             return request({
-                uri: "http://api.chat21.org/"+app_id+"/requests",
+                uri: "http://api.chat21.org/"+projectid+"/requests",
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
