@@ -43,9 +43,16 @@ const request = require('request-promise');
 
 
 // Creates the endpoint for our webhook 
-appWebHook.post('/', (req, res) => {  
+appWebHook.post('/:project_id', (req, res) => {  
  
+  if (!req.params.project_id) {
+    res.status(405).send('project_id is not present!');
+  }
+
   let body = req.body;
+
+  let project_id = req.params.project_id;
+
 
   // Checks this is an event from a page subscription
   if (body.object === 'page') {
@@ -76,9 +83,9 @@ appWebHook.post('/', (req, res) => {
       let app_id = "tilechat";
       // let app_id = SUPPORT_APP_ID;
 
-      let projectid = "5ab0f32757066e0014bfd718";
+      // let projectid = "5ab0f32757066e0014bfd718";
 
-       chatApi.sendGroupMessage(sender_id, sender_fullname, hased_request_id, recipient_fullname, text, app_id, null, projectid);
+       chatApi.sendGroupMessage(sender_id, sender_fullname, hased_request_id, recipient_fullname, text, app_id, null, project_id);
 
       
 

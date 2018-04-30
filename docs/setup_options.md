@@ -28,6 +28,6 @@ Run the follow command to retrieve your environment variables ``` firebase funct
 * Set the bot user id <BOT_UID> parameter with ```firebase functions:config:set bot.uid=<BOT_UID>```
 
 ## FB Messenger
-* Create an FB APP 
+* Create an FB APP. More info here https://developers.facebook.com/docs/messenger-platform/webhook
 * Enable FB webhook with ```firebase functions:config:set webhook.enabled=true```
 * Set FB secret with ```firebase functions:config:set webhook.secret=EAANskcQny4cBAIpgGUvuHNoHCpgIcyTTJpzZBZCjlZAxaMtTnJcfEBQZBniOUnNr92ThWbTOtMEZCfAazxaFhVnq1WpLmZBUhnTfJUlmO4xF37telaUZCpCECqaObMeyumZB4UGP0BZChSER9ce3uVA8HBMIJTAHa097V3bnNcLACB7qVTCySNg3c```
