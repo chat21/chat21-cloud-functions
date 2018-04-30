@@ -11,6 +11,8 @@ Run the follow command to retrieve your environment variables ``` firebase funct
 ### Generic SMTP (Ex. MailGun)
 * Set STMP URI endpoint with : ```firebase functions:config:set email.endpoint=smtp://<Username>:<password>@smtp.mailgun.org``` 
         (Unset with ```firebase functions:config:unset email.endpoint```)
+
+* Set email sender with: ```firebase functions:config:set email.from=<sender_email>```
 ### Gmail
 * Set Gmail account with  : ```firebase functions:config:set email.gmail.user=frontiere21@gmail.com``` and ```firebase functions:config:set email.gmail.password=ft21gmail``` More info here https://community.nodemailer.com/using-gmail/ and here https://medium.com/@manojsinghnegi/sending-an-email-using-nodemailer-gmail-7cfa0712a799
 
