@@ -511,7 +511,11 @@ app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
       res.status(405).send('app_id is not present!');
     }
 
-    if (!req.body.user_id) {
+    // if (!req.body.user_id) {
+    //   res.status(405).send('user_id is not present!');
+    // }
+
+    if (!req.params.user_id) {
       res.status(405).send('user_id is not present!');
     }
 
@@ -522,7 +526,8 @@ app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
     let app_id = req.params.app_id;
     console.log('app_id', app_id);
 
-    let user_id = req.body.user_id;
+    // let user_id = req.body.user_id;
+    let user_id = req.params.user_id;
     console.log('user_id', user_id);
 
     let is_subscribed = req.body.is_subscribed;
