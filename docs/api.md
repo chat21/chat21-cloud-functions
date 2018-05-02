@@ -239,3 +239,23 @@ Example:
        -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjQzZTFiMGIyOTllNDIxZjU2ZWI1YTQ2NjhkMWNmMjNmNGFjNjk2NGMifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyMDg2Njk4MywidXNlcl9pZCI6IlU0SEwzR1dqQnNkOHpMWDRWdmEwczdXMkZOOTIiLCJzdWIiOiJVNEhMM0dXakJzZDh6TFg0VnZhMHM3VzJGTjkyIiwiaWF0IjoxNTIwODY2OTgzLCJleHAiOjE1MjA4NzA1ODMsImVtYWlsIjoiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhbmRyZWEubGVvQGZyb250aWVyZTIxLml0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.zzdAPcqr8aGWQ-i_2kejYZz5mvE92zk-UxsrLN1Wm8VbfgwyvC9X3C-vR46fkXhcBO96GsU4U6sJoQIzy8XPiENMmACSbtZsQBkWV7Dlcij08TqBO_HOYA7LVk4fCOCdJ_jaL8DgmbbaP6uYIy_fkBg43-FSLV7x21TqAGIT8f-IDSUAfU_J9jbdy3bcwl2Rpr7P8PbmK8RgKgFNXwoY8T1g2PXM4fUzZU2MszLycRMzP4eoDQPgGEB7Kk2RdDDdez2i5fxJtashYQ5tWy5jAf6bSMR1wm3Ng-27YzeEmZ-rW0ve3liRqNhSJJ_KPp-2dHfTNsgL-odw_3cP_lvSWw' \
         https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/support-group-L5xro2P81zHs7YA7-DX/
 ```
+
+## Subscribe/unsubscribe to receive emails
+
+```
+  curl -X POST \
+      -H 'Content-Type: application/json' \
+      -d '{"user_id": "<USER_ID>", "is_subscribed": "<IS_SUBSCRIBED>"}' \
+      https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/users/<USER_ID>/settings/email?token=chat21-secret-orgAa,
+```
+
+Example:
+
+```
+  curl -X POST \
+      -H 'Content-Type: application/json' \
+      -d '{"user_id": "u2K7nLo2dTZEOYYTykrufN6BDF92", "is_subscribed": "true"}' \
+      https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/users/u2K7nLo2dTZEOYYTykrufN6BDF92/settings/email?token=chat21-secret-orgAa,
+```
+
+
