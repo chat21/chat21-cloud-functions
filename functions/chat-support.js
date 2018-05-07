@@ -378,7 +378,9 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
     var groupId = recipient_id;
 
 
-    
+    //Don't overrride initial conversations.attributes created with the new request
+    message.attributes = null;
+
     return admin.firestore().collection('conversations').doc(groupId).set(message, { merge: true }).then(writeResult => {
     // return admin.firestore().collection('conversations').doc(groupId).update(message).then(writeResult => {
         // Send back a message that we've succesfully written the message

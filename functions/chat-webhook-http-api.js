@@ -72,6 +72,7 @@ appWebHook.post('/:project_id', (req, res) => {
       var sender_fullname = "Utente Facebook"; //TODO get fb user name with lookup 
       console.log("sender_fullname",sender_fullname);
 
+      //TODO cambiare recipient fullname con nome utente 
       let recipient_fullname = "Support Group";
 
       let text = webhook_event.message.text;
