@@ -149,9 +149,14 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.SERVED;
             }
 
+            if (message.attributes != null) {
+                newRequest.attributes = message.attributes;
+            }
 
             newRequest.app_id = app_id;
             
+            console.log('newRequest', newRequest);
+
 
             chatApi.stopTyping("system", recipient_id, app_id);
 
@@ -379,7 +384,9 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
 
     //Don't overrride initial conversations.attributes created with the new request
-    message.attributes = null;
+    delete message.attributes;
+
+   console.log('message ' + JSON.stringify(message));
 
     return admin.firestore().collection('conversations').doc(groupId).set(message, { merge: true }).then(writeResult => {
     // return admin.firestore().collection('conversations').doc(groupId).update(message).then(writeResult => {

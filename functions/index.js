@@ -101,6 +101,9 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
         conversation.channel_type = "direct";
     }
     
+    if (message.type!=null) {
+        conversation.type = message.type;
+    }
 
     //conversation.status = message.status;
     conversation.status = 2;
