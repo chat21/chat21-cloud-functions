@@ -476,7 +476,7 @@ app.post('/:app_id/contacts', (req, res) => {
  * This endpoint supports CORS.
  */
 // [START trigger]
-app.put('/:app_id/contacts', (req, res) => {
+app.put('/:app_id/contacts/:contact_id', (req, res) => {
   console.log('create a contact');
 
    

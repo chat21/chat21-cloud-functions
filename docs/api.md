@@ -4,14 +4,20 @@ Below are described the REST API of Chat21:
 
 ## Authentication
 
+We support two authentication methods : JWT and Shared Secret
+
 ### JWT Authentication
 Generate a Firebase token with:
 
 ```
  curl 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=<API_KEY>' \
--H 'Content-Type: application/json' \
--d '{"email":"<USER_EMAIL>","password":"<USER_PASSWORD>","returnSecureToken":true}'
+    -H 'Content-Type: application/json' \
+    -d '{"email":"<USER_EMAIL>","password":"<USER_PASSWORD>","returnSecureToken":true}'
 ```
+
+The API_KEY is the firebase API KEY available under the Settings page of your Firebase project. 
+You can find the API KEY in:
+(gear-next-to-project-name) > Project Settings > Cloud Messaging
 
 A successful authentication is indicated by a 200 OK HTTP status code. The response contains the Firebase ID token and refresh token associated with the existing email/password account.
 
@@ -19,28 +25,38 @@ Example:
 
 ```
 curl 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDWMsqHBKmWVT7mWiSqBfRpS5U8YwTl7H0' \
- -H 'Content-Type: application/json' \
- -d '{"email":"andrea.leo@frontiere21.it","password":"123456","returnSecureToken":true}'
+    -H 'Content-Type: application/json' \
+    -d '{"email":"andrea.leo@frontiere21.it","password":"123456","returnSecureToken":true}'
 ```
 
 More info here : https://firebase.google.com/docs/reference/rest/auth/#section-sign-in-email-password
 
 ### Secret Authentication (for admin)
 
-Add this query parameter to the following endpoints : ```?token=chat21-secret-orgAa,```
-
+To authenticate you can add the token query parameter to the endpoints. Example : ```?token=chat21-secret-orgAa,```
+You can change the secret token for your installation with ```firebase functions:config:set secretToken=MYSECRET```
 
 ## Send a message
+
+You can send a message making a POST call to the endpoint :
 
 ```
   curl -X POST \
       -H 'Content-Type: application/json' \
       -H "Authorization: Bearer <Firebase ID Token>" \
-       -d '{"sender_fullname": "<FULLNAME>", "recipient_id": "<ID>", "recipient_fullname":"<FULLNAME>","text":"helo from API"}' \
-      https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/messages
+       -d '{"sender_fullname": "<SENDER_FULLNAME>", "recipient_id": "<ID>", "recipient_fullname":"<RECIPIENT_FULLNAME>","text":"<MESSAGE_TEXT>"}' \
+      https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/messages
 ```
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <SENDER_FULLNAME>: is the Sender Fullname. Ex: Andrea Leo
+- <RECIPIENT_FULLNAME>: is the Recipient Fullname. Ex: Andrea Sponziello
+- <MESSAGE_TEXT>: it's the message text
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 
-Example: 
+Example. Send a new message : 
+
 ```
    curl -X POST \
        -H 'Content-Type: application/json' \
@@ -53,14 +69,23 @@ Example:
 
 ## Create a Group
 
+Create a chat user's group making the following POST call :
+
 ```
 
   curl -X POST \
       -H 'Content-Type: application/json' \
       -H "Authorization: Bearer <Firebase ID Token>" \
-      -d '{"group_name": "group_name", "app_id":"<APP_ID>"}' \
-      https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/groups
+      -d '{"group_name": "<GROUP_NAME>", "group_members": {"<MEMBER_ID>":1}}' \
+      https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups
 ```
+
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <GROUP_NAME>: it's the new group name
+- <MEMBER_ID>: it's the user ids of the group members
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 
 Example:
 
@@ -74,13 +99,24 @@ Example:
 
 ## Join a Group
 
+With this API the user can join (become a member) of an existing group:
+
 ```
     curl -X POST \
        -H 'Content-Type: application/json' \
        -H "Authorization: Bearer <Firebase ID Token>" \
-       -d '{"member_id": "<member_id>"}' \
-       https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members
+       -d '{"member_id": "<MEMBER_ID>"}' \
+       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members
 ```
+
+
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <MEMBER_ID>: it's the user id of the user you want to joing (become a member)
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- <GROUP_ID>: it's the existing group id
+
 
 Example:
 
@@ -94,12 +130,22 @@ Example:
 
 ## Leave a Group
 
+With this API the user can leave of an existing group:
+
+
 ```
     curl  -X DELETE \
        -H 'Content-Type: application/json' \
        -H "Authorization: Bearer <Firebase ID Token>" \
-       https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members/<MEMBERID>
+       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members/<MEMBERID>
 ```
+
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- <GROUP_ID>: it's the existing group id
+- <MEMBER_ID>: it's the user id of the user you want to leave a group
 
 Example:
 
@@ -114,13 +160,23 @@ Example:
 
 ## Set Group members
 
+With this API you can set the group members
+
+
 ```
     curl -X PUT \
        -H 'Content-Type: application/json' \
        -H "Authorization: Bearer <Firebase ID Token>" \
        -d '{"members": {"<member_id1>":1},{"<member_id2>":1}}' \
-       https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members
+       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members
 ```
+
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <MEMBER_ID>: it's the user ids of the group members
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- <GROUP_ID>: it's the existing group id
 
 Example:
 
@@ -135,12 +191,21 @@ Example:
 
 ## Delete a my message
 
+Delete a message from the personale timeline of a conversation specified by a RECIPIENT_ID
+
 ```
     curl  -X DELETE \
        -H 'Content-Type: application/json' \
        -H "Authorization: Bearer <Firebase ID Token>" \
-       https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/messages/<RECIPIENT_ID>/<MESSAGE_ID>
+       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/messages/<RECIPIENT_ID>/<MESSAGE_ID>
 ```
+
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- <MEMBER_ID>: it's the recipient id
+- <MESSAGE_ID>: it's the message id
 
 Example:
 
@@ -153,12 +218,25 @@ Example:
 
 ## Delete a group message for me and other users
 
+Delete a message from all the timelines of a conversation specified by a RECIPIENT_ID
+
+
 ```
     curl  -X DELETE \
        -H 'Content-Type: application/json' \
        -H "Authorization: Bearer <Firebase ID Token>" \
        'https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/messages/<RECIPIENT_ID>/<MESSAGE_ID>?all=true&channel_type=group'
 ```
+
+
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- <MEMBER_ID>: it's the recipient id
+- <MESSAGE_ID>: it's the message id
+
+
 Example:
 
 ```
@@ -172,14 +250,27 @@ Example:
 
 ## Create a Contact
 
+Create a new contact.
+
 ```
 
   curl -X POST \
       -H 'Content-Type: application/json' \
       -H "Authorization: Bearer <Firebase ID Token>" \
-      -d '{"firstname": "firstname", "lastname": "lastname","email": "email"}' \
-      https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/contacts
+      -d '{"firstname": "<FIRSTNAME>", "lastname": "<LASTNAME>","email": "<EMAIL>"}' \
+      https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/contacts
 ```
+
+
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIRSTNAME>: it's the firstname of the contact
+- <LASTNAME>: it's the lastname of the contact
+- <EMAIL>: it's the contact email
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+
+
 
 Example:
 
@@ -192,12 +283,38 @@ Example:
 ```
 
 
-## Webhook
+## Update my Contact Information
+
+Update my contact information:
 
 ```
-  curl -v -X GET \
+
+  curl -X PUT \
       -H 'Content-Type: application/json' \
-      'https://us-central1-chat-v2-dev.cloudfunctions.net/webhookapi/?hub.mode=subscribe&hub.verify_token=webhooksecret'
+      -H "Authorization: Bearer <Firebase ID Token>" \
+      -d '{"firstname": "<FIRSTNAME>", "lastname": "<LASTNAME>","email": "<EMAIL>"}' \
+      https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/contacts
+```
+
+
+Where :
+- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIRSTNAME>: it's the firstname of the contact
+- <LASTNAME>: it's the lastname of the contact
+- <EMAIL>: it's the contact email
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+
+
+
+Example:
+
+```
+   curl -v -X PUT \
+       -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMDUwYzMxN2ExMjJlZDhlMWZlODdkN2FhZTdlMzk3OTBmNmMwYjQifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyNjk4NTkwOSwidXNlcl9pZCI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsInN1YiI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsImlhdCI6MTUyNjk4NTkwOSwiZXhwIjoxNTI2OTg5NTA5LCJlbWFpbCI6ImFuZHJlYS5sZW9AZnJvbnRpZXJlMjEuaXQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.Pg0sJa243tZ1a6LTU1541V1GGHrx2JzkG4KGdBafuNygZrsTEmyMb0mlVDycSeSL1oAUCB91O-0N5m5U2UARTCS7OU9CM_PojwspgX2-a3iAwHGnwRNVExLaK98sYjpEDbGGOILZGPj9PJAkdsDo4_IyQnO-VE85NZEEcsULSm5DU3_TihKi1EjgqcJse7w6rMI5_00Mn2qFdaC62dyqHVojGNpwzwQ88JcB3AnrJ_fTpt0DEhtMT__avIhgyv6cPSOwhOs9_J0wSNLonLaZ5ns33xM6G-oiotglvqTmARX-iHRnUw--05OwfpzpoJ8puoXvO4PbZJesqN6OIGSHww' \
+        -d '{"firstname": "firstname", "lastname": "lastname","email": "email"}' \
+    https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts
 ```
 
 
@@ -259,3 +376,11 @@ Example:
 ```
 
 
+## Webhook
+TODO
+
+```
+  curl -v -X GET \
+      -H 'Content-Type: application/json' \
+      'https://us-central1-chat-v2-dev.cloudfunctions.net/webhookapi/?hub.mode=subscribe&hub.verify_token=webhooksecret'
+```

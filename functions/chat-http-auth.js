@@ -45,9 +45,13 @@ module.exports = {
             }
            
             if (authQueryStr) {
-                idToken = req.query.token;  
+                idToken = req.query.token;
+                
+                let secretToken = functions.config().secretToken | "chat21-secret-orgAa,";
+                console.log('secretToken',secretToken);
+
                 //TODO move to firebase config 
-                if (idToken=="chat21-secret-orgAa,"){
+                if (idToken==secretToken){
                     var newUser = {uid:"system"};
                     req.user = newUser
                     return next();
