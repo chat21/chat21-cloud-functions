@@ -43,12 +43,12 @@ You can send a message making a POST call to the endpoint :
 ```
   curl -X POST \
       -H 'Content-Type: application/json' \
-      -H "Authorization: Bearer <Firebase ID Token>" \
+      -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
        -d '{"sender_fullname": "<SENDER_FULLNAME>", "recipient_id": "<ID>", "recipient_fullname":"<RECIPIENT_FULLNAME>","text":"<MESSAGE_TEXT>"}' \
       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/messages
 ```
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <SENDER_FULLNAME>: is the Sender Fullname. Ex: Andrea Leo
 - <RECIPIENT_FULLNAME>: is the Recipient Fullname. Ex: Andrea Sponziello
 - <MESSAGE_TEXT>: it's the message text
@@ -75,13 +75,13 @@ Create a chat user's group making the following POST call :
 
   curl -X POST \
       -H 'Content-Type: application/json' \
-      -H "Authorization: Bearer <Firebase ID Token>" \
+      -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
       -d '{"group_name": "<GROUP_NAME>", "group_members": {"<MEMBER_ID>":1}}' \
       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups
 ```
 
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <GROUP_NAME>: it's the new group name
 - <MEMBER_ID>: it's the user ids of the group members
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
@@ -104,14 +104,14 @@ With this API the user can join (become a member) of an existing group:
 ```
     curl -X POST \
        -H 'Content-Type: application/json' \
-       -H "Authorization: Bearer <Firebase ID Token>" \
+       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
        -d '{"member_id": "<MEMBER_ID>"}' \
        https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members
 ```
 
 
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <MEMBER_ID>: it's the user id of the user you want to joing (become a member)
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
@@ -136,12 +136,12 @@ With this API the user can leave of an existing group:
 ```
     curl  -X DELETE \
        -H 'Content-Type: application/json' \
-       -H "Authorization: Bearer <Firebase ID Token>" \
+       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
        https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members/<MEMBERID>
 ```
 
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 - <GROUP_ID>: it's the existing group id
@@ -166,13 +166,13 @@ With this API you can set the group members
 ```
     curl -X PUT \
        -H 'Content-Type: application/json' \
-       -H "Authorization: Bearer <Firebase ID Token>" \
+       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
        -d '{"members": {"<member_id1>":1},{"<member_id2>":1}}' \
        https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/groups/<GROUP_ID>/members
 ```
 
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <MEMBER_ID>: it's the user ids of the group members
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
@@ -196,12 +196,12 @@ Delete a message from the personale timeline of a conversation specified by a RE
 ```
     curl  -X DELETE \
        -H 'Content-Type: application/json' \
-       -H "Authorization: Bearer <Firebase ID Token>" \
+       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
        https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/messages/<RECIPIENT_ID>/<MESSAGE_ID>
 ```
 
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 - <MEMBER_ID>: it's the recipient id
@@ -224,13 +224,13 @@ Delete a message from all the timelines of a conversation specified by a RECIPIE
 ```
     curl  -X DELETE \
        -H 'Content-Type: application/json' \
-       -H "Authorization: Bearer <Firebase ID Token>" \
+       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
        'https://us-central1-<project-id>.cloudfunctions.net/api/<APP_ID>/messages/<RECIPIENT_ID>/<MESSAGE_ID>?all=true&channel_type=group'
 ```
 
 
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 - <MEMBER_ID>: it's the recipient id
@@ -256,14 +256,14 @@ Create a new contact.
 
   curl -X POST \
       -H 'Content-Type: application/json' \
-      -H "Authorization: Bearer <Firebase ID Token>" \
+      -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
       -d '{"firstname": "<FIRSTNAME>", "lastname": "<LASTNAME>","email": "<EMAIL>"}' \
       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/contacts
 ```
 
 
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIRSTNAME>: it's the firstname of the contact
 - <LASTNAME>: it's the lastname of the contact
 - <EMAIL>: it's the contact email
@@ -291,14 +291,14 @@ Update my contact information:
 
   curl -X PUT \
       -H 'Content-Type: application/json' \
-      -H "Authorization: Bearer <Firebase ID Token>" \
+      -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
       -d '{"firstname": "<FIRSTNAME>", "lastname": "<LASTNAME>","email": "<EMAIL>"}' \
       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/contacts
 ```
 
 
 Where :
-- <Firebase ID Token> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIRSTNAME>: it's the firstname of the contact
 - <LASTNAME>: it's the lastname of the contact
 - <EMAIL>: it's the contact email
@@ -326,7 +326,7 @@ Example:
 ```
   curl -X POST \
       -H 'Content-Type: application/json' \
-      -H "Authorization: Bearer <Firebase ID Token>" \
+      -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
        -d '{"sender_fullname": "<FULLNAME>", "request_id": "<ID_REQUEST>","text":"helo from API","projectid":"<Project_id>"}' \
       https://us-central1-<project-id>.cloudfunctions.net/supportapi/<APP_ID>/requests
 ```
@@ -344,7 +344,7 @@ Example:
 ```
     curl -X PUT \
        -H 'Content-Type: application/json' \
-       -H "Authorization: Bearer <Firebase ID Token>" \
+       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
        https://us-central1-<project-id>.cloudfunctions.net/supportapi/<APP_ID>/groups/<GROUP_ID>
 ```
 
