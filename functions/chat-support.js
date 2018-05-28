@@ -138,7 +138,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             newRequest.requester_id = message.sender;
             newRequest.requester_fullname = message.sender_fullname;
             newRequest.first_text = message.text;
-
+            newRequest.departmentid = departmentid;
 
             newRequest.members = group_members;
             newRequest.membersCount = Object.keys(group_members).length;
