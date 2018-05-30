@@ -13,6 +13,8 @@ const request = require('request-promise');
 
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
+const chatUtil = require('./chat-util');
+
 
 // START SUPPORT
 
@@ -54,6 +56,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     
     chatApi.typing("system", recipient_id, app_id);
 
+
     var projectid = message.projectid;
     console.log('projectId',projectid);
 
@@ -66,7 +69,13 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
     var group_id = recipient_id; //recipient is the group id
 
+    chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
+    // chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", "La stiamo mettendo in contatto con un operatore. Attenda...", app_id, {subtype:"info/support"});
+
+
     var group_members = {};
+
+    var agents = [];
 
     return request({
         //uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid,
@@ -86,13 +95,18 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             }else {
                 console.log('SUCCESS! response', response);
 
-                // if (response && response.routing && response.routing == "fixed" && response.id_bot) {
-                if (response && response.operators  && response.operators.length>0) {
-                    // var id_bot = "bot_"+response.id_bot;
-                    var id_new_operator = response.operators[0].id_user;
-                    console.log('id_new_operator', id_new_operator);
+                if (response) {
+                    if (response.operators  && response.operators.length>0) {
+                        // var id_bot = "bot_"+response.id_bot;
+                        var id_new_operator = response.operators[0].id_user;
+                        console.log('id_new_operator', id_new_operator);
 
-                    group_members[id_new_operator] = 1; //bot
+                        group_members[id_new_operator] = 1; //bot
+                    }
+                    if (response.agents) {
+                        agents = response.agents;
+                        console.log('agents', agents);
+                    }
                 }
             }
         
@@ -142,6 +156,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
             newRequest.members = group_members;
             newRequest.membersCount = Object.keys(group_members).length;
+            newRequest.agents = agents;
 
             if (newRequest.membersCount==2){
                 newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.UNSERVED;

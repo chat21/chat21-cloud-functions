@@ -70,4 +70,14 @@ chatSupportApi.CHATSUPPORT_STATUS = {
 
 chatSupportApi.SUPPORT_APP_ID = "tiledesk";
 
+chatSupportApi.LABELS = {
+    EN : {
+        JOIN_OPERATOR_MESSAGE : "We are putting you in touch with an operator.."
+    },
+    IT : {
+        JOIN_OPERATOR_MESSAGE : "La stiamo mettendo in contatto con un operatore. Attenda..."
+    }
+}
+
+
 module.exports = chatSupportApi;
