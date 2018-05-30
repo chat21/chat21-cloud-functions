@@ -19,7 +19,7 @@ class ChatBotSupportApi {
 'http://ec2-52-47-168-118.eu-west-3.compute.amazonaws.com/qnamaker/v2.0/knowledgebases/2f5d6f6e-fb26-4ba2-b705-91d24b96cf79/generateAnswer'
 
 */
-    askToInternalQnaBot (kq_id, question) {
+    askToInternalQnaBot (kq_id, question, message) {
 
         let qnaServiceUrl = "http://ec2-52-47-168-118.eu-west-3.compute.amazonaws.com/qnamaker/v2.0/knowledgebases/"+kq_id+"/generateAnswer";
         
@@ -57,7 +57,8 @@ class ChatBotSupportApi {
                         // var question = response.hits[0].questions[0].document.question;
                         // console.log('question', question);   
 
-                        answer = answer + " Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.";
+                        answer = answer + " " +  chatUtil.getMessage("DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE", message.language, LABELS);
+
                         response_options = { "question" : "Sei soddisfatto della risposta?",
                         "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
 
@@ -82,7 +83,7 @@ class ChatBotSupportApi {
 
     }
 
-    askToQnaBot (question, qnaServiceUrl, qnaKey) {
+    askToQnaBot (question, qnaServiceUrl, qnaKey, message) {
           
         console.log('qnaServiceUrl', qnaServiceUrl);
         console.log('qnaKey', qnaKey);
@@ -152,5 +153,13 @@ class ChatBotSupportApi {
 
 var chatBotSupportApi = new ChatBotSupportApi();
 
+chatBotSupportApi.LABELS = {
+    EN : {
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \ n If you are satisfied, type \\ close to close the support chat or \\ agent to talk to an operator."
+    },
+    IT : {
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore."
+    }
+}
 
 module.exports = chatBotSupportApi;
