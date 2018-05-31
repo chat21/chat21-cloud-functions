@@ -69,13 +69,11 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
     var group_id = recipient_id; //recipient is the group id
 
-    chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
-    // chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", "La stiamo mettendo in contatto con un operatore. Attenda...", app_id, {subtype:"info/support"});
-
 
     var group_members = {};
 
     var agents = [];
+    var availableAgents = 0;
 
     return request({
         //uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid,
@@ -107,6 +105,10 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                         agents = response.agents;
                         console.log('agents', agents);
                     }
+                    if (response.available_agents) {
+                        availableAgents = response.available_agents.length;
+                        console.log('availableAgents', availableAgents);
+                    }
                 }
             }
         
@@ -117,6 +119,16 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
         })
         .finally(function() { 
             // console.log("finally"); 
+
+
+
+            if (availableAgents==0) {
+                chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
+            }else {
+                chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
+                // chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", "La stiamo mettendo in contatto con un operatore. Attenda...", app_id, {subtype:"info/support"});
+            }
+
 
             var group_name = " Support Group";
 
