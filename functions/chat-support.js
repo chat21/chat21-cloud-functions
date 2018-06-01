@@ -570,51 +570,51 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 
 
 
-    exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-        const message_id = event.params.message_id;
-        const recipient_id = event.params.recipient_id;
-        const app_id = event.params.app_id;
-        // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
-        
-        const message = event.data.current.val();
-        // DEBUG console.log('message ' + JSON.stringify(message));
+exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+    const message_id = event.params.message_id;
+    const recipient_id = event.params.recipient_id;
+    const app_id = event.params.app_id;
+    // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-        // DEBUG console.log("message.status : " + message.status);     
+    const message = event.data.current.val();
+    // DEBUG console.log('message ' + JSON.stringify(message));
+
+    // DEBUG console.log("message.status : " + message.status);     
+
+    if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+
+    if (recipient_id.indexOf("support-group")==-1 ){
+        console.log('exit for recipient');
+        return 0;
+    }
+
+    console.log('it s a message to nodejs ');
     
-        if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
-            return 0;
-        }
-    
-        if (recipient_id.indexOf("support-group")==-1 ){
-            console.log('exit for recipient');
-            return 0;
+    return request({
+        uri: "http://api.chat21.org/"+app_id+"/messages",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+        },
+        method: 'POST',
+        json: true,
+        body: message,
+        //resolveWithFullResponse: true
+        }).then(response => {
+        if (response.statusCode >= 400) {
+            throw new Error(`HTTP Error: ${response.statusCode}`);
         }
 
-        console.log('it s a message to nodejs ');
+        console.log('SUCCESS! Posted', event.data.ref);        
+        console.log('SUCCESS! response', response);           
         
-        return request({
-            uri: "http://api.chat21.org/"+app_id+"/messages",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-            },
-            method: 'POST',
-            json: true,
-            body: message,
-            //resolveWithFullResponse: true
-            }).then(response => {
-            if (response.statusCode >= 400) {
-                throw new Error(`HTTP Error: ${response.statusCode}`);
-            }
+        });
+
     
-            console.log('SUCCESS! Posted', event.data.ref);        
-            console.log('SUCCESS! response', response);           
-            
-            });
     
-        
-        
-    });
+});
   
 
 

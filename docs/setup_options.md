@@ -14,7 +14,7 @@ Run the follow command to retrieve your environment variables ``` firebase funct
 
 * Set email sender with: ```firebase functions:config:set email.from=<sender_email>```
 ### Gmail
-* Set Gmail account with  : ```firebase functions:config:set email.gmail.user=frontiere21@gmail.com``` and ```firebase functions:config:set email.gmail.password=ft21gmail``` More info here https://community.nodemailer.com/using-gmail/ and here https://medium.com/@manojsinghnegi/sending-an-email-using-nodemailer-gmail-7cfa0712a799
+* Set Gmail account with  : ```firebase functions:config:set email.gmail.user=<EMAIL>``` and ```firebase functions:config:set email.gmail.password=<PASSWORD>``` More info here https://community.nodemailer.com/using-gmail/ and here https://medium.com/@manojsinghnegi/sending-an-email-using-nodemailer-gmail-7cfa0712a799
 
 
 # SUPPORT MODE
