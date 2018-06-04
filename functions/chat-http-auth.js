@@ -3,15 +3,13 @@
 
 const admin = require('firebase-admin');
 const cors = require('cors')({origin: true});
-
-
+const functions = require('firebase-functions');
 
 // Express middleware that validates Firebase ID Tokens passed in the Authorization HTTP header.
 // The Firebase ID token needs to be passed as a Bearer token in the Authorization HTTP header like this:
 // `Authorization: Bearer <Firebase ID Token>`.
 // when decoded successfully, the ID Token content will be added as `req.user`.
 module.exports = {
-
     authenticate : function(req, res, next) {
         console.log('authenticate');
 
@@ -47,7 +45,7 @@ module.exports = {
             if (authQueryStr) {
                 idToken = req.query.token;
                 
-                let secretToken = functions.config().secretToken | "chat21-secret-orgAa,";
+                let secretToken = functions.config().secretToken ? functions.config().secretToken : "chat21-secret-orgAa,";
                 console.log('secretToken',secretToken);
 
                 //TODO move to firebase config 
