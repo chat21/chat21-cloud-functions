@@ -588,14 +588,15 @@ app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
     console.log('is_subscribed', is_subscribed);
 
     var result = chatApi.subscribeEmail(user_id, is_subscribed, app_id); // its a promise
-    console.log('result', result);
+    // console.log('result', result);
 
     result.then(function (data) {
       // console.log("data" , data);
       console.log("email subscriptions setting saved successfully. " , data['email']);
       console.log('===== END email - unsubscribe =====');
       // res.status(201).send(JSON.stringify(data['snapshot']));
-      res.status(201).send(JSON.stringify(data['email']));
+      // res.status(201).send(JSON.stringify(data['email']));
+      res.status(201).send(data['email']);
     }).catch(function (error) {
       console.log("email subscriptions setting could not be saved. " , error);
       console.log('===== END email - unsubscribe =====');
