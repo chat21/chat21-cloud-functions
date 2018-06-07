@@ -7,6 +7,7 @@ const request = require('request-promise');
 
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
+const chatUtil = require('./chat-util');
 
 class ChatBotSupportApi {
 
