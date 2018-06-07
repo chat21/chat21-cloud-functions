@@ -161,6 +161,9 @@ chatBotSupportApi.LABELS = {
     },
     IT : {
         DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore."
+    },
+    "IT-IT" : {
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore."
     }
 }
 
