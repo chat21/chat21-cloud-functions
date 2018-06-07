@@ -8,6 +8,7 @@ const request = require('request-promise');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const chatUtil = require('./chat-util');
+// const chatSupportApi = require('./chat-support-api');
 
 class ChatBotSupportApi {
 
@@ -58,7 +59,7 @@ class ChatBotSupportApi {
                         // var question = response.hits[0].questions[0].document.question;
                         // console.log('question', question);   
 
-                        answer = answer + " " +  chatUtil.getMessage("DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE", message.language, LABELS);
+                        answer = answer + " " +  chatUtil.getMessage("DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE", message.language, chatBotSupportApi.LABELS);
 
                         response_options = { "question" : "Sei soddisfatto della risposta?",
                         "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
