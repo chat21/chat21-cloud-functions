@@ -169,6 +169,8 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             newRequest.members = group_members;
             newRequest.membersCount = Object.keys(group_members).length;
             newRequest.agents = agents;
+            newRequest.availableAgents = availableAgents;
+            
 
             if (newRequest.membersCount==2){
                 newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.UNSERVED;
