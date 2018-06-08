@@ -293,7 +293,7 @@ Change my first and lastname:
       -H 'Content-Type: application/json' \
       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
       -d '{"firstname": "<FIRSTNAME>", "lastname": "<LASTNAME>"}' \
-      https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/contacts
+      https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/contacts/me
 ```
 
 
@@ -313,7 +313,7 @@ Example:
        -H 'Content-Type: application/json' \
        -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMDUwYzMxN2ExMjJlZDhlMWZlODdkN2FhZTdlMzk3OTBmNmMwYjQifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyNjk4NTkwOSwidXNlcl9pZCI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsInN1YiI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsImlhdCI6MTUyNjk4NTkwOSwiZXhwIjoxNTI2OTg5NTA5LCJlbWFpbCI6ImFuZHJlYS5sZW9AZnJvbnRpZXJlMjEuaXQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.Pg0sJa243tZ1a6LTU1541V1GGHrx2JzkG4KGdBafuNygZrsTEmyMb0mlVDycSeSL1oAUCB91O-0N5m5U2UARTCS7OU9CM_PojwspgX2-a3iAwHGnwRNVExLaK98sYjpEDbGGOILZGPj9PJAkdsDo4_IyQnO-VE85NZEEcsULSm5DU3_TihKi1EjgqcJse7w6rMI5_00Mn2qFdaC62dyqHVojGNpwzwQ88JcB3AnrJ_fTpt0DEhtMT__avIhgyv6cPSOwhOs9_J0wSNLonLaZ5ns33xM6G-oiotglvqTmARX-iHRnUw--05OwfpzpoJ8puoXvO4PbZJesqN6OIGSHww' \
         -d '{"firstname": "firstname", "lastname": "lastname"}' \
-    https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts
+    https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts/me
 ```
 
 
