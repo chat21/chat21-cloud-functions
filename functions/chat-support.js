@@ -73,7 +73,9 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     var group_members = {};
 
     var agents = [];
-    var availableAgents = 0;
+    var availableAgents= [];
+    var availableAgentsCount= 0;
+    var assigned_operator_id;
 
     return request({
         //uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid,
@@ -96,18 +98,21 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 if (response) {
                     if (response.operators  && response.operators.length>0) {
                         // var id_bot = "bot_"+response.id_bot;
-                        var id_new_operator = response.operators[0].id_user;
-                        console.log('id_new_operator', id_new_operator);
+                        assigned_operator_id = response.operators[0].id_user;
+                        console.log('assigned_operator_id', assigned_operator_id);
 
-                        group_members[id_new_operator] = 1; //bot
+                        group_members[assigned_operator_id] = 1; //bot
                     }
                     if (response.agents) {
                         agents = response.agents;
                         console.log('agents', agents);
                     }
                     if (response.available_agents) {
-                        availableAgents = response.available_agents.length;
+                        availableAgents = response.available_agents;
                         console.log('availableAgents', availableAgents);
+                        
+                        availableAgentsCount = availableAgents.length;
+                        console.log('availableAgentsCount', availableAgentsCount);
                     }
                 }
             }
@@ -170,7 +175,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             newRequest.membersCount = Object.keys(group_members).length;
             newRequest.agents = agents;
             newRequest.availableAgents = availableAgents;
-            
+            newRequest.assigned_operator_id = assigned_operator_id;
 
             if (newRequest.membersCount==2){
                 newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.UNSERVED;
