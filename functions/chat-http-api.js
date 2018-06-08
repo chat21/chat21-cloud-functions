@@ -499,7 +499,7 @@ app.put('/:app_id/contacts/:contact_id', (req, res) => {
 
         let firstname = req.body.firstname;
         let lastname = req.body.lastname;
-        let email = req.body.email;
+        // let email = req.body.email;
 
         let current_user = req.user.uid;
 
@@ -512,8 +512,9 @@ app.put('/:app_id/contacts/:contact_id', (req, res) => {
         console.log('app_id', app_id);
 
 
-        var result =  chatApi.updateContactWithId(current_user, firstname, lastname, email, app_id);
-      
+        var result =  chatApi.changeContactFullname(current_user, firstname, lastname, app_id);
+        // var result =  chatApi.updateContactWithId(current_user, firstname, lastname, email, app_id);
+        
         console.log('result', result);
 
         res.status(200).send(result);

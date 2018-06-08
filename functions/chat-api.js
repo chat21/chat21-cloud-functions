@@ -293,6 +293,21 @@ class ChatApi {
         return admin.database().ref(path).set(contact);
     }
 
+    changeContactFullname(uid, firstname, lastname, app_id) {
+
+        var path = '/apps/'+app_id+'/contacts/'+uid;
+        console.log("path", path);
+
+
+        var contact = {};
+        contact.firstname = firstname;
+        contact.lastname = lastname;
+    
+        
+        console.log("updating contact " + JSON.stringify(contact) + " to "+ path);
+        return admin.database().ref(path).update(contact);
+    }
+
     updateContactWithId(uid, firstname, lastname, email, app_id) {
 
         var path = '/apps/'+app_id+'/contacts/'+uid;
