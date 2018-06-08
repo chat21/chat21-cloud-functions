@@ -506,7 +506,63 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
         console.log('message contains \\agent');
         chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", "La stiamo mettendo in contatto con un operatore. Attenda...", app_id, {subtype:"info/support"});
 
-        return chatSupportApi.removeBotFromGroupMember(group_id, app_id);
+        chatSupportApi.removeBotFromGroupMember(group_id, app_id);
+
+
+        var projectid = message.projectid;
+        console.log('projectId',projectid);
+    
+    
+        var departmentid = "default";
+        if (message.attributes && message.attributes.departmentId && !message.attributes.departmentId==""){
+            departmentid =  message.attributes.departmentId;
+        }
+        console.log('departmentid', departmentid);
+
+        
+        return request({
+            uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid+"/operators?nobot=true",
+            headers: {
+                'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
+                'Content-Type': 'application/json'
+            },
+            method: 'GET',
+            json: true,
+            //resolveWithFullResponse: true
+            }).then(response => {
+               
+                if (!response) {
+                    // throw new Error(`HTTP Error: ${response.statusCode}`);
+                    console.log(`Error getting department.`);
+                }else {
+                    console.log('SUCCESS! response', response);
+    
+                    if (response) {
+                        if (response.operators  && response.operators.length>0) {
+                            // var id_bot = "bot_"+response.id_bot;
+                            var assigned_operator_id = response.operators[0].id_user;
+                            console.log('assigned_operator_id', assigned_operator_id);
+
+                            chatApi.joinGroup(assigned_operator_id, group_id, app_id);
+    
+                        }                        
+                    }
+                }
+            
+    
+            })
+            .catch(function(error) { 
+                console.log("Error getting department.", error); 
+            });
+        
+
+
+
+
+
+
+
+
     }else {
         return 0;
     }
