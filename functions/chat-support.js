@@ -657,9 +657,12 @@ exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{
     }
 
     console.log('it s a message to nodejs ');
+
+    var projectid = message.projectid;
+    console.log('projectId',projectid);
     
     return request({
-        uri: "http://api.chat21.org/"+app_id+"/messages",
+        uri: "http://api.chat21.org/"+projectid+"/messages",
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
@@ -725,9 +728,11 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
     chatApi.typing(sender_id, recipient_id, app_id);
 
 
+    var projectid = message.projectid;
+    console.log('projectId',projectid);
 
     return request({
-        uri: "http://api.chat21.org/"+app_id+"/faq_kb/"+bot_id,
+        uri: "http://api.chat21.org/"+projectid+"/faq_kb/"+bot_id,
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
