@@ -50,33 +50,35 @@ class ChatBotSupportApi {
                     
 
                     var answer = null;
-                    var response_options;
+                    // var response_options;
 
                     if (response.hits && response.hits.length>0) {
                         answer = entities.decode(response.hits[0].document.answer);
                         console.log('answer', answer);    
-                
-                        // var question = response.hits[0].questions[0].document.question;
-                        // console.log('question', question);   
-
-                        answer = answer + " " +  chatUtil.getMessage("DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE", message.language, chatBotSupportApi.LABELS);
-
-                        response_options = { "question" : "Sei soddisfatto della risposta?",
-                        "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
-
-                    }else if (answer == "\\agent"){ //if \\agent dont append se sei siddisfatto...
             
-                    }else {
-                        answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.";
-            
-                        response_options = { "question" : "Vuoi parlare con un operatore?",
-                        "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
 
                     }
+                        // answer = answer + " " +  chatUtil.getMessage("DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE", message.language, chatBotSupportApi.LABELS);
+
+                        // response_options = { "question" : "Sei soddisfatto della risposta?",
+                        // "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
+
+                    // }else if (answer == "\\agent"){ //if \\agent dont append se sei siddisfatto...
+            
+                    // }else {
+                    //     answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.";
+            
+                    //     response_options = { "question" : "Vuoi parlare con un operatore?",
+                    //     "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
+
+                    // }
                         
             
-                    let resp = {answer:answer, response_options:response_options};
+                    // let resp = {answer:answer, response_options:response_options};
+                    let resp = {answer:answer};
 
+                    
+                    
                     return resolve(resp);
 
                 });
@@ -157,13 +159,22 @@ var chatBotSupportApi = new ChatBotSupportApi();
 
 chatBotSupportApi.LABELS = {
     EN : {
-        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \ n If you are satisfied, type \\ close to close the support chat or \\ agent to talk to an operator."
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \ n If you are satisfied, type \\ close to close the support chat or \\ agent to talk to an operator.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "I did not find an answer in the knowledge base. \ n Do you want to talk to an operator or reformulate your question? \ n Type \\ agent to talk to an operator or type a new question.",
+        DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \ n If you are satisfied, type \\ close to close the support chat or reformulate your question.",
+        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "I did not find an answer in the knowledge base. \ n Please reformulate your question?"
     },
     IT : {
-        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore."
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.",
+        DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure riformula la tua domanda.",
+        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Prego riformula la  domanda."
     },
     "IT-IT" : {
-        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore."
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.",
+        DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure riformula la tua domanda.",
+        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Prego riformula la domanda."
     }
 }
 
