@@ -73,15 +73,21 @@ chatSupportApi.SUPPORT_APP_ID = "tiledesk";
 chatSupportApi.LABELS = {
     EN : {
         JOIN_OPERATOR_MESSAGE : "We are putting you in touch with an operator..",
-        NO_AVAILABLE_OPERATOR_MESSAGE : "Hello, no operators are available at the moment. Please leave a chat message, we will reply to you soon."
+        NO_AVAILABLE_OPERATOR_MESSAGE : "Hello, no operators are available at the moment. Please leave a chat message, we will reply to you soon.",
+        TOUCHING_OPERATOR: "We are putting you in touch with an operator. Please wait..",
+        THANKS_MESSAGE: "Thank you for using our support system"
     },
     IT : {
         JOIN_OPERATOR_MESSAGE : "La stiamo mettendo in contatto con un operatore. Attenda...",
-        NO_AVAILABLE_OPERATOR_MESSAGE : "Salve al momento non è disponibile alcun operatore. Lasci un messaggio in chat, la contatteremo presto."
+        NO_AVAILABLE_OPERATOR_MESSAGE : "Salve al momento non è disponibile alcun operatore. Lasci un messaggio in chat, la contatteremo presto.",
+        TOUCHING_OPERATOR :"La stiamo mettendo in contatto con un operatore. Attenda...",
+        THANKS_MESSAGE: "Grazie per aver utilizzato il nostro sistema di supporto"
     },
     "IT-IT" : {
         JOIN_OPERATOR_MESSAGE : "La stiamo mettendo in contatto con un operatore. Attenda...",
-        NO_AVAILABLE_OPERATOR_MESSAGE : "Salve al momento non è disponibile alcun operatore. Lasci un messaggio in chat, la contatteremo presto."
+        NO_AVAILABLE_OPERATOR_MESSAGE : "Salve al momento non è disponibile alcun operatore. Lasci un messaggio in chat, la contatteremo presto.",
+        TOUCHING_OPERATOR :"La stiamo mettendo in contatto con un operatore. Attenda...",
+        THANKS_MESSAGE: "Grazie per aver utilizzato il nostro sistema di supporto"
     }
 }
 

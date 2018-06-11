@@ -261,7 +261,7 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
 
 
      if (group && group.name) {
-        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Gruppo creato", app_id,{subtype:"info"});
+        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Group created", app_id,{subtype:"info"});
         //  return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
      }
      
@@ -325,9 +325,9 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
                 console.log("contact", contact);
                 var fullname = contact.firstname + " " + contact.lastname;
                 console.log("fullname", fullname);
-                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " aggiunto al gruppo", app_id, {subtype:"info"});
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " added to group", app_id, {subtype:"info"});
             }, function (error) {
-                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Nuovo membro aggiunto al gruppo", app_id, {subtype:"info"});
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info"});
             });
     
         }
