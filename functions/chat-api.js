@@ -275,6 +275,33 @@ class ChatApi {
     }
 
 
+    getContactById(contact_id, app_id) {
+        console.log("getting contact with id " + contact_id + " and app_id "+ app_id);
+
+        return new Promise(function(resolve, reject) {
+            // Do async job
+            return admin.database().ref('/apps/'+app_id+'/contacts/'+contact_id).once('value').then(function(contactSnapshot) {
+               console.log('contactSnapshot ' + JSON.stringify(contactSnapshot) );        
+                
+                if (contactSnapshot.val()!=null){ 
+                    var contact = contactSnapshot.val();
+                    console.log('contact ' + JSON.stringify(contact) );
+        
+                    
+                    return resolve(contact);
+                }else {
+                    var error = 'Warning: Contact '+ contact_id +' not found ';
+                    console.log(error );
+                    //recipient_id is NOT a group
+                    // return 0;
+                    return reject(error);
+                }
+        
+        
+            });
+        });
+    }
+
     createContactWithId(uid, firstname, lastname, email, app_id) {
 
         var path = '/apps/'+app_id+'/contacts/'+uid;

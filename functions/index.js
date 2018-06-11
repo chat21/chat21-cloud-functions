@@ -320,7 +320,16 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
      return chatApi.getGroupById(group_id, app_id).then(function (group) {
         console.log("group", group);
         if (group) {
-            return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Nuovo membro aggiunto al gruppo", app_id, {subtype:"info"});
+
+            chatApi.getContactById(member_id, app_id).then(function (contact) {
+                console.log("contact", contact);
+                var fullname = contact.firstname + " " + contact.lastname;
+                console.log("fullname", fullname);
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " aggiunto al gruppo", app_id, {subtype:"info"});
+            }, function (error) {
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Nuovo membro aggiunto al gruppo", app_id, {subtype:"info"});
+            });
+    
         }
      });
     
