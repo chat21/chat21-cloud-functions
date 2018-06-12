@@ -601,4 +601,17 @@ chatApi.CHAT_MESSAGE_STATUS = {
             SEEN : 300 //seen
     
         }
+
+chatApi.LABELS = {
+    EN : {
+        GROUP_CREATED_MESSAGE : "Group created",
+    },
+    IT : {
+        GROUP_CREATED_MESSAGE : "Gruppo creato",
+    },
+    "IT-IT" : {
+        GROUP_CREATED_MESSAGE : "Gruppo creato",
+    }
+}
+
 module.exports = chatApi;

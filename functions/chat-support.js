@@ -76,6 +76,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     var availableAgents= [];
     var availableAgentsCount= 0;
     var assigned_operator_id;
+    var idBot;
 
     return request({
         //uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid,
@@ -103,6 +104,9 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
                         group_members[assigned_operator_id] = 1; //bot
                     }
+                    idBot = response.department.id_bot;
+                    console.log('idBot', idBot);
+
                     if (response.agents) {
                         agents = response.agents;
                         console.log('agents', agents);
@@ -126,12 +130,12 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             // console.log("finally"); 
 
 
-
-            if (availableAgents==0) {
-                chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
-            }else {
-                chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
-                // chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", "La stiamo mettendo in contatto con un operatore. Attenda...", app_id, {subtype:"info/support"});
+            if (!idBot) {
+                if (availableAgents==0) {
+                    chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
+                }else {
+                    chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
+                }
             }
 
 
@@ -796,7 +800,10 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
 
                 chatApi.stopTyping(sender_id, recipient_id, app_id);
         
-                var sender_fullname = "Bot";
+                // var sender_fullname = "Bot";
+                var sender_fullname = response.name;
+                console.log('sender_fullname', sender_fullname); 
+
                 var recipient_group_fullname = message.recipient_fullname;
 
                 return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, answer, app_id);

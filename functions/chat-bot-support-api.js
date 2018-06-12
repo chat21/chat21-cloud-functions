@@ -166,13 +166,13 @@ chatBotSupportApi.LABELS = {
     },
     IT : {
         DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.",
-        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.",
         DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure riformula la tua domanda.",
         DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Prego riformula la  domanda."
     },
     "IT-IT" : {
         DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.",
-        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.",
         DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure riformula la tua domanda.",
         DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Prego riformula la domanda."
     }
