@@ -131,7 +131,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
 
             if (!idBot) {
-                if (availableAgents==0) {
+                if (availableAgentsCount==0) {
                     chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
                 }else {
                     chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support"});
