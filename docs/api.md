@@ -204,7 +204,7 @@ Where :
 - <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
-- <MEMBER_ID>: it's the recipient id
+- <RECIPIENT_ID>: it's the recipient id
 - <MESSAGE_ID>: it's the message id
 
 Example:
@@ -233,7 +233,7 @@ Where :
 - <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
-- <MEMBER_ID>: it's the recipient id
+- <RECIPIENT_ID>: it's the recipient id
 - <MESSAGE_ID>: it's the message id
 
 
@@ -247,6 +247,34 @@ Example:
 
 
 ```
+
+
+## Delete a conversation
+
+Delete a conversation from the personale timeline specified by a RECIPIENT_ID
+
+```
+    curl  -X DELETE \
+       -H 'Content-Type: application/json' \
+       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
+       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/conversations/<RECIPIENT_ID>
+```
+
+Where :
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- <RECIPIENT_ID>: it's the recipient id
+
+Example:
+
+```
+    curl -X DELETE \
+      -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjdhM2QxOTA0ZjE4ZTI1Nzk0ODgzMWVhYjgwM2UxMmI3OTcxZTEzYWIifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUyODg3NjAwNywidXNlcl9pZCI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsInN1YiI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsImlhdCI6MTUyODg3NjAwNywiZXhwIjoxNTI4ODc5NjA3LCJlbWFpbCI6ImFuZHJlYS5sZW9AZnJvbnRpZXJlMjEuaXQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.OMLzWOQ9tQroiZuHKZSkWf_JDPAjueYthJXD86ZRIX1LOxlXfewJG3Reb71gXcIggLtrrqfDLw7h9JLSpMuuSl8sZW6ppiMPcwHMdZbFT4kMz-k5wEjkIQaRSua8BKVXnl65TR3hX7xqAvV8F65pRzyndauBOv1mq6o1JfDBKXPDk5O-sXufa3G7ShApjvtW9XAqC6PxnutuoniUGxZhZj1pXn2zlBLFnFcONZNaT1vDfRruAZatmxh41Gc5i04aj0mhqcu2HciJ37qIF2uDY1WkrMs4VUDd-PH1iI4IKKh3k2CXNrPVKQEzR_nL_NyLh_ZnfL8kewLaGFjQOGo0Xg' \
+        https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/conversations/y4QN01LIgGPGnoV6ql07hwPAQg23/
+```
+
 
 ## Create a Contact
 

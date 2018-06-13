@@ -109,6 +109,10 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     conversation.status = 2;
     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
 
+    //delete archived conv if present
+    chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
+
+    
     var path = '/apps/'+app_id+'/users/'+sender_id+'/conversations/'+recipient_id;
 
     console.log('creating conversation ' + JSON.stringify(conversation) + " to: "+ path);

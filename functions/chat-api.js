@@ -138,6 +138,52 @@ class ChatApi {
             }); 
     }
 
+    deleteConversation(user_id, recipient_id, app_id) {
+        var path = '/apps/'+app_id+'/users/'+user_id+'/conversations/'+recipient_id;
+
+        console.log("deleteConversation from " + path);
+        return admin.database().ref(path).remove();
+
+    }
+
+    deleteArchivedConversation(user_id, recipient_id, app_id) {
+        var path = '/apps/'+app_id+'/users/'+user_id+'/archived_conversations/'+recipient_id;
+
+        console.log("deleteArchivedConversation from " + path);
+        return admin.database().ref(path).remove();
+
+    }
+
+    archiveConversation(user_id, recipient_id, app_id) {
+        var path = '/apps/'+app_id+'/users/'+user_id+'/conversations/'+recipient_id;
+
+        var that = this;
+        
+        return admin.database().ref(path).once('value').then(function(conversationSnapshot) {
+            console.log('conversationSnapshot ' + JSON.stringify(conversationSnapshot) );
+            
+    
+            
+            if (conversationSnapshot.val()!=null){ 
+                var conversation = conversationSnapshot.val();
+                var newpath = '/apps/'+app_id+'/users/'+user_id+'/archived_conversations/'+recipient_id;
+
+                console.log("archiving conversation from " + path + " to path "+ newpath);
+                return admin.database().ref(newpath).set(conversation).then(writeResult => {
+                    // Send back a message that we've succesfully written the message
+                    console.log(`successfully copied`);
+            
+                    return that.deleteConversation(user_id, recipient_id, app_id);
+                    });
+        
+            }else {
+                console.log("conversation not found under " + path);
+
+            }
+        });
+        
+    }
+
 
 
     getGroupById(group_id, app_id) {

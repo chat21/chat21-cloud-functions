@@ -205,6 +205,68 @@ app.delete('/:app_id/messages/:recipient_id/:message_id', (req, res) => {
 
 
     /**
+ * Delete a conversation
+ * 
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.delete('/:app_id/conversations/:recipient_id/', (req, res) => {
+  // app.delete('/groups/:group_id/members/:member_id', (req, res) => {
+  console.log('delete a conversation');
+
+   
+    // if (req.method !== 'DELETE') {
+    //   res.status(403).send('Forbidden!');
+    // }
+      
+      cors(req, res, () => {
+
+        if (!req.params.recipient_id) {
+          res.status(405).send('recipient_id is not present!');
+        }
+
+      
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+
+
+        let recipient_id = req.params.recipient_id;
+        let app_id = req.params.app_id;
+        let user_id = req.user.uid;
+
+        let physicsDelete = false;
+        if (req.query.delete) {
+          physicsDelete = true;
+        }
+
+    
+        console.log('recipient_id', recipient_id);
+        console.log('app_id', app_id);
+        console.log('physicsDelete', physicsDelete);
+        console.log('user_id', user_id);
+
+
+        var result;
+    
+        if (physicsDelete==false) {
+          result =  chatApi.archiveConversation(user_id, recipient_id, app_id);
+        }else {
+          result =  chatApi.deleteConversation(user_id, recipient_id, app_id);
+        }
+      
+        
+      
+        console.log('result', result);
+
+        res.status(204).send(result);
+      });
+    });
+
+
+
+    /**
  * Create a group
  
  * This endpoint supports CORS.

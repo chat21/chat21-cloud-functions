@@ -141,13 +141,17 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
 
         let group_id = req.params.group_id;
         let app_id = req.params.app_id;
+        let user_id = req.user.uid;
 
 
         console.log('group_id', group_id);
         console.log('app_id', app_id);
+        console.log('user_id', user_id);
 
        
         var result =  chatSupportApi.closeChat(group_id, app_id);
+
+        chatApi.archiveConversation(user_id, group_id, app_id);
 
         console.log('result', result);
 
