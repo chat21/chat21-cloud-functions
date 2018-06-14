@@ -494,10 +494,10 @@ app.post('/:app_id/contacts', (req, res) => {
       
       cors(req, res, () => {
 
-        if (!req.body.firstname) {
+        if (req.body.firstname  == undefined) {
             res.status(405).send('firstname is not present!');
         }
-        if (!req.body.lastname) {
+        if (req.body.lastname == undefined) {
           res.status(405).send('lastname is not present!');
         }
        
@@ -548,7 +548,7 @@ app.put('/:app_id/contacts/me', (req, res) => {
       
       cors(req, res, () => {
 
-        if (!req.body.firstname  == undefined) {
+        if (req.body.firstname  == undefined) {
             res.status(405).send('firstname is not present!');
         }
         if (req.body.lastname == undefined) {
