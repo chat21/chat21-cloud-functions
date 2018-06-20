@@ -139,12 +139,13 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             }
 
 
-            var group_name = " Support Group";
+            // var group_name = " Support Group";
+            var group_name = "";
 
             if (message.sender_fullname) {
-                group_name = message.sender_fullname + group_name;
+                group_name = message.sender_fullname;
             }else {
-                group_name = "Guest" + group_name;
+                group_name = "Guest";
 
             }
 
