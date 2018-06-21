@@ -648,6 +648,10 @@ chatApi.CHAT_MESSAGE_STATUS = {
     
         }
 
+chatApi.CHAT_MESSAGE_OPTIONS_KEY = {
+            UPDATE_CONVERSATION : "updateconversation",   //Boolean
+}
+
 chatApi.LABELS = {
     EN : {
         GROUP_CREATED_MESSAGE : "Group created",
