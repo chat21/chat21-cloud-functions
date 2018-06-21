@@ -72,9 +72,9 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
 
    
     const message = event.data.current.val();
-    // DEBUG console.log('message ' + JSON.stringify(message));
+    console.log('message ' + JSON.stringify(message));
 
-    if (message.attributes && message.attributes.updateconversation && message.attributes.updateconversation==false) {
+    if (message.attributes && message.attributes.updateconversation==false) {
         console.log('not update the conversation because updateconversation is false');
         return 0;
     }
@@ -287,7 +287,7 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
      const fromPath = '/apps/'+app_id+'/messages/' + group_id;
     //  console.log("fromPath", fromPath);
 
-     return admin.database().ref(fromPath).once('value').then(function(messagesSnap) {
+     return admin.database().ref(fromPath).orderByChild("timestamp").once('value').then(function(messagesSnap) {
         // console.log('messagesSnap ' + JSON.stringify(messagesSnap) );
 
             if (messagesSnap.val()!=null){
