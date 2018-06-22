@@ -149,13 +149,21 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
         console.log('user_id', user_id);
 
        
-        var result =  chatSupportApi.closeChat(group_id, app_id);
+        // var result =  chatSupportApi.closeChat(group_id, app_id);
 
-        chatApi.archiveConversation(user_id, group_id, app_id);
+        // chatApi.archiveConversation(user_id, group_id, app_id);
 
-        console.log('result', result);
+        Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversation(user_id, group_id, app_id)]).then(function(snapshots) {
+          // firebaseData.members = snapshots[0];
+          // firebaseData.events = snapshots[1];
+          // console.log(firebaseData);
+          // res.render("cac", firebaseData);
+          res.status(200).send();
+        });
+        
+        // console.log('result', result);
 
-        res.status(200).send(result);
+        // res.status(200).send(result);
       });
     });
 

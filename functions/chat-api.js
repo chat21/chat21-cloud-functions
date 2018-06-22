@@ -178,7 +178,7 @@ class ChatApi {
         
             }else {
                 console.log("conversation not found under " + path);
-
+                return 0;
             }
         });
         
