@@ -777,7 +777,7 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
                         message_key = "DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE";
                     }
 
-                    answer = qnaresp.answer + " " +  chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+                    answer = qnaresp.answer + ". " +  chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
 
                     // response_options = { "question" : "Sei soddisfatto della risposta?",
                     // "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
