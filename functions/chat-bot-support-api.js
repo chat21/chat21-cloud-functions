@@ -51,11 +51,14 @@ class ChatBotSupportApi {
 
                     var answer = null;
                     // var response_options;
+                    var score = 0;
 
                     if (response.hits && response.hits.length>0) {
                         answer = entities.decode(response.hits[0].document.answer);
                         console.log('answer', answer);    
-            
+
+                        score = response.hits[0].score;
+                        console.log('score', score);    
 
                     }
                         // answer = answer + " " +  chatUtil.getMessage("DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE", message.language, chatBotSupportApi.LABELS);
@@ -75,7 +78,7 @@ class ChatBotSupportApi {
                         
             
                     // let resp = {answer:answer, response_options:response_options};
-                    let resp = {answer:answer};
+                    let resp = {answer:answer, score: score};
 
                     
                     
