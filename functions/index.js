@@ -260,21 +260,22 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      const group = event.data.current.val();
      console.log("group",group);
      
-    //  if (group_id.indexOf("support-group")>-1 ){
-    //     console.log('dont send group creation message for support-group');
-    //     return 0;
-    // }
+     if (group_id.indexOf("support-group")>-1 ){
+        console.log('dont send group creation message for support-group');
+        return 0;
+     }
 
      var sender_id =  "system";
      var sender_fullname = "Sistema";
 
 
      if (group && group.name) {
-        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Group created", app_id,{subtype:"info", "updateconversation" : false});
+        return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Group created", app_id, {subtype:"info", updateconversation : true, messagelabel: {key: "GROUP_CREATED", parameters:{creator: group.owner}} });
         //  return sendGroupMessageToRecipientsTimeline(sender_id, group_id, message, "123456-DAMODIFICARE", app_id);
      }
      
-});
+  });
+
 
 exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
     
@@ -322,6 +323,13 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
          return 0;
      }
 
+     var updateconversation = true;
+
+     if (group_id.indexOf("support-group")>-1 ){
+        console.log('dont update conversation for group creation message for support-group');
+         updateconversation = false;
+     }
+
      var sender_id =  "system";
      var sender_fullname = "Sistema";
 
@@ -334,9 +342,9 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
                 console.log("contact", contact);
                 var fullname = contact.firstname + " " + contact.lastname;
                 console.log("fullname", fullname);
-                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " added to group", app_id, {subtype:"info", "updateconversation" : false});
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP", parameters:{member_id: member_id, fullname:fullname} }});
             }, function (error) {
-                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : false});
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP", parameters:{member_id: member_id} }});
             });
     
         }
