@@ -331,8 +331,6 @@ exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_
 
                     console.log("member_id not present into docConv");
 
-                    // return admin.firestore().collection('conversations').doc(group_id).update({members:dataToUpdate}).then(writeResult => {
-                        //  return admin.firestore().collection('conversations').doc(group_id).create(dataToUpdate).then(writeResult => {
                         return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
                 
                             
@@ -381,7 +379,6 @@ exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{
     // console.log("dataToUpdate ", dataToUpdate);
 
 
-//    return admin.firestore().collection('conversations').doc(group_id).update({members:memberToAdd}).then(writeResult => {
      return admin.firestore().collection('conversations').doc(group_id).update({
         ['members.' + member_id]: FieldValue.delete()
       }).then(writeResult => {
@@ -431,7 +428,6 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
    console.log('message ' + JSON.stringify(message));
 
     return admin.firestore().collection('conversations').doc(groupId).set(message, { merge: true }).then(writeResult => {
-    // return admin.firestore().collection('conversations').doc(groupId).update(message).then(writeResult => {
         // Send back a message that we've succesfully written the message
         console.log(`Conversation with ID: ${groupId} saved.`);
       });
