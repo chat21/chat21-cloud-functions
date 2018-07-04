@@ -249,15 +249,15 @@ Example:
 ```
 
 
-## Delete a conversation
+## Archive or delete a conversation
 
-Delete a conversation from the personale timeline specified by a RECIPIENT_ID
+Archive or delete a conversation from the personal timeline specified by a RECIPIENT_ID
 
 ```
     curl  -X DELETE \
        -H 'Content-Type: application/json' \
        -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
-       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/conversations/<RECIPIENT_ID>
+       https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/conversations/<RECIPIENT_ID>?<DELETE_PARAM>=<BOOLEAN_VALUE>
 ```
 
 Where :
@@ -265,6 +265,7 @@ Where :
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 - <RECIPIENT_ID>: it's the recipient id
+- <DELETE_PARAM>:  (Optional) if true permanently deletes the conversation, if false archives the conversation
 
 Example:
 
