@@ -134,7 +134,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
            
             to: recipientEmail, // list of receivers,
             bcc: "andrea.leo@frontiere21.it",
-            subject: `Nuovo messaggio da ${tenant}`, // Subject line
+            subject: `New message from ${tenant}`, // Subject line
             // text: `${messageText}`, // plain text body
             // html: `<b>${sender}</b> : ${messageText} <br> to : <b>${recipient}</b>` // html body
             html: 
@@ -216,7 +216,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
                             <td class="alert alert-warning" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #3A699B; margin: 0;" align="center" bgcolor="#3A699B" valign="top">
                               <div>
                                 <p style="float: left;"><img src="http://script.smart21.it/chat21/header_logo.png" height="48px" width="48px" border="1px"></p>
-                                <h2>Nuovo messaggio da</h2>
+                                <h2>New message from</h2>
                                 <h1>${tenant}</h1>
                               </div>
   
@@ -228,26 +228,26 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
   
                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                   <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                                    Mittente: <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">${sender_fullname}</strong>
+                                    Sender: <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">${sender_fullname}</strong>
                                   </td>
                                 </tr>
   
                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                   <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                                    Destinatario: <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">${recipient_fullname}</strong>
+                                    Recipient: <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">${recipient_fullname}</strong>
                                   </td>
                                 </tr>
   
   
                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                   <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                                    Testo del messaggio: <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">${messageText}</strong>
+                                    Message: <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">${messageText}</strong>
                                   </td>
                                 </tr>
   
                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                   <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                                    Data di invio: <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">${formattedMessageTimestamp}</strong>
+                                    Date: <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">${formattedMessageTimestamp}</strong>
                                   </td>
                                 </tr>
   
@@ -367,7 +367,7 @@ function formatTimestamp(timestampMS) {
     var date = moment.unix(timestamp); 
   
     var startdate = moment(date);
-    date = moment(startdate).add(1, 'hours');
+    //date = moment(startdate).add(1, 'hours');
   
     var userReadableTimestamp = date.format(pattern);
      // DEBUG  console.log("userReadableTimestamp: " + userReadableTimestamp);
