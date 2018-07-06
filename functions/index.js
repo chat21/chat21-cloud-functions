@@ -240,10 +240,14 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
          membersToUpdate.forEach(function(memberToUpdate) {
          console.log('memberToUpdate ' + memberToUpdate);
    
+         //COLDSTART PROBLEM RETURN??
            admin.database().ref('/apps/'+tenantId+'/users/'+memberToUpdate+'/groups/'+groupId).set(group).then(snapshot => {
                console.log("snapshot",snapshot);   
+               return 0;
            });    
          });
+
+         return 0;
      }
 
      return 0;
@@ -302,6 +306,7 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
                 return admin.database().ref(toPath).update(messages);
             } else {
                 console.log("messages is null. Nothing to duplicate");
+                return 0;
             }
         });
     
@@ -338,7 +343,7 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
         console.log("group", group);
         if (group) {
 
-            chatApi.getContactById(member_id, app_id).then(function (contact) {
+            return chatApi.getContactById(member_id, app_id).then(function (contact) {
                 console.log("contact", contact);
                 var fullname = contact.firstname + " " + contact.lastname;
                 console.log("fullname", fullname);

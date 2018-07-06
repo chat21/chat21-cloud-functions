@@ -22,7 +22,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     // const sender_id = event.params.sender_id; 
     const recipient_id = event.params.recipient_id;
     const app_id = event.params.app_id;;
-    // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
+    console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
     
     // const messageRef = event.data.ref;
     // console.log('messageRef ' + messageRef);
@@ -33,10 +33,10 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
 
     const messageWithMessageId = event.data.current.val();
-    // DEBUG console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
+    console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
 
     const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
-//    DEBUG console.log('message ' + JSON.stringify(message));
+    console.log('message ' + JSON.stringify(message));
 
     // console.log("message.status : " + message.status);     
 
@@ -416,9 +416,6 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
     console.log('it s a support message ');
 
-    
-    // var conversationId = createConversationId(sender_id, recipient_id);
-    // console.log('conversationId', conversationId);
     var groupId = recipient_id;
 
 
@@ -427,17 +424,18 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
    console.log('message ' + JSON.stringify(message));
 
-    return admin.firestore().collection('conversations').doc(groupId).set(message, { merge: true }).then(writeResult => {
-        // Send back a message that we've succesfully written the message
-        console.log(`Conversation with ID: ${groupId} saved.`);
-      });
+    return admin.firestore().collection('conversations').doc(groupId).set(message, { merge: true });
+    
+    //     .then(writeResult => {
+    //     // Send back a message that we've succesfully written the message
+    //     console.log(`Conversation with ID: ${groupId} saved.`);
+    //   });
     
 
 });
 
 
 
-//   exports.sendToSupport = functions.database.ref('/apps/{app_id}/users/jjXVZKQSzMhOhhyIjSVOGqy4cMd2/messages/{recipient_id}/{message_id}').onCreate(event => {
     exports.saveSupportMessagesToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
         const message_id = event.params.message_id;
       
@@ -460,13 +458,13 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
     
     
         console.log('it s a support message ');
-        // var conversationId = recipient_id;
-        // message.conversationId = conversationId;
+       
     
-        return admin.firestore().collection('messages').doc(message_id).set(message).then(writeResult => {
-            // Send back a message that we've succesfully written the message
-            console.log(`Message with ID: ${message_id} created.`);
-          });
+        return admin.firestore().collection('messages').doc(message_id).set(message);
+        // .then(writeResult => {
+        //     // Send back a message that we've succesfully written the message
+        //     console.log(`Message with ID: ${message_id} created.`);
+        //   });
         
     
     });
@@ -680,6 +678,8 @@ exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{
         console.log('SUCCESS! Posted', event.data.ref);        
         console.log('SUCCESS! response', response);           
         
+        return 0;
+
         });
 
     
