@@ -79,7 +79,6 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     var idBot;
 
     return request({
-        //uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid,
         uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid+"/operators",
         headers: {
             'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
@@ -214,7 +213,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 return 0;
             });
 
-
+            //Save to mongo
             return request({
                 uri: "http://api.chat21.org/"+projectid+"/requests",
                 headers: {
@@ -232,6 +231,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 console.log('Saved successfully to backend with response', response);           
                 
             });
+            
 
 
         });;

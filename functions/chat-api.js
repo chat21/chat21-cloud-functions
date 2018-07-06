@@ -7,20 +7,6 @@ const admin = require('firebase-admin');
 class ChatApi {
 
 
-// constructor(val) {
-//     ChatApi.CHAT_MESSAGE_STATUS = {
-//         FAILED : -100,
-//         SENDING : 0,
-//         SENT : 100, //saved into sender timeline
-//         DELIVERED : 150, //delivered to recipient timeline
-//         RECEIVED : 200, //received from the recipient client
-//         RETURN_RECEIPT: 250, //return receipt from the recipient client
-//         SEEN : 300 //seen
-
-//     }
-// }
-
-// exports.CHAT_MESSAGE_STATUS = CHAT_MESSAGE_STATUS;
 
     sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes) {
 
@@ -166,6 +152,10 @@ class ChatApi {
             
             if (conversationSnapshot.val()!=null){ 
                 var conversation = conversationSnapshot.val();
+
+                //update timestamp
+                conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
+
                 var newpath = '/apps/'+app_id+'/users/'+user_id+'/archived_conversations/'+recipient_id;
 
                 console.log("archiving conversation from " + path + " to path "+ newpath);
@@ -428,11 +418,14 @@ class ChatApi {
         const timestamp = admin.database.ServerValue.TIMESTAMP
 
     
-        this.insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp);
+        return Promise.all([ this.insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp),
+            this.sendMessageToTimelineInternal(message, sender_id, recipient_id, message_id, app_id, timestamp)]);
+                //.then(function(snapshots) {
+        // });
+        
+        // this.insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp);
+        // return this.sendMessageToTimelineInternal(message, sender_id, recipient_id, message_id, app_id, timestamp);
 
-        return this.sendMessageToTimelineInternal(message, sender_id, recipient_id, message_id, app_id, timestamp);
-
-        // return 0;
     }
 
     insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp) {
@@ -477,8 +470,13 @@ class ChatApi {
         }else {//is a group message
             // DEBUG console.log('sending group message ' + JSON.stringify(message) );
              //send to group timeline
-             chatApi.sendMessageToGroupTimeline(recipient_id, message, message_id, app_id);            
-            return chatApi.sendGroupMessageToMembersTimeline(sender_id, recipient_id, message, message_id, app_id);
+
+             return Promise.all([ chatApi.sendMessageToGroupTimeline(recipient_id, message, message_id, app_id),
+                chatApi.sendGroupMessageToMembersTimeline(sender_id, recipient_id, message, message_id, app_id)]);
+
+
+            //  chatApi.sendMessageToGroupTimeline(recipient_id, message, message_id, app_id);            
+            // return chatApi.sendGroupMessageToMembersTimeline(sender_id, recipient_id, message, message_id, app_id);
         }
 
     }
@@ -527,92 +525,6 @@ class ChatApi {
             }); 
     }
 
-    // sendGroupMessageToMembersTimeline(sender_id, recipient_group_id, message, message_id, app_id) {
-
-    //     var updates = {};
-        
-    //     return admin.database().ref('/apps/'+app_id+'/groups/'+recipient_group_id).once('value').then(function(groupSnapshot) {
-    //             // DEBUG console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
-    //             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
-
-    //             if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
-    //                 var group = groupSnapshot.val();
-    //                 console.log('group ' + JSON.stringify(group) );
-
-    //                 var groupMembers = group.members;
-    //                 var groupMembersAsArray = Object.keys(groupMembers);
-    //                 // DEBUG console.log('groupMembers ' + JSON.stringify(groupMembersAsArray) );
-                
-                
-    //                 //TODO check se sender è membro del gruppo
-    //                 // if (groupMembersAsArray.indexOf(sender_id)<0) {
-    //                 //     errore non sei membro del gruppo
-    //                 // }
-
-
-    //                 groupMembersAsArray.forEach(function(groupMember) {
-    //                     // console.log('groupMember ' + groupMember);
-
-    //                     //DON'T send a message to the sender of the message 
-    //                     if (groupMember!=sender_id) { 
-    //                         updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
-    //                     }
-    //                 });
-    //             }else {
-    //                 console.log('Warning: Group '+ recipient_group_id +' not found ' );
-    //                 //recipient_id is NOT a group
-    //                 return 0;
-    //             }
-
-    //             console.log('sendGroupMessageToMembersTimeline with message ' + JSON.stringify(message) + " TO: " + JSON.stringify(updates) );
-                
-    //             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
-
-    //         });
-    // }
-
-
-
-
-    // sendBroadcastChannelMessageToRecipientsTimeline(sender_id, recipient_channel_id, message, message_id, app_id) {
-    //     var updates = {};
-        
-    //         admin.database().ref('/apps/'+app_id+'/groups/'+recipient_channel_id).once('value').then(function(groupSnapshot) {
-    //             console.log('groupSnapshot ' + JSON.stringify(groupSnapshot) );
-    //             //console.log('snapshot.val() ' + JSON.stringify(snapshot.val()) );
-
-    //             if (groupSnapshot.val()!=null){ //recipient_id is a GROUP
-    //                 var isBroadcastGroup = groupSnapshot.val().broadcast;
-    //                 if (isBroadcastGroup==1) {
-
-    //                 }
-    //                 var groupMembers = groupSnapshot.val().members;
-    //                 var groupMembersAsArray = Object.keys(groupMembers);
-    //                 console.log('groupMembersAsArray ' + JSON.stringify(groupMembersAsArray) );
-    //                 //TODO check se sender è membro del gruppo
-    //                 // if (groupMembersAsArray.indexOf(sender_id)<0) {
-    //                 //     errore non sei membro del gruppo
-    //                 // }
-    //                 groupMembersAsArray.forEach(function(groupMember) {
-    //                     console.log('groupMember ' + groupMember);
-    //                     //DON'T send a message to the sender of the message 
-    //                     if (groupMember!=sender_id) { 
-    //                         //here recipient_id is the group_id
-    //                         updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
-    //                     }
-    //                 });
-    //             }else {
-    //                 console.warn('Warning: Group '+ recipient_group_id +' not found ' );
-    //                 //recipient_id is NOT a group
-                                
-    //             }
-
-    //             console.log('updates ' + JSON.stringify(updates) );
-                
-    //             return admin.database().ref('/apps/'+app_id+'/users').update(updates);
-
-    //         });
-    // }
 
     subscribeEmail(user_id, is_subscribed, app_id) {
 
