@@ -517,7 +517,7 @@ class ChatApi {
                     if (groupMember!=sender_id) { 
                         updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
                     }
-                });
+            });
         
                 console.log('sendGroupMessageToMembersTimeline with message ' + JSON.stringify(message) + " TO: " + JSON.stringify(updates) );
                 

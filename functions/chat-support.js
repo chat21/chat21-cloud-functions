@@ -207,11 +207,12 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
 
 
-            admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true }).then(writeResult => {
-                // Send back a message that we've succesfully written the message
-                console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
-                return 0;
-            });
+            admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true });
+            // .then(writeResult => {
+            //     // Send back a message that we've succesfully written the message
+            //     console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
+            //     return 0;
+            // });
 
             //Save to mongo
             return request({
@@ -228,7 +229,8 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 if (response.statusCode >= 400) {
                     throw new Error(`HTTP Error: ${response.statusCode}`);
                 }
-                console.log('Saved successfully to backend with response', response);           
+                console.log('Saved successfully to backend with response', response);  
+                return response;         
                 
             });
             
@@ -237,6 +239,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
         });;
 
 });
+
 
 
     // https://firebase.google.com/docs/firestore/manage-data/transactions
