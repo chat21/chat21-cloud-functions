@@ -27,6 +27,23 @@ class ChatBotSupportApi {
         
         console.log('qnaServiceUrl', qnaServiceUrl);
 
+        try {
+            if (question.indexOf("oggi")>-1) {
+                question = question + " " + new Date().toJSON().slice(0,10);
+            }
+            if (question.indexOf("domani")>-1) {
+                var tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+                question = question + " " + tomorrow.toJSON().slice(0,10);
+            }
+        }catch(e){
+            console.log('error adding date extra');
+        }
+        
+
+        console.log('question', question);
+
+
+
         return new Promise(function(resolve, reject) {
 
                 return request({            
