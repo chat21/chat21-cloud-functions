@@ -675,7 +675,7 @@ exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{
             // throw new Error(`HTTP Error: ${response.statusCode}`);
             console.error(`HTTP Error: ${response.statusCode}`);
         }else {
-            console.log('SUCCESS! Posted', event.data.ref);        
+            console.log('SUCCESS! Posted', data.ref);        
             console.log('SUCCESS! response', response);        
         }
 
