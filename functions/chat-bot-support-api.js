@@ -179,8 +179,8 @@ var chatBotSupportApi = new ChatBotSupportApi();
 
 chatBotSupportApi.LABELS = {
     EN : {
-        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \ n If you are satisfied, type \\ close to close the support chat or \\ agent to talk to an operator.",
-        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "I did not find an answer in the knowledge base. \ n Do you want to talk to an operator or reformulate your question? \ n Type \\ agent to talk to an operator or type a new question.",
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \n If you are satisfied, type \\close to close the support chat or \\agent to talk to an operator.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "I did not find an answer in the knowledge base. \n Do you want to talk to an operator or reformulate your question? \n Type \\agent to talk to an operator or type a new question.",
         //DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \ n If you are satisfied, type \\ close to close the support chat or reformulate your question.",
         DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "",
         DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "I did not find an answer in the knowledge base. \ n Please reformulate your question?"
