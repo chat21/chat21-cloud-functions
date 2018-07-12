@@ -51,10 +51,15 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
         return 0;
     }
 
+    var group_id = recipient_id; //recipient is the group id
+
+
 
     console.log("creating new request for message ", JSON.stringify(message));     
     
-    chatApi.typing("system", recipient_id, app_id);
+
+
+    chatApi.typing("system", group_id, app_id);
 
 
     var projectid = message.projectid;
@@ -67,178 +72,168 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     }
     console.log('departmentid', departmentid);
 
-    var group_id = recipient_id; //recipient is the group id
+
+
+
 
 
     var group_members = {};
-
+    var assigned_operator_id;
+    var idBot;
     var agents = [];
     var availableAgents= [];
     var availableAgentsCount= 0;
-    var assigned_operator_id;
-    var idBot;
 
-    return request({
-        uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid+"/operators",
-        headers: {
-            'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
-            'Content-Type': 'application/json'
-        },
-        method: 'GET',
-        json: true,
-        //resolveWithFullResponse: true
-        }).then(response => {
-           
-            if (!response) {
-                // throw new Error(`HTTP Error: ${response.statusCode}`);
-                console.log(`Error getting department.`);
-            }else {
-                console.log('SUCCESS! response', response);
+    return chatSupportApi.getDepartmentOperator(projectid, departmentid).then(response => {
 
-                if (response) {
-                    if (response.operators  && response.operators.length>0) {
-                        // var id_bot = "bot_"+response.id_bot;
-                        assigned_operator_id = response.operators[0].id_user;
-                        console.log('assigned_operator_id', assigned_operator_id);
+        idBot = response.idBot;
+        console.log("idBot", idBot);     
 
-                        group_members[assigned_operator_id] = 1; //bot
-                    }
-                    idBot = response.department.id_bot;
-                    console.log('idBot', idBot);
+        assigned_operator_id= response.assigned_operator_id;
+        console.log("assigned_operator_id", assigned_operator_id);     
 
-                    if (response.agents) {
-                        agents = response.agents;
-                        console.log('agents', agents);
-                    }
-                    if (response.available_agents) {
-                        availableAgents = response.available_agents;
-                        console.log('availableAgents', availableAgents);
-                        
-                        availableAgentsCount = availableAgents.length;
-                        console.log('availableAgentsCount', availableAgentsCount);
-                    }
-                }
-            }
-        
+        agents = response.agents;
+        console.log("agents", agents);     
 
-        })
-        .catch(function(error) { 
-            console.log("Error getting department.", error); 
-        })
-        .finally(function() { 
-            // console.log("finally"); 
+        availableAgents= response.availableAgents;
+        console.log("availableAgents", availableAgents);     
+
+        availableAgentsCount = response.availableAgentsCount;
+        console.log("availableAgentsCount", availableAgentsCount);     
+
+        group_members[assigned_operator_id] = 1;
+        console.log("group_members", group_members);     
 
 
-            if (!idBot) {
-                if (availableAgentsCount==0) {
-                    chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
-                }else {
-                    chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
-                }
-            }
+        return createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, message, app_id, group_members, 
+            departmentid, agents, availableAgents, assigned_operator_id);
+    }).catch(error => {
 
+        console.error("catch", error);     
 
-            // var group_name = " Support Group";
-            var group_name = "";
-
-            if (message.sender_fullname) {
-                group_name = message.sender_fullname;
-            }else {
-                group_name = "Guest";
-
-            }
-
-            var group_owner = "system";
-            group_members.system = 1;
-            group_members[message.sender] = 1;  //add system                
-
-        
-        
-            console.log("group_members", group_members);     
-
-            var gAttributes = null;
-            if (message.attributes){
-                gAttributes =  message.attributes;
-            }
-            console.log('gAttributes', gAttributes);
-
-            
-            chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, gAttributes);
-
-            
-
-        //creare firestore conversation
-            var newRequest = {};
-            newRequest.created_on = admin.firestore.FieldValue.serverTimestamp();
-            newRequest.requester_id = message.sender;
-            newRequest.requester_fullname = message.sender_fullname;
-            newRequest.first_text = message.text;
-            newRequest.departmentid = departmentid;
-
-            newRequest.members = group_members;
-            newRequest.membersCount = Object.keys(group_members).length;
-            newRequest.agents = agents;
-            newRequest.availableAgents = availableAgents;
-
-            if (assigned_operator_id) {
-                newRequest.assigned_operator_id = assigned_operator_id;
-            }
-
-            if (newRequest.membersCount==2){
-                newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.UNSERVED;
-            }else {
-                newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.SERVED;
-            }
-
-            if (message.attributes != null) {
-                newRequest.attributes = message.attributes;
-            }
-
-            newRequest.app_id = app_id;
-            
-            console.log('newRequest', newRequest);
-
-
-            chatApi.stopTyping("system", recipient_id, app_id);
-
-
-
-
-
-
-
-            admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true });
-            // .then(writeResult => {
-            //     // Send back a message that we've succesfully written the message
-            //     console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
-            //     return 0;
-            // });
-
-            //Save to mongo
-          /*   return request({
-                uri: "http://api.chat21.org/"+projectid+"/requests",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-                },
-                method: 'POST',
-                json: true,
-                body: newRequest,
-                //resolveWithFullResponse: true
-                }).then(response => {
-                if (response.statusCode >= 400) {
-                    throw new Error(`HTTP Error: ${response.statusCode}`);
-                }
-                console.log('Saved successfully to backend with response', response);  
-                return response;         
-                
-            }); */
-            
-
-
-        });;
+        return createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, message, app_id, group_members, 
+            departmentid, agents, availableAgents, assigned_operator_id);
+    });
 
 });
+
+function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, message, app_id, group_members, 
+    departmentid, agents, availableAgents, assigned_operator_id) {
+    
+    if (!idBot) {
+        if (availableAgentsCount==0) {
+            chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
+        }else {
+            chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
+        }
+    }
+
+    chatApi.stopTyping("system", group_id, app_id);
+
+    return Promise.all([createNewGroup(message, group_id, group_members, app_id), saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id)]);
+
+    // createNewGroup(message, group_id, group_members, app_id);
+    // return saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id);
+
+}
+
+function createNewGroup(message, group_id, group_members, app_id) {
+    // var group_name = " Support Group";
+    var group_name = "";
+
+    if (message.sender_fullname) {
+        group_name = message.sender_fullname;
+    }else {
+        group_name = "Guest";
+
+    }
+
+    var group_owner = "system";
+    group_members.system = 1;
+    group_members[message.sender] = 1;  //add system                
+
+
+
+    console.log("group_members", group_members);     
+
+    var gAttributes = null;
+    if (message.attributes){
+        gAttributes =  message.attributes;
+    }
+    console.log('gAttributes', gAttributes);
+
+    
+    return chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, gAttributes);
+
+}
+
+function saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id) {
+        //creare firestore conversation
+        var newRequest = {};
+        newRequest.created_on = admin.firestore.FieldValue.serverTimestamp();
+        newRequest.requester_id = message.sender;
+        newRequest.requester_fullname = message.sender_fullname;
+        newRequest.first_text = message.text;
+        newRequest.departmentid = departmentid;
+
+        newRequest.members = group_members;
+        newRequest.membersCount = Object.keys(group_members).length;
+        newRequest.agents = agents;
+        newRequest.availableAgents = availableAgents;
+
+        if (assigned_operator_id) {
+            newRequest.assigned_operator_id = assigned_operator_id;
+        }
+
+        if (newRequest.membersCount==2){
+            newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.UNSERVED;
+        }else {
+            newRequest.support_status = chatSupportApi.CHATSUPPORT_STATUS.SERVED;
+        }
+
+        if (message.attributes != null) {
+            newRequest.attributes = message.attributes;
+        }
+
+        newRequest.app_id = app_id;
+        
+        console.log('newRequest', newRequest);
+
+
+        return admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true });
+        // .then(writeResult => {
+        //     // Send back a message that we've succesfully written the message
+        //     console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
+        //     return 0;
+        // });
+
+    //Save to mongo
+
+    // return request({
+    //     uri: "http://api.chat21.org/"+projectid+"/requests",
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+    //     },
+    //     method: 'POST',
+    //     json: true,
+    //     body: newRequest,
+    //     //resolveWithFullResponse: true
+    //     }).then(response => {
+    //     if (response.statusCode >= 400) {
+    //         // throw new Error(`HTTP Error: ${response.statusCode}`);
+    //         console.error(`HTTP Error: ${response.statusCode}`);
+    //     }else {
+    //         console.log('Saved successfully to backend with response', response);  
+    //     }
+
+    //     return response;             
+        
+    // });
+    
+
+}
+
 
 
 
@@ -677,13 +672,17 @@ exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{
         //resolveWithFullResponse: true
         }).then(response => {
         if (response.statusCode >= 400) {
-            throw new Error(`HTTP Error: ${response.statusCode}`);
+            // throw new Error(`HTTP Error: ${response.statusCode}`);
+            console.error(`HTTP Error: ${response.statusCode}`);
+        }else {
+            console.log('SUCCESS! Posted', event.data.ref);        
+            console.log('SUCCESS! response', response);        
         }
 
         console.log('SUCCESS! Posted', data.ref);        
         console.log('SUCCESS! response', response);           
         
-        return 0;
+        return response;
 
         });
 

@@ -54,9 +54,9 @@ app.post('/:app_id/requests', (req, res) => {
       cors(req, res, () => {
         let sender_id = req.user.uid;
 
-        if (!req.body.request_id) {
-          res.status(405).send('request_id is not present!');
-      }
+        // if (!req.body.request_id) {
+        //   res.status(405).send('request_id is not present!');
+        // }
 
         if (!req.body.sender_fullname) {
             res.status(405).send('Sender Fullname is not present!');
@@ -94,6 +94,11 @@ app.post('/:app_id/requests', (req, res) => {
         // request_id=request_id.replace("-Re: ","-");
         console.log('request_id', request_id);
         
+        if (!request_id) {
+          request_id = new Date().getTime();
+          console.log('request_id', request_id);
+        }
+
         console.log('recipient_fullname', recipient_fullname);
         console.log('text', text);
         console.log('app_id', app_id);
@@ -104,12 +109,12 @@ app.post('/:app_id/requests', (req, res) => {
         console.log('hased_request_id', hased_request_id);
 
       
-        var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, hased_request_id, recipient_fullname, text, app_id, null, projectid);
+        chatApi.sendGroupMessage(sender_id, sender_fullname, hased_request_id, recipient_fullname, text, app_id, null, projectid).then(function(result) {
+          console.log('result', result);
+
+          res.status(201).send(result);
+        });
        
-
-        console.log('result', result);
-
-        res.status(201).send(result);
         // [END sendResponse]
       });
     });

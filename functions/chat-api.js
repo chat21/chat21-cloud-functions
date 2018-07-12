@@ -194,14 +194,16 @@ class ChatApi {
                     return resolve(group);
                 }else {
                     var error = 'Warning: Group '+ group_id +' not found ';
-                    console.log(error );
+                    console.warn(error );
                     //recipient_id is NOT a group
                     // return 0;
                     return reject(error);
                 }
         
         
-            });
+            }).catch(function(error) {
+                return reject(error);
+            })
         });
     }
 
@@ -211,23 +213,26 @@ class ChatApi {
 
         return new Promise(function(resolve, reject) {
 
-            return that.getGroupById(group_id, app_id).then(function(group) {
+            return that.getGroupById(group_id, app_id)
+                .then(function(group) {
 
-                // if (group) {
-                    var groupMembers = group.members;
+                    // if (group) {
+                        var groupMembers = group.members;
 
-                    // DEBUG console.log("groupMembers", groupMembers);
+                        // DEBUG console.log("groupMembers", groupMembers);
 
-                    var groupMembersAsArray = Object.keys(groupMembers);
+                        var groupMembersAsArray = Object.keys(groupMembers);
+                    
+                    //    DEBUG  console.log("groupMembersAsArray", groupMembersAsArray);
+
+                        return resolve(groupMembersAsArray);
+                    // }
+
+
                 
-                //    DEBUG  console.log("groupMembersAsArray", groupMembersAsArray);
-
-                    return resolve(groupMembersAsArray);
-                // }
-
-
-            
-            });
+                }).catch(function(error){
+                    return reject(error);
+                });
         });
     }
 
