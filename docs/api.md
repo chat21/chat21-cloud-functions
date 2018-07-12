@@ -355,7 +355,7 @@ Example:
   curl -X POST \
       -H 'Content-Type: application/json' \
       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
-       -d '{"sender_fullname": "<FULLNAME>", "request_id": "<ID_REQUEST>","text":"helo from API","projectid":"<Project_id>"}' \
+       -d '{"sender_fullname": "<FULLNAME>", "text":"helo from API","projectid":"<Project_id>"}' \
       https://us-central1-<project-id>.cloudfunctions.net/supportapi/<APP_ID>/requests
 ```
 
@@ -363,7 +363,7 @@ Example:
 ```
    curl -X POST \
        -H 'Content-Type: application/json' \
-       -d '{"sender_fullname": "Andrea Leo", "request_id": "andrea.leo@f21.it-Re: subject", "text":"hello from API","projectid":"5ab0f32757066e0014bfd718"}' \
+       -d '{"sender_fullname": "Andrea Leo", "text":"hello from API","projectid":"5ab0f32757066e0014bfd718"}' \
        'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/requests?token=chat21-secret-orgAa,'
 ```
 
