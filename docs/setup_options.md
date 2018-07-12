@@ -3,7 +3,7 @@
 Use with Google Cloud environment to configure the platform.
 
 # Retrieve your configuration
-Run the follow command to retrieve your environment variables ``` firebase functions:config:get``` 
+Run the follow command to retrieve your environment variables ```firebase functions:config:get``` 
 
 ## Email Notification
 * Enable email notification with: ```firebase functions:config:set email.enabled=true```
@@ -19,6 +19,8 @@ Run the follow command to retrieve your environment variables ``` firebase funct
 
 # SUPPORT MODE
 * Enable Support features with: ```firebase functions:config:set support.enabled=true```
+* Enable Firestore database under Firebase Console with Allow All permissions
+* Configure billing account to make external network call to web services
 
 # CHANNEL GENERAL
 

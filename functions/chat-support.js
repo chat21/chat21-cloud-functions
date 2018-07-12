@@ -18,21 +18,21 @@ const chatUtil = require('./chat-util');
 
 // START SUPPORT
 
-exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate(event => {
-    // const sender_id = event.params.sender_id; 
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
+exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
+    // const sender_id = context.params.sender_id; 
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;;
     console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
     
-    // const messageRef = event.data.ref;
+    // const messageRef = data.ref;
     // console.log('messageRef ' + messageRef);
 
-    // // const messageKey = event.data.current.key;
+    // // const messageKey = data.current.key;
     // const messageKey = messageRef.key;
     // console.log('messageKey ' + messageKey);
 
 
-    const messageWithMessageId = event.data.current.val();
+    const messageWithMessageId = data.val();
     console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
 
     const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
@@ -215,7 +215,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             // });
 
             //Save to mongo
-            return request({
+          /*   return request({
                 uri: "http://api.chat21.org/"+projectid+"/requests",
                 headers: {
                     'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
                 console.log('Saved successfully to backend with response', response);  
                 return response;         
                 
-            });
+            }); */
             
 
 
@@ -296,11 +296,11 @@ function updateMembersCount(group_id, operation, app_id) {
        });
    
 }
-exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
-    const member_id = event.params.member_id;
-    const group_id = event.params.group_id;
-    const app_id = event.params.app_id;;
+    const member_id = context.params.member_id;
+    const group_id = context.params.group_id;
+    const app_id = context.params.app_id;;
    // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
     
 
@@ -330,7 +330,9 @@ exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_
                 
                 var docConv = docConvRef.data();
 
-                if (!docConv.members.hasOwnProperty(member_id)) {
+                console.log("docConv.members", docConv.members);
+
+                if (!docConv.members || !docConv.members.hasOwnProperty(member_id)) {
 
                     console.log("member_id not present into docConv");
 
@@ -355,11 +357,11 @@ exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_
 });
 
 
-exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete(event => {
+exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
     
-    const member_id = event.params.member_id;
-    const group_id = event.params.group_id;
-    const app_id = event.params.app_id;;
+    const member_id = context.params.member_id;
+    const group_id = context.params.group_id;
+    const app_id = context.params.app_id;;
    // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
     
 
@@ -397,13 +399,13 @@ exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{
 
 
 
-exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-    const message_id = event.params.message_id;
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
+exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+    const message_id = context.params.message_id;
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;;
     console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-    const message = event.data.current.val();
+    const message = data.val();
     console.log('message ' + JSON.stringify(message));
 
     console.log("message.status : " + message.status);     
@@ -439,14 +441,14 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
 
 
-    exports.saveSupportMessagesToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-        const message_id = event.params.message_id;
+    exports.saveSupportMessagesToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+        const message_id = context.params.message_id;
       
-        const recipient_id = event.params.recipient_id;
-        const app_id = event.params.app_id;;
+        const recipient_id = context.params.recipient_id;
+        const app_id = context.params.app_id;;
         console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
         
-        const message = event.data.current.val();
+        const message = data.val();
         console.log('message ' + JSON.stringify(message));
     
         console.log("message.status : " + message.status);     
@@ -477,15 +479,15 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
 
 
-exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     
-    const message_id = event.params.message_id;
+    const message_id = context.params.message_id;
       
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;;
     // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-    const message = event.data.current.val();
+    const message = data.val();
     // DEBUG  console.log('message ' + JSON.stringify(message));
 
     // DEBUG console.log("message.status : " + message.status);     
@@ -572,15 +574,15 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
 });
 
 
-exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     
-    const message_id = event.params.message_id;
+    const message_id = context.params.message_id;
       
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;;
     // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-    const message = event.data.current.val();
+    const message = data.val();
     // DEBUG  console.log('message ' + JSON.stringify(message));
 
     // DEBUG console.log("message.status : " + message.status);     
@@ -611,13 +613,13 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 });
 
 
-// exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
+// exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
     
-//     const group_id = event.params.group_id;
-//     const app_id = event.params.app_id;;
+//     const group_id = context.params.group_id;
+//     const app_id = context.params.app_id;;
 //     console.log("group_id: "+ group_id + ", app_id: " + app_id);
   
-//     const group = event.data.current.val();
+//     const group = data.val();
 //     console.log("group",group);
     
 //     if (group_id.indexOf("support-group")==-1 ){
@@ -638,13 +640,13 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 
 
 
-exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
-    const message_id = event.params.message_id;
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;
+exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+    const message_id = context.params.message_id;
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;
     // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-    const message = event.data.current.val();
+    const message = data.val();
     // DEBUG console.log('message ' + JSON.stringify(message));
 
     // DEBUG console.log("message.status : " + message.status);     
@@ -678,7 +680,7 @@ exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{
             throw new Error(`HTTP Error: ${response.statusCode}`);
         }
 
-        console.log('SUCCESS! Posted', event.data.ref);        
+        console.log('SUCCESS! Posted', data.ref);        
         console.log('SUCCESS! response', response);           
         
         return 0;
@@ -693,19 +695,19 @@ exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{
 
 
 
-exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
     // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
-    const message_id = event.params.message_id;
+    const message_id = context.params.message_id;
 
-    const sender_id = event.params.sender_id;
+    const sender_id = context.params.sender_id;
 
    
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;;
     // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-    const message = event.data.current.val();
+    const message = data.val();
 
     if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
         return 0;

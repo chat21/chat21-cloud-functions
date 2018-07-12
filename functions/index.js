@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 
 var admin = require('firebase-admin');
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp();
 
 
 
@@ -9,6 +9,9 @@ const chatApi = require('./chat-api');
 
 const chatHttpApi = require('./chat-http-api');
 exports.api = functions.https.onRequest(chatHttpApi.api);
+
+//let functions.config() = JSON.parse(process.env.FIREBASE_CONFIG);
+//console.log("functions.config()", functions.config());
 
 
 if (functions.config().support && functions.config().support.enabled) {
@@ -28,18 +31,18 @@ if (functions.config().webhook && functions.config().webhook.enabled) {
     exports.webhook = chatWebHook;
 }
 
-  exports.insertAndSendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+  exports.insertAndSendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
    
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id;
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
+    const message_id = context.params.message_id;
+    const sender_id = context.params.sender_id;
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;;
     console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-    const message = event.data.current.val();
+    const message = data.val();
     console.log('message ' + JSON.stringify(message));
 
-    const messageRef = event.data.ref;
+    const messageRef = data.ref;
     //console.log('messageRef ' + messageRef );
 
     
@@ -62,16 +65,16 @@ if (functions.config().webhook && functions.config().webhook.enabled) {
 
 
 //se metto {uid} prende utente corrente
-exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
    
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id;    
-    const recipient_id = event.params.recipient_id;  
-    const app_id = event.params.app_id;;
+    const message_id = context.params.message_id;
+    const sender_id = context.params.sender_id;    
+    const recipient_id = context.params.recipient_id;  
+    const app_id = context.params.app_id;;
 //    DEBUG  console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
 
    
-    const message = event.data.current.val();
+    const message = data.val();
     console.log('message ' + JSON.stringify(message));
 
     if (message.attributes && message.attributes.updateconversation==false) {
@@ -130,28 +133,33 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
 
 
 //only for direct message
-  exports.sendMessageReturnReceipt = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onUpdate(event => {
+  exports.sendMessageReturnReceipt = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onUpdate((change, context) => {
    
-    const message_id = event.params.message_id;
-    const sender_id = event.params.sender_id;
-    const recipient_id = event.params.recipient_id;
-    const app_id = event.params.app_id;;
+    const message_id = context.params.message_id;
+    const sender_id = context.params.sender_id;
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;;
 //    DEBUG  console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
-    const message = event.data.current.val();
+    const message = change.after.val();
     // DEBUG console.log('message ' + JSON.stringify(message));
 
-    // const messageRef = event.data.ref;
+    // const messageRef = event.ref;
     //console.log('messageRef ' + messageRef );
 
     // DEBUG console.log("message.status : " + message.status);      
     //console.log("message.is_group : " + message.is_group);      
     
-    var eventSnapshot = event.data;
-    var messageStatusSnapshot = eventSnapshot.child('status');
+
+
+
+    //var messageStatusSnapshot = change.child('status');
+    //console.log("messageStatusSnapshot : " + messageStatusSnapshot);      
+
     if (
         (message.channel_type==null  || message.channel_type=="direct") //only for direct message
-        && messageStatusSnapshot.changed() && message.status==chatApi.CHAT_MESSAGE_STATUS.RECEIVED
+        //TODO ATTENTION && messageStatusSnapshot.changed() 
+        && message.status==chatApi.CHAT_MESSAGE_STATUS.RECEIVED
         ) {
 
         var path = '/apps/'+app_id+'/users/'+recipient_id+'/messages/'+sender_id + '/'+ message_id;
@@ -177,18 +185,18 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
 
 
 
-  exports.fanOutGroup = functions.database.ref('/apps/{tenantId}/groups/{groupId}').onWrite(event => {
+  exports.fanOutGroup = functions.database.ref('/apps/{tenantId}/groups/{groupId}').onWrite((data, context) => {
     
-     //console.log('event.data: ' +  event.data);
+     //console.log('event: ' +  event);
    
-     const tenantId = event.params.tenantId;
+     const tenantId = context.params.tenantId;
      console.log("tenantId : " + tenantId);
    
-     const groupId = event.params.groupId;
+     const groupId = context.params.groupId;
      console.log("groupId : " + groupId);
    
    
-     const group = event.data.current.val();
+     const group = data.after.val();
      
      console.log('group ' + JSON.stringify(group) );
    
@@ -220,9 +228,9 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      var previousMembersAsArray = [];
      
      //var deletedMembers = [];
-     if (event.data.previous.exists()) {
-       previousMembers = event.data.previous.val().members;
-       //console.log('previousMembers ' + JSON.stringify(previousMembers));
+     if (data.before.exists()) {
+       previousMembers = data.before.val().members;
+       console.log('previousMembers ' + JSON.stringify(previousMembers));
        previousMembersAsArray = Object.keys(previousMembers);
        console.log('previousMembersAsArray ' + JSON.stringify(previousMembersAsArray));
      }
@@ -255,13 +263,13 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
 
   
 
-   exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate(event => {
+   exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
     
-     const group_id = event.params.group_id;
-     const app_id = event.params.app_id;;
+     const group_id = context.params.group_id;
+     const app_id = context.params.app_id;;
      console.log("group_id: "+ group_id + ", app_id: " + app_id);
    
-     const group = event.data.current.val();
+     const group = data.val();
      console.log("group",group);
      
      if (group_id.indexOf("support-group")>-1 ){
@@ -281,11 +289,11 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
   });
 
 
-exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
-     const member_id = event.params.member_id;
-     const group_id = event.params.group_id;
-     const app_id = event.params.app_id;;
+     const member_id = context.params.member_id;
+     const group_id = context.params.group_id;
+     const app_id = context.params.app_id;;
     // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
      
      
@@ -313,14 +321,14 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
 });
 
 
-exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate(event => {
+exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
-     const member_id = event.params.member_id;
-     const group_id = event.params.group_id;
-     const app_id = event.params.app_id;;
+     const member_id = context.params.member_id;
+     const group_id = context.params.group_id;
+     const app_id = context.params.app_id;;
      console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
      
-     const member = event.data.current.val();
+     const member = data.val();
      console.log("member", member);
 
 
@@ -358,10 +366,10 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
 });
 
 if (functions.config().group && functions.config().group.general && functions.config().group.general.autojoin ) {
-    exports.addToGeneralMembersOnContantCreation = functions.database.ref('/apps/{app_id}/contacts/{contact_id}').onCreate(event => {
+    exports.addToGeneralMembersOnContantCreation = functions.database.ref('/apps/{app_id}/contacts/{contact_id}').onCreate((data, context) => {
         
-        const contact_id = event.params.contact_id;
-        const app_id = event.params.app_id;;
+        const contact_id = context.params.contact_id;
+        const app_id = context.params.app_id;;
         // DEBUG console.log("contact_id: "+ contact_id + ", app_id: " + app_id);
     
         var group_id = "general_group";

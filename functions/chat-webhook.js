@@ -4,7 +4,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const chatApi = require('./chat-api');
 const request = require('request-promise');  
-
+//let functions.config() = JSON.parse(process.env.FIREBASE_CONFIG);
 
 function callSendAPI(sender_psid, response) {
   // Construct the message body
@@ -34,19 +34,19 @@ function callSendAPI(sender_psid, response) {
   }); 
 }
 
-exports.sendToFB = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate(event => {
+exports.sendToFB = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
   // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
-  const message_id = event.params.message_id;
+  const message_id = context.params.message_id;
 
-  const sender_id = event.params.sender_id;
+  const sender_id = context.params.sender_id;
 
  
-  const recipient_id = event.params.recipient_id;
-  const app_id = event.params.app_id;;
+  const recipient_id = context.params.recipient_id;
+  const app_id = context.params.app_id;;
   // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
   
-  const message = event.data.current.val();
+  const message = data.val();
 
   if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
       return 0;
