@@ -141,11 +141,12 @@ class ChatApi {
     }
 
     archiveConversationForAllGroupMembers(group_id, app_id) {
+        var that = this;
         return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
             
             groupMembers.forEach(function(groupMember) {
                     console.log('groupMember ' + groupMember);            
-                    this.archiveConversation(user_id, group_id, app_id);
+                    that.archiveConversation(groupMember, group_id, app_id);
                    
                 });
         
