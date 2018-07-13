@@ -65,6 +65,12 @@ exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{se
       return 0;
     }
 
+    if (message.attributes && message.attributes.sendnotification==false) {
+      console.log('not send push notification because sendnotification is false');
+      return 0;
+    }
+
+
     const text = message.text;
     const messageTimestamp = JSON.stringify(message.timestamp);
 

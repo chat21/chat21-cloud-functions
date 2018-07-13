@@ -300,20 +300,37 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
      const fromPath = '/apps/'+app_id+'/messages/' + group_id;
     //  console.log("fromPath", fromPath);
 
-     return admin.database().ref(fromPath).orderByChild("timestamp").once('value').then(function(messagesSnap) {
+     return admin.database().ref(fromPath).orderByChild("timestamp").once('value').then(function(messageSnap) {
         // console.log('messagesSnap ' + JSON.stringify(messagesSnap) );
 
-            if (messagesSnap.val()!=null){
-                var messages = messagesSnap.val();
-                // console.log('messages ' + JSON.stringify(messages) );
+        //called multiple time for each message
+            if (messageSnap.val()!=null){
+                var message = messageSnap.val();
+                console.log('message ' + JSON.stringify(message) );
 
+                //disable notification
+                // if (message.attributes) {
+                //     message.attributes.sendnotification = false;
+                // }
+
+                //disable notification
+                // var i = 0;
+                // messages.forEach(function(message) {
+                //     if (i>0) {
+                //         if (message.attributes) {
+                //             message.attributes.sendnotification = false;
+                //         }
+                //     }                          
+                //     console.log('message ' + message);    
+                // });
+                
                 const toPath = '/apps/'+app_id+'/users/' + member_id+'/messages/'+group_id;
                 // console.log("toPath", toPath);
 
-                console.log('duplicating messages ' + JSON.stringify(messages) + " from : " + fromPath + " to " + toPath);
-                return admin.database().ref(toPath).update(messages);
+                console.log('duplicating message ' + JSON.stringify(message) + " from : " + fromPath + " to " + toPath);
+                return admin.database().ref(toPath).update(message);
             } else {
-                console.log("messages is null. Nothing to duplicate");
+                console.log("message is null. Nothing to duplicate");
                 return 0;
             }
         });

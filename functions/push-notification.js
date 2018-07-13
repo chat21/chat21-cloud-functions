@@ -52,6 +52,11 @@ const chatApi = require('./chat-api');
         return 0;
     }
 
+    if (message.attributes && message.attributes.sendnotification==false) {
+        console.log('not send push notification because sendnotification is false');
+        return 0;
+    }
+
 
     // if (functions.config().push && functions.config().push.disabled && functions.config().push.mute.for ) {
 
