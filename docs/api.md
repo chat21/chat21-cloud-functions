@@ -369,11 +369,18 @@ Example:
 
 ## Close Support group
 
+Where :
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
+- <GROUP_ID>: is the group id to close
+- open: (Optional)If true reopen an existing closed group
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+
 ```
     curl -X PUT \
        -H 'Content-Type: application/json' \
        -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
-       https://us-central1-<project-id>.cloudfunctions.net/supportapi/<APP_ID>/groups/<GROUP_ID>
+       https://us-central1-<project-id>.cloudfunctions.net/supportapi/<APP_ID>/groups/<GROUP_ID>?open=true/false
 ```
 
 Example:

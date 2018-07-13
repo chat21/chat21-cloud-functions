@@ -13,18 +13,63 @@ class ChatSupportApi {
 
     //unused
     updateSupportStatus(group_id, support_status) {
-        
-        var dataToUpdate = {
-            "support_status": support_status
-        }
+        return new Promise(function(resolve, reject) {
 
-        return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
-            // Send back a message that we've succesfully written the message
-            console.log(`support_status updated with value: ${JSON.stringify(dataToUpdate)}`);
+            var dataToUpdate = {
+                "support_status": support_status
+            }
 
-        return 0;
+            return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
+                // Send back a message that we've succesfully written the message
+                console.log(`support_status updated with value: ${JSON.stringify(dataToUpdate)}`);
+                return resolve(writeResult);
+            });
         });
     }
+    openChat(group_id, app_id) {
+
+        return admin.firestore().collection("conversations").doc(group_id).get().then(docConvRef => {
+            if (docConvRef.exists) {
+    
+                console.log("docConvRef", docConvRef);
+                    
+                    var docConv = docConvRef.data();
+    
+                    console.log("docConv.members", docConv.members);
+    
+                    if (docConv.members) {
+
+                        var newMembersCount = Object.keys(docConv.members).length
+                        console.log("newMembersCount", newMembersCount);
+
+                        var newStatus;
+                        if (newMembersCount<=1) {
+                            newStatus = this.CHATSUPPORT_STATUS.CLOSED;                            
+                           } else if (newMembersCount==2) {
+                            newStatus = this.CHATSUPPORT_STATUS.UNSERVED;                            
+                           } else {  //>2
+                            newStatus = this.CHATSUPPORT_STATUS.SERVED;                            
+                           }     
+                        
+                           return this.updateSupportStatus(group_id, newStatus).then(function() {
+                                return chatApi.sendGroupMessage("system", "System", group_id, "Support Group", "Reopen", app_id, {subtype:"info/support"});
+                           });
+                        } else {
+                        console.log("no members");
+    
+                    }
+            }
+
+    });
+
+        
+      
+        // var members = {"system":1};
+        // var result =  chatApi.setMembersGroup(members, group_id, app_id);
+      
+        // return result;
+    }
+
 
     closeChat(group_id, app_id) {
 
@@ -171,19 +216,22 @@ chatSupportApi.LABELS = {
         JOIN_OPERATOR_MESSAGE : "We are putting you in touch with an operator..",
         NO_AVAILABLE_OPERATOR_MESSAGE : "Hello, no operators are available at the moment. Please leave a chat message, we will reply to you soon.",
         TOUCHING_OPERATOR: "We are putting you in touch with an operator. Please wait..",
-        THANKS_MESSAGE: "Thank you for using our support system"
+        THANKS_MESSAGE: "Thank you for using our support system",
+        REOPEN_MESSAGE : "Chat re-opened"
     },
     IT : {
         JOIN_OPERATOR_MESSAGE : "La stiamo mettendo in contatto con un operatore. Attenda...",
         NO_AVAILABLE_OPERATOR_MESSAGE : "Salve al momento non è disponibile alcun operatore. Lasci un messaggio in chat, la contatteremo presto.",
         TOUCHING_OPERATOR :"La stiamo mettendo in contatto con un operatore. Attenda...",
-        THANKS_MESSAGE: "Grazie per aver utilizzato il nostro sistema di supporto"
+        THANKS_MESSAGE: "Grazie per aver utilizzato il nostro sistema di supporto",
+        REOPEN_MESSAGE : "Chat riaperta"
     },
     "IT-IT" : {
         JOIN_OPERATOR_MESSAGE : "La stiamo mettendo in contatto con un operatore. Attenda...",
         NO_AVAILABLE_OPERATOR_MESSAGE : "Salve al momento non è disponibile alcun operatore. Lasci un messaggio in chat, la contatteremo presto.",
         TOUCHING_OPERATOR :"La stiamo mettendo in contatto con un operatore. Attenda...",
-        THANKS_MESSAGE: "Grazie per aver utilizzato il nostro sistema di supporto"
+        THANKS_MESSAGE: "Grazie per aver utilizzato il nostro sistema di supporto",
+        REOPEN_MESSAGE : "Chat riaperta"
     }
 }
 

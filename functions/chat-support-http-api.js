@@ -148,26 +148,39 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
         let app_id = req.params.app_id;
         let user_id = req.user.uid;
 
+        let open = false;
+        if (req.query.open) {
+          open = req.query.open;
+        }
+
 
         console.log('group_id', group_id);
         console.log('app_id', app_id);
         console.log('user_id', user_id);
+        console.log('open', open);
 
        
         // var result =  chatSupportApi.closeChat(group_id, app_id);
 
         // chatApi.archiveConversation(user_id, group_id, app_id);
 
-        Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversationForAllGroupMembers(group_id, app_id)]).then(function(snapshots) {
-          // Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversation(user_id, group_id, app_id)]).then(function(snapshots) {
-
-          
-          // firebaseData.members = snapshots[0];
-          // firebaseData.events = snapshots[1];
-          // console.log(firebaseData);
-          // res.render("cac", firebaseData);
-          res.status(200).send();
-        });
+        if (open==false) {
+          Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversationForAllGroupMembers(group_id, app_id)]).then(function(snapshots) {
+            // Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversation(user_id, group_id, app_id)]).then(function(snapshots) {
+  
+            
+            // firebaseData.members = snapshots[0];
+            // firebaseData.events = snapshots[1];
+            // console.log(firebaseData);
+            // res.render("cac", firebaseData);
+            res.status(200).send();
+          });
+        }else {
+          chatSupportApi.openChat(group_id, app_id).then(function(snapshots) {
+            res.status(200).send();
+          });
+        }
+      
         
         // console.log('result', result);
 

@@ -1,4 +1,3 @@
-
 {
     "rules": {
       "apps": {
@@ -45,6 +44,9 @@
                   // "$conversation_id":{
                     //  ".indexOn": ["timestamp"]
                   // }
+                },
+                "archived_conversations":{
+                  ".indexOn": ["timestamp"]
                 }
             }
           }
