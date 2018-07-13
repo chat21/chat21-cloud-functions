@@ -101,7 +101,9 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
         availableAgentsCount = response.availableAgentsCount;
         console.log("availableAgentsCount", availableAgentsCount);     
 
-        group_members[assigned_operator_id] = 1;
+        if (assigned_operator_id) {
+            group_members[assigned_operator_id] = 1;
+        }
         console.log("group_members", group_members);     
 
 
