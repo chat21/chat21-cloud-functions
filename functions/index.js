@@ -278,7 +278,7 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
      }
 
      var sender_id =  "system";
-     var sender_fullname = "Sistema";
+     var sender_fullname = "System";
 
 
      if (group && group.name) {
@@ -361,7 +361,7 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
      }
 
      var sender_id =  "system";
-     var sender_fullname = "Sistema";
+     var sender_fullname = "System";
 
 
      return chatApi.getGroupById(group_id, app_id).then(function (group) {

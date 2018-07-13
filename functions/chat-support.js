@@ -124,9 +124,9 @@ function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, 
     
     if (!idBot) {
         if (availableAgentsCount==0) {
-            chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
+            chatApi.sendGroupMessage("system", "System", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
         }else {
-            chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
+            chatApi.sendGroupMessage("system", "System", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
         }
     }
 
@@ -505,7 +505,7 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
     // if (message.sender.startsWith("bot_") == false && message.text.indexOf("\\agent") > -1) {
     if (message.text.indexOf("\\agent") == 0) {
         console.log('message contains \\agent');
-        chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group", chatUtil.getMessage("TOUCHING_OPERATOR", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
+        chatApi.sendGroupMessage("system", "System", group_id, "Support Group", chatUtil.getMessage("TOUCHING_OPERATOR", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
 
         chatSupportApi.removeBotFromGroupMember(group_id, app_id);
 
@@ -600,7 +600,7 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
     // if (message.sender.startsWith("bot_") == false && message.text.indexOf("\\close") > -1) {
     if (message.text.indexOf("\\close") == 0) {
         console.log('message contains \\close');
-        chatApi.sendGroupMessage("system", "Sistema", group_id, "Support Group",chatUtil.getMessage("THANKS_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
+        chatApi.sendGroupMessage("system", "System", group_id, "Support Group",chatUtil.getMessage("THANKS_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
 
         return chatSupportApi.closeChat(group_id, app_id);
     }else {
@@ -625,7 +625,7 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 //    }
 
 //     var sender_id =  "system";
-//     var sender_fullname = "Sistema";
+//     var sender_fullname = "System";
 
 //     // chatApi.typing(sender_id, group_id, app_id);
 
