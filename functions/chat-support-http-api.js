@@ -158,7 +158,10 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
 
         // chatApi.archiveConversation(user_id, group_id, app_id);
 
-        Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversation(user_id, group_id, app_id)]).then(function(snapshots) {
+        Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversationForAllGroupMembers(group_id, app_id)]).then(function(snapshots) {
+          // Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversation(user_id, group_id, app_id)]).then(function(snapshots) {
+
+          
           // firebaseData.members = snapshots[0];
           // firebaseData.events = snapshots[1];
           // console.log(firebaseData);

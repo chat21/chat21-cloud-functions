@@ -140,6 +140,22 @@ class ChatApi {
 
     }
 
+    archiveConversationForAllGroupMembers(group_id, app_id) {
+        return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
+            
+            groupMembers.forEach(function(groupMember) {
+                    console.log('groupMember ' + groupMember);            
+                    this.archiveConversation(user_id, group_id, app_id);
+                   
+                });
+        
+                console.log('archiveConversationForAllMembers');
+                
+                return 0;
+            }); 
+
+    }
+
     archiveConversation(user_id, recipient_id, app_id) {
         var path = '/apps/'+app_id+'/users/'+user_id+'/conversations/'+recipient_id;
 
