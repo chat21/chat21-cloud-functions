@@ -290,8 +290,10 @@ function updateMembersCount(group_id, operation, app_id) {
            });
        }).then(function(membersCount) {
            console.log("Transaction successfully committed with membersCount: ", membersCount);
+           return 0;
        }).catch(function(error) {
            console.log("Transaction failed: ", error);
+           return error;
        });
    
 }
@@ -348,8 +350,11 @@ exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_
                     // });
                 } else {
                     console.log("member_id already present into docConv");
+                    return 0;
 
                 }
+        }else {
+            return 0;
         }
 //   
     });
@@ -559,6 +564,7 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
                 if (!response) {
                     // throw new Error(`HTTP Error: ${response.statusCode}`);
                     console.log(`Error getting department.`);
+                    return 0;
                 }else {
                     console.log('SUCCESS! response', response);
     
@@ -568,9 +574,13 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
                             var assigned_operator_id = response.operators[0].id_user;
                             console.log('assigned_operator_id', assigned_operator_id);
 
-                            chatApi.joinGroup(assigned_operator_id, group_id, app_id);
+                           return chatApi.joinGroup(assigned_operator_id, group_id, app_id);
     
+                        } else {
+                            return 0;
                         }                        
+                    }else {
+                        return 0;
                     }
                 }
             
@@ -578,6 +588,7 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
             })
             .catch(function(error) { 
                 console.log("Error getting department.", error); 
+                return error;
             });
         
 

@@ -59,7 +59,7 @@ module.exports = {
             }
 
             console.log('idToken', idToken);
-            admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
+            return admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
                 req.user = decodedIdToken;
                 console.log('req.user', req.user);
 
