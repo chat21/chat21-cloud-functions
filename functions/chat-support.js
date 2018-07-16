@@ -15,6 +15,8 @@ const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const chatUtil = require('./chat-util');
 
+const http = require('http');
+const agent = new http.Agent({keepAlive: true});
 
 // START SUPPORT
 
@@ -84,7 +86,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     var availableAgents= [];
     var availableAgentsCount= 0;
 
-    return chatSupportApi.getDepartmentOperator(projectid, departmentid).then(response => {
+    return chatSupportApi.getDepartmentOperator(projectid, departmentid,agent).then(response => {
 
         idBot = response.idBot;
         console.log("idBot", idBot);     
@@ -124,9 +126,9 @@ function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, 
     
     if (!idBot) {
         if (availableAgentsCount==0) {
-            chatApi.sendGroupMessage("system", "System", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
+            chatApi.sendGroupMessage("system", "System", group_id, "Support Group", chatUtil.getMessage("NO_AVAILABLE_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {"updateconversation" : false});
         }else {
-            chatApi.sendGroupMessage("system", "System", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {subtype:"info/support", "updateconversation" : false});
+            chatApi.sendGroupMessage("system", "System", group_id, "Support Group", chatUtil.getMessage("JOIN_OPERATOR_MESSAGE", message.language, chatSupportApi.LABELS), app_id, {"updateconversation" : false});
         }
     }
 
@@ -472,8 +474,29 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
     });
 
 
+    // var path = '/apps/'+app_id+'/users/'+user_id+'/archived_conversations/'+recipient_id;
+exports.reopenSupportRequest = functions.database.ref('/apps/{app_id}/users/{user_id}/archived_conversations/{recipient_id}').onDelete((snap, context) => {
+    const app_id = context.params.app_id;
+    const user_id = context.params.user_id;
+    const recipient_id = context.params.recipient_id;
+    console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", user_id: " + user_id);
+
+    if (recipient_id.indexOf("support-group")==-1 ){
+        console.log('exit for recipient');
+        return 0;
+    }
+    if (user_id!="system") {
+        console.log('only system can reopen a support chat');
+        return 0;
+    }
 
 
+    const deletedData = snap.val(); // data that was deleted
+
+    console.log('deletedData', deletedData);
+
+    return chatSupportApi.openChat(recipient_id, app_id);
+});
 
 
 exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
@@ -481,7 +504,7 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
     const message_id = context.params.message_id;
       
     const recipient_id = context.params.recipient_id;
-    const app_id = context.params.app_id;;
+    const app_id = context.params.app_id;
     // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
     
     const message = data.val();
@@ -528,6 +551,7 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
                 'Content-Type': 'application/json'
             },
             method: 'GET',
+            agent: agent,
             json: true,
             //resolveWithFullResponse: true
             }).then(response => {
@@ -752,6 +776,7 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
         },
         method: 'GET',
         json: true,
+        agent: agent,
         //resolveWithFullResponse: true
         }).then(response => {
             if (!response) {

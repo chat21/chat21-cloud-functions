@@ -131,12 +131,41 @@ class ChatApi {
         return admin.database().ref(path).remove();
 
     }
+    //NOT in use
+    deleteArchivedConversationIfExists(user_id, recipient_id, app_id) {
+        var that = this;
+        return new Promise(function(resolve, reject) {
+
+            var path = '/apps/'+app_id+'/users/'+user_id+'/archived_conversations/'+recipient_id;
+            return admin.database().ref(path).once('value').then(function(conversationSnapshot) {
+                //console.log('conversationSnapshot ' + JSON.stringify(conversationSnapshot) );
+                if (conversationSnapshot.val()){ //exists
+                    console.log('conversationSnapshot exists ' + JSON.stringify(conversationSnapshot.val()) );
+                    return that.deleteArchivedConversation(user_id, recipient_id, app_id).then(function(){
+                        return resolve(conversationSnapshot.val());
+                    });
+                }else {
+                    console.log('conversationSnapshot not exists ');
+                    return resolve();
+                }
+            });
+
+             
+        });
+    }
 
     deleteArchivedConversation(user_id, recipient_id, app_id) {
-        var path = '/apps/'+app_id+'/users/'+user_id+'/archived_conversations/'+recipient_id;
+        // return new Promise(function(resolve, reject) {
 
-        console.log("deleteArchivedConversation from " + path);
-        return admin.database().ref(path).remove();
+            var path = '/apps/'+app_id+'/users/'+user_id+'/archived_conversations/'+recipient_id;
+
+            console.log("deleteArchivedConversation from " + path);
+            return admin.database().ref(path).remove();
+            // .then(function(a) {
+            //     console.log("aXXXX " + a);
+            //     return resolve(a);
+            // })
+        // });
 
     }
 

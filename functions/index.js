@@ -6,6 +6,7 @@ admin.initializeApp();
 
 
 const chatApi = require('./chat-api');
+// const chatSupportApi = require('./chat-support-api');
 
 const chatHttpApi = require('./chat-http-api');
 exports.api = functions.https.onRequest(chatHttpApi.api);
@@ -85,7 +86,7 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     var conversation = {};
     // console.log("message.status : " + message.status);       
 
-    if (message.status == null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING) {
+    if (message.status == null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING) { //i'm the sender
         conversation.is_new = false;
         conversation.sender = sender_id; //message.sender could be null because saveMessage could be called after
         conversation.recipient = recipient_id;  ///message.recipient could be null because saveMessage could be called after  
@@ -118,7 +119,23 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
 
     //delete archived conv if present
-    chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
+//    chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
+
+    // chatApi.deleteArchivedConversationIfExists(sender_id, recipient_id, app_id).then(function(archived_conversation) {
+    //     // console.log('archived_conversation', archived_conversation);
+    //     if (archived_conversation && 
+    //         archived_conversation.recipient.indexOf("support-group")>-1 &&
+    //         (message.status == null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING)
+    //         ){ //the message sender will reopen the support group
+    //         console.log('reopening the support request', archived_conversation);
+    //         if (functions.config().support && functions.config().support.enabled) {
+    //             return chatSupportApi.openChat(archived_conversation.recipient, app_id);
+    //         }
+            
+    //     }
+    // });
+
+
 
     
     var path = '/apps/'+app_id+'/users/'+sender_id+'/conversations/'+recipient_id;
@@ -130,6 +147,20 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
    
   });
 
+  exports.deleteArchivedConversation = functions.database.ref('/apps/{app_id}/users/{sender_id}/conversations/{recipient_id}').onCreate((data, context) => {
+    const sender_id = context.params.sender_id;    
+    const recipient_id = context.params.recipient_id;  
+    const app_id = context.params.app_id;;
+    console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id);
+
+   
+    const conversation = data.val();
+    console.log('conversation ' + JSON.stringify(conversation));
+
+    return chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
+
+    
+  });
 
 
 //only for direct message

@@ -52,12 +52,14 @@ class ChatSupportApi {
                            }     
                         
                            return this.updateSupportStatus(group_id, newStatus).then(function() {
-                                return chatApi.sendGroupMessage("system", "System", group_id, "Support Group", "Reopen", app_id, {subtype:"info/support"});
+                                return chatApi.sendGroupMessage("system", "System", group_id, "Support Group", "Chat reopened", app_id, {subtype:"info/support"});
                            });
                         } else {
-                        console.log("no members");
-    
-                    }
+                            console.log("no members");
+                            return 0;
+                        }
+            }else {
+                return 0;
             }
 
     });
@@ -103,7 +105,7 @@ class ChatSupportApi {
       }
 
 
-      getDepartmentOperator(projectid, departmentid) {
+      getDepartmentOperator(projectid, departmentid,agent) {
 
 
         var that = this;
@@ -128,6 +130,7 @@ class ChatSupportApi {
                     },
                     method: 'GET',
                     json: true,
+                    agent: agent //The same approach works for HTTPS—just use https.Agent instead of http.Agent.
                     //resolveWithFullResponse: true
                     }).then(response => {
                     
