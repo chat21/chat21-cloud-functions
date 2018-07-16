@@ -210,7 +210,7 @@ class ChatApi {
                     console.log(`successfully copied`);
             
                     return that.deleteConversation(user_id, recipient_id, app_id);
-                    });
+                });
         
             }else {
                 console.log("conversation not found under " + path);

@@ -165,7 +165,10 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
         // chatApi.archiveConversation(user_id, group_id, app_id);
 
         if (open==false) {
-          Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversationForAllGroupMembers(group_id, app_id)]).then(function(snapshots) {
+          Promise.all([ chatSupportApi.closeChat(group_id, app_id), 
+              chatApi.archiveConversationForAllGroupMembers(group_id, app_id),
+              chatApi.archiveConversation(user_id, group_id, app_id) //for old conversation where only group member is system
+            ]).then(function(snapshots) {
             // Promise.all([ chatSupportApi.closeChat(group_id, app_id), chatApi.archiveConversation(user_id, group_id, app_id)]).then(function(snapshots) {
   
             

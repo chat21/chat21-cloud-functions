@@ -52,7 +52,7 @@ class ChatSupportApi {
                            }     
                         
                            return this.updateSupportStatus(group_id, newStatus).then(function() {
-                                return chatApi.sendGroupMessage("system", "System", group_id, "Support Group", "Chat reopened", app_id, {subtype:"info/support"});
+                                return chatApi.sendGroupMessage("system", "System", group_id, "Support Group", "Chat reopened", app_id, {subtype:"info/support","updateconversation" : false});
                            });
                         } else {
                             console.log("no members");
@@ -75,7 +75,9 @@ class ChatSupportApi {
 
     closeChat(group_id, app_id) {
 
-        return this.updateSupportStatus(group_id, this.CHATSUPPORT_STATUS.CLOSED);
+        return this.updateSupportStatus(group_id, this.CHATSUPPORT_STATUS.CLOSED).then(function() {
+            return chatApi.sendGroupMessage("system", "System", group_id, "Support Group", "Chat closed", app_id, {subtype:"info/support","updateconversation" : false});
+       });
       
         // var members = {"system":1};
         // var result =  chatApi.setMembersGroup(members, group_id, app_id);

@@ -71,7 +71,7 @@ const chatApi = require('./chat-api');
     
     // DEBUG console.log(`--->/apps/${app_id}/users/${sender_id}/instanceId`);
 
-return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instances`).once('value').then(function(instancesIdAsObj) {
+    return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instances`).once('value').then(function(instancesIdAsObj) {
     // return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
       
         console.log('instancesIdAsObj ' + instancesIdAsObj); 
@@ -132,6 +132,8 @@ return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instances`).once
                         error.code === 'messaging/registration-token-not-registered') {
                         tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
                     }
+
+                    return error;
                 }
             });
             return Promise.all(tokensToRemove);
