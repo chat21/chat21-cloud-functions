@@ -23,24 +23,28 @@ var moment = require('moment');
 
 
 
-let mailTransport = null;
+let mailTransport;
 
-if (functions.config().email.endpoint) {
-  console.log('mail enabled with mailTrasport endpoint ',functions.config().email.endpoint);
-  mailTransport = nodemailer.createTransport(functions.config().email.endpoint);
-}
+if (!mailTransport) {
+  if (functions.config().email.endpoint) {
+    console.log('mail enabled with mailTrasport endpoint ',functions.config().email.endpoint);
+    mailTransport = nodemailer.createTransport(functions.config().email.endpoint);
+  }
 
-if (functions.config().email.gmail && functions.config().email.gmail.user  && functions.config().email.gmail.password) {
-  console.log('mail enabled with mailTrasport gmail user',functions.config().email.gmail.user);
-  console.log('mail enabled with mailTrasport gmail password',functions.config().email.gmail.password);
+  if (functions.config().email.gmail && functions.config().email.gmail.user  && functions.config().email.gmail.password) {
+    console.log('mail enabled with mailTrasport gmail user',functions.config().email.gmail.user);
+    console.log('mail enabled with mailTrasport gmail password',functions.config().email.gmail.password);
 
-  mailTransport = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: functions.config().email.gmail.user,
-        pass:functions.config().email.gmail.password
-      }
-    });
+    mailTransport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: functions.config().email.gmail.user,
+          pass:functions.config().email.gmail.password
+        }
+      });
+  }
+}else{
+  console.log('mailTransport already init');
 }
 
 

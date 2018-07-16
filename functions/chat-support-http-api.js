@@ -120,6 +120,85 @@ app.post('/:app_id/requests', (req, res) => {
       });
     });
 
+    
+
+    //curl 'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/requests/create?token=chat21-secret-orgAa,&sender_fullname=Bash&text=pingfromAPI&projectid=5b45e1c75313c50014b3abc6'
+    app.get('/:app_id/requests/create', (req, res) => {
+      console.log('create request');
+    
+       
+          if (req.method !== 'GET') {
+            res.status(403).send('Forbidden!');
+          }
+          
+          cors(req, res, () => {
+            let sender_id = req.user.uid;
+    
+            // if (!req.body.request_id) {
+            //   res.status(405).send('request_id is not present!');
+            // }
+    
+            if (!req.query.sender_fullname) {
+                res.status(405).send('Sender Fullname is not present!');
+            }
+           
+           
+            if (!req.query.text) {
+                res.status(405).send('text  is not present!');
+            }
+            if (!req.params.app_id) {
+                res.status(405).send('app_id is not present!');
+            }
+    
+            if (!req.query.projectid) {
+              res.status(405).send('projectid is not present!');
+             }
+    
+            if (req.query.sender_id) {
+              sender_id = req.query.sender_id;
+            }
+    
+            let request_id = req.query.request_id;
+    
+            let sender_fullname = req.query.sender_fullname;
+            let recipient_fullname = "Support Group";
+            let text = req.query.text;
+            let app_id = req.params.app_id;
+            let projectid = req.query.projectid;
+    
+            
+    
+            console.log('sender_id', sender_id);
+            console.log('sender_fullname', sender_fullname);
+            
+            // request_id=request_id.replace("-Re: ","-");
+            console.log('request_id', request_id);
+            
+            if (!request_id) {
+              request_id = new Date().getTime();
+              console.log('request_id', request_id);
+            }
+    
+            console.log('recipient_fullname', recipient_fullname);
+            console.log('text', text);
+            console.log('app_id', app_id);
+            console.log('projectid', projectid);
+    
+            
+            //let hased_request_id = "support-group-"+md5(request_id);
+            let hased_request_id = "support-group-"+ request_id;
+            console.log('hased_request_id', hased_request_id);
+    
+          
+            chatApi.sendGroupMessage(sender_id, sender_fullname, hased_request_id, recipient_fullname, text, app_id, null, projectid).then(function(result) {
+              console.log('result', result);
+    
+              res.status(201).send(result);
+            });
+           
+            // [END sendResponse]
+          });
+        });
   
  /**
  * Close support group
