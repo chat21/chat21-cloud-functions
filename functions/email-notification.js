@@ -23,6 +23,27 @@ var moment = require('moment');
 
 
 
+let mailTransport = null;
+
+if (functions.config().email.endpoint) {
+  console.log('mail enabled with mailTrasport endpoint ',functions.config().email.endpoint);
+  mailTransport = nodemailer.createTransport(functions.config().email.endpoint);
+}
+
+if (functions.config().email.gmail && functions.config().email.gmail.user  && functions.config().email.gmail.password) {
+  console.log('mail enabled with mailTrasport gmail user',functions.config().email.gmail.user);
+  console.log('mail enabled with mailTrasport gmail password',functions.config().email.gmail.password);
+
+  mailTransport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: functions.config().email.gmail.user,
+        pass:functions.config().email.gmail.password
+      }
+    });
+}
+
+
 exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id; 
@@ -298,25 +319,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
           // ################ END EMAIL ################ //  
       
           //const mailTransport = nodemailer.createTransport(`smtp://postmaster@mg.frontiere21.it:bd2324866fa29bae0a4553c069bdd279@smtp.mailgun.org`);
-          let mailTransport = null;
-
-          if (functions.config().email.endpoint) {
-            console.log('mail enabled with mailTrasport endpoint ',functions.config().email.endpoint);
-            mailTransport = nodemailer.createTransport(functions.config().email.endpoint);
-          }
-
-          if (functions.config().email.gmail && functions.config().email.gmail.user  && functions.config().email.gmail.password) {
-            console.log('mail enabled with mailTrasport gmail user',functions.config().email.gmail.user);
-            console.log('mail enabled with mailTrasport gmail password',functions.config().email.gmail.password);
-
-            mailTransport = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                  user: functions.config().email.gmail.user,
-                  pass:functions.config().email.gmail.password
-                }
-              });
-          }
+         
 
           if (!mailTransport) {
             throw "mailTransport is not defined";
