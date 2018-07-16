@@ -139,6 +139,7 @@ return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instances`).once
         })
         .catch(function (error) {
             console.log("Error sending message:", error);
+            return 0;
         });
 
     });

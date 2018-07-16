@@ -36,8 +36,8 @@ module.exports = {
 
             if (authHeader==false && authQueryStr==false){
                 console.log('authorization not present');
-                res.status(403).send('Unauthorized');
-                return;
+                return res.status(403).send('Unauthorized');
+                
             }
             let idToken;
             if (authHeader) {
@@ -65,7 +65,7 @@ module.exports = {
 
                 return next();
             }).catch(() => {
-                res.status(403).send('Unauthorized');
+                return res.status(403).send('Unauthorized');
             });
 
 

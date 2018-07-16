@@ -329,7 +329,7 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
           //   });
 
           // get the email settings value
-          admin.database().ref(`/apps/${tenant}/users/${recipient}/settings/email`).once('value').then(function (snapshot) {
+          return admin.database().ref(`/apps/${tenant}/users/${recipient}/settings/email`).once('value').then(function (snapshot) {
             // The Promise was succeeded
 
             // send the email if the email subscription is enabled
@@ -341,11 +341,13 @@ function sendNewMessageNotificationEmail(sender_fullname, recipient, recipient_f
             } else  {
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New email sent to:' + recipientEmail);
+                return 0;
               });
             }
           }, function (error) {
             // The Promise was rejected.
             console.error(error);
+            return error;
           });
         }else {
           console.log('Email not enabled');
