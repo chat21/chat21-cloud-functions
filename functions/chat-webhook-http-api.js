@@ -25,7 +25,7 @@ const cors = require('cors')({origin: true});
 
 const appWebHook = express();
 const chatHttpAuth = require('./chat-http-auth');
-var md5 = require('md5');
+//var md5 = require('md5');
 // const request = require('request');
 
 const request = require('request-promise');  
@@ -79,7 +79,8 @@ appWebHook.post('/:project_id', (req, res) => {
       console.log("text",text);
 
 
-      let hased_request_id = "support-group-"+md5(sender_id+"-"+webhook_event.recipient.id);
+      //let hased_request_id = "support-group-"+md5(sender_id+"-"+webhook_event.recipient.id);
+      let hased_request_id = "support-group-"+ sender_id+"-"+webhook_event.recipient.id;
       console.log("hased_request_id",hased_request_id);
 
       let app_id = "tilechat";

@@ -15,7 +15,7 @@ exports.api = functions.https.onRequest(chatHttpApi.api);
 //console.log("functions.config()", functions.config());
 
 
-if (functions.config().support && functions.config().support.enabled) {
+if (functions.config().support && functions.config().support.enabled && functions.config().support.enabled=="true") {
     const supportChat = require('./chat-support');
     exports.support = supportChat;
 
@@ -24,7 +24,7 @@ if (functions.config().support && functions.config().support.enabled) {
 }
 
 
-if (functions.config().webhook && functions.config().webhook.enabled) {
+if (functions.config().webhook && functions.config().webhook.enabled && functions.config().webhook.enabled=="true") {
     const chatWebHookHttpApi = require('./chat-webhook-http-api');
     exports.webhookapi = functions.https.onRequest(chatWebHookHttpApi.api);
 

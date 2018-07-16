@@ -213,27 +213,29 @@ function saveNewRequest (message, departmentid, group_members, agents, available
 
     //Save to mongo
 
-    // return request({
-    //     uri: "http://api.chat21.org/"+projectid+"/requests",
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-    //     },
-    //     method: 'POST',
-    //     json: true,
-    //     body: newRequest,
-    //     //resolveWithFullResponse: true
-    //     }).then(response => {
-    //     if (response.statusCode >= 400) {
-    //         // throw new Error(`HTTP Error: ${response.statusCode}`);
-    //         console.error(`HTTP Error: ${response.statusCode}`);
-    //     }else {
-    //         console.log('Saved successfully to backend with response', response);  
-    //     }
+    // if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
+    //     return request({
+    //         uri: "http://api.chat21.org/"+projectid+"/requests",
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+    //         },
+    //         method: 'POST',
+    //         json: true,
+    //         body: newRequest,
+    //         //resolveWithFullResponse: true
+    //         }).then(response => {
+    //         if (response.statusCode >= 400) {
+    //             // throw new Error(`HTTP Error: ${response.statusCode}`);
+    //             console.error(`HTTP Error: ${response.statusCode}`);
+    //         }else {
+    //             console.log('Saved successfully to backend with response', response);  
+    //         }
 
-    //     return response;             
-        
-    // });
+    //         return response;             
+            
+    //     });
+    // }
     
 
 }
@@ -254,7 +256,8 @@ function updateMembersCount(group_id, operation, app_id) {
            // This code may get re-run multiple times if there are conflicts.
            return transaction.get(conversationDocRef).then(function(conversationDoc) {
                if (!conversationDoc.exists) {
-                   throw "Document does not exist!";
+                   //throw "Document does not exist!";
+                   console.error("Document does not exist!");
                }
    
                var oldMemberCount = 0; //default is 2
@@ -671,62 +674,62 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 // });
 
 
+if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
+    exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+        const message_id = context.params.message_id;
+        const recipient_id = context.params.recipient_id;
+        const app_id = context.params.app_id;
+        // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+        
+        const message = data.val();
+        // DEBUG console.log('message ' + JSON.stringify(message));
 
-exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
-    const message_id = context.params.message_id;
-    const recipient_id = context.params.recipient_id;
-    const app_id = context.params.app_id;
-    // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
-    
-    const message = data.val();
-    // DEBUG console.log('message ' + JSON.stringify(message));
+        // DEBUG console.log("message.status : " + message.status);     
 
-    // DEBUG console.log("message.status : " + message.status);     
-
-    if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
-        return 0;
-    }
-
-    if (recipient_id.indexOf("support-group")==-1 ){
-        console.log('exit for recipient');
-        return 0;
-    }
-
-    console.log('it s a message to nodejs ');
-
-    var projectid = message.projectid;
-    console.log('projectId',projectid);
-    
-    return request({
-        uri: "http://api.chat21.org/"+projectid+"/messages",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-        },
-        method: 'POST',
-        json: true,
-        body: message,
-        //resolveWithFullResponse: true
-        }).then(response => {
-        if (response.statusCode >= 400) {
-            // throw new Error(`HTTP Error: ${response.statusCode}`);
-            console.error(`HTTP Error: ${response.statusCode}`);
-        }else {
-            console.log('SUCCESS! Posted', data.ref);        
-            console.log('SUCCESS! response', response);        
+        if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+            return 0;
         }
 
-        console.log('SUCCESS! Posted', data.ref);        
-        console.log('SUCCESS! response', response);           
+        if (recipient_id.indexOf("support-group")==-1 ){
+            console.log('exit for recipient');
+            return 0;
+        }
+
+        console.log('it s a message to nodejs ');
+
+        var projectid = message.projectid;
+        console.log('projectId',projectid);
         
-        return response;
+        return request({
+            uri: "http://api.chat21.org/"+projectid+"/messages",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+            },
+            method: 'POST',
+            json: true,
+            body: message,
+            //resolveWithFullResponse: true
+            }).then(response => {
+            if (response.statusCode >= 400) {
+                // throw new Error(`HTTP Error: ${response.statusCode}`);
+                console.error(`HTTP Error: ${response.statusCode}`);
+            }else {
+                console.log('SUCCESS! Posted', data.ref);        
+                console.log('SUCCESS! response', response);        
+            }
 
-        });
+            console.log('SUCCESS! Posted', data.ref);        
+            console.log('SUCCESS! response', response);           
+            
+            return response;
 
-    
-    
-});
-  
+            });
+
+        
+        
+    });
+}  
 
 
 
@@ -791,7 +794,8 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
         //resolveWithFullResponse: true
         }).then(response => {
             if (!response) {
-                throw new Error(`HTTP Error`);
+               // throw new Error(`HTTP Error`);
+               console.error('HTTP Error', response);         
             }
 
             console.log('SUCCESS! response', response);           

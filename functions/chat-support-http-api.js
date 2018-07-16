@@ -22,7 +22,7 @@ const admin = require('firebase-admin');
 const chatApi = require('./chat-api');
 const express = require('express');
 const cors = require('cors')({origin: true});
-var md5 = require('md5');
+//var md5 = require('md5');
 
 const app = express();
 // const language = new Language({projectId: process.env.GCLOUD_PROJECT});
@@ -105,7 +105,8 @@ app.post('/:app_id/requests', (req, res) => {
         console.log('projectid', projectid);
 
         
-        let hased_request_id = "support-group-"+md5(request_id);
+        //let hased_request_id = "support-group-"+md5(request_id);
+        let hased_request_id = "support-group-"+ request_id;
         console.log('hased_request_id', hased_request_id);
 
       
