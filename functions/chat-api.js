@@ -468,6 +468,7 @@ class ChatApi {
     insertAndSendMessageInternal(messageRef, message, sender_id, recipient_id, message_id, app_id) {
         let timestamp = admin.database.ServerValue.TIMESTAMP;
         console.log("server cloud function timestamp", timestamp);
+        console.log("server cloud function timestamp", new Date());
 
         if (message && message.timestamp) {
             console.log("message.timestamp", message.timestamp);
