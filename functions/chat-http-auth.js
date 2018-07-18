@@ -37,7 +37,7 @@ module.exports = {
             if (authHeader==false && authQueryStr==false){
                 console.log('authorization not present');
                 res.status(403).send('Unauthorized');
-                
+                return;
             }
             let idToken;
             if (authHeader) {
@@ -59,7 +59,7 @@ module.exports = {
             }
 
             console.log('idToken', idToken);
-            return admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
+            admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
                 req.user = decodedIdToken;
                 console.log('req.user', req.user);
 
