@@ -240,7 +240,7 @@ class ChatApi {
                     return resolve(group);
                 }else {
                     var error = 'Warning: Group '+ group_id +' not found ';
-                    console.warn(error );
+                    console.log(error );
                     //recipient_id is NOT a group
                     // return 0;
                     return reject(error);
@@ -466,7 +466,13 @@ class ChatApi {
     //INTERNAL METHOD
 
     insertAndSendMessageInternal(messageRef, message, sender_id, recipient_id, message_id, app_id) {
-        const timestamp = admin.database.ServerValue.TIMESTAMP
+        let timestamp = admin.database.ServerValue.TIMESTAMP;
+        console.log("server cloud function timestamp", timestamp);
+
+        if (message && message.timestamp) {
+            console.log("message.timestamp", message.timestamp);
+            timestamp = message.timestamp;
+        }
 
     
         return Promise.all([ this.insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp),
@@ -479,8 +485,13 @@ class ChatApi {
 
     }
 
-    insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp) {
-       
+    insertAndSendMessageInternalUpdates(messageRef, message, sender_id, recipient_id, message_id, app_id) {
+        var updates= [];
+        const timestamp = admin.database.ServerValue.TIMESTAMP
+        
+    }
+
+    insertMessageInternalUpdates(message, sender_id, recipient_id, timestamp) {
         var update = {};
 
         update.sender = sender_id;
@@ -497,7 +508,11 @@ class ChatApi {
 
         console.log('inserting new message  with ' + JSON.stringify(update));
 
-        return messageRef.update(update);
+        return update;
+    }
+
+    insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp) {       
+        return messageRef.update(this.insertMessageInternalUpdates(message, sender_id, recipient_id, timestamp));
     }
 
 

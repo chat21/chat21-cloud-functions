@@ -18,6 +18,36 @@ const chatUtil = require('./chat-util');
 const http = require('http');
 const agent = new http.Agent({keepAlive: true});
 
+
+// function keeplive() {
+//     if (functions.config().support.keeplive && functions.config().support.keeplive.enabled && functions.config().support.keeplive.enabled=="true") {
+//         console.log('PING enabled');  
+//         return setInterval(function() {
+//                     return request({
+//                         uri: "https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/requests?token=chat21-secret-orgAa,",
+//                         headers: {
+//                             'Content-Type': 'application/json',
+//                             //'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+//                         },
+//                         method: 'POST',
+//                         json: true,
+//                         body: {"sender_fullname": "Bash", "text":"ping from API","projectid":"5b45e1c75313c50014b3abc6"},
+//                         //resolveWithFullResponse: true
+//                         }).then(response => {
+//                         if (response.statusCode >= 400) {
+//                             // throw new Error(`HTTP Error: ${response.statusCode}`);
+//                             console.error(`PING HTTP Error: ${response.statusCode}`);
+//                         }else {
+//                             console.log('PING success to backend with response', response);  
+//                         }
+            
+//                         return response;             
+                        
+//                     });
+//                 }
+//             , 300000); // every 5 minutes (300000)
+//     }
+// }
 // START SUPPORT
 
 exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
