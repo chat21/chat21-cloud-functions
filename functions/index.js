@@ -119,6 +119,7 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
 
     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
     if (message.timestamp) {
+        console.log("message.timestamp",message.timestamp);
         conversation.timestamp = message.timestamp;
     }
     
