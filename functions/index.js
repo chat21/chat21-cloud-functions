@@ -116,7 +116,12 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
 
     //conversation.status = message.status;
     conversation.status = 2;
+
     conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
+    if (message.timestamp) {
+        conversation.timestamp = message.timestamp;
+    }
+    
 
     //delete archived conv if present
 //    chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
