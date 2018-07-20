@@ -220,6 +220,114 @@ class ChatApi {
         
     }
 
+    getLastMessage(sender_id, recipient_id, app_id) {
+        const messagePath = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_id;
+        //console.log("messagePath:",messagePath);
+
+        return new Promise(function(resolve, reject) {
+            return admin.database().ref(messagePath).orderByChild("timestamp").limitToLast(1).once('value').then(function(lastMessageSnapshot) {
+                //console.log('lastMessageSnapshot ' + JSON.stringify(lastMessageSnapshot) );
+                
+                if (lastMessageSnapshot.val()!=null){ 
+                
+                    var message = lastMessageSnapshot.val();
+                    //console.log('message ' + JSON.stringify(message) );
+        
+                    
+                    return resolve(message);
+                }else {
+                    var error = 'Empty message for  sender_id'+ sender_id +' and recipient_id ' + recipient_id;
+                    console.log(error );
+                    //recipient_id is NOT a group
+                    // return 0;
+                    return reject(error);
+                }
+        
+        
+            }).catch(function(error) {
+                return reject(error);
+            })
+        });
+    
+    }
+
+
+    createConversationInternal(sender_id, recipient_id, app_id, message) {
+        //console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message: " + message);
+
+        if (message.attributes && message.attributes.updateconversation==false) {
+            console.log('not update the conversation because updateconversation is false');
+            return 0;
+        }
+    
+        var conversation = {};
+        // console.log("message.status : " + message.status);       
+    
+        if (message.status == null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING) { //i'm the sender
+            conversation.is_new = false;
+            conversation.sender = sender_id; //message.sender could be null because saveMessage could be called after
+            conversation.recipient = recipient_id;  ///message.recipient could be null because saveMessage could be called after  
+        } else {
+            conversation.is_new = true;
+            conversation.sender = message.sender;
+            conversation.recipient = message.recipient;  
+        }
+       
+        conversation.last_message_text = message.text;
+        if (message.sender_fullname){ //message potrebbe non avere il sender fullname perche la app non l'ha passato. in questo caso se nn c'è il fullname anche la conversation non ha il fullname
+            conversation.sender_fullname = message.sender_fullname;
+        }
+        if (message.recipient_fullname){        
+            conversation.recipient_fullname = message.recipient_fullname;
+        }
+    
+        if (message.channel_type!=null) {
+            conversation.channel_type = message.channel_type;
+        }else {
+            conversation.channel_type = "direct";
+        }
+        
+        if (message.type!=null) {
+            conversation.type = message.type;
+        }
+    
+        //conversation.status = message.status;
+        conversation.status = 2;
+    
+        conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
+        if (message.timestamp) {
+            //console.log("message.timestamp",message.timestamp);
+            conversation.timestamp = message.timestamp;
+        }
+        
+    
+        //delete archived conv if present
+    //    chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
+    
+        // chatApi.deleteArchivedConversationIfExists(sender_id, recipient_id, app_id).then(function(archived_conversation) {
+        //     // console.log('archived_conversation', archived_conversation);
+        //     if (archived_conversation && 
+        //         archived_conversation.recipient.indexOf("support-group")>-1 &&
+        //         (message.status == null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING)
+        //         ){ //the message sender will reopen the support group
+        //         console.log('reopening the support request', archived_conversation);
+        //         if (functions.config().support && functions.config().support.enabled) {
+        //             return chatSupportApi.openChat(archived_conversation.recipient, app_id);
+        //         }
+                
+        //     }
+        // });
+    
+    
+    
+        
+        var path = '/apps/'+app_id+'/users/'+sender_id+'/conversations/'+recipient_id;
+    
+        console.log('creating conversation ' + JSON.stringify(conversation) + " to: "+ path);
+    
+        return admin.database().ref(path).set(conversation);
+    }
+
 
 
     getGroupById(group_id, app_id) {
@@ -363,16 +471,16 @@ class ChatApi {
 
 
     getContactById(contact_id, app_id) {
-        console.log("getting contact with id " + contact_id + " and app_id "+ app_id);
+        //console.log("getting contact with id " + contact_id + " and app_id "+ app_id);
 
         return new Promise(function(resolve, reject) {
             // Do async job
             return admin.database().ref('/apps/'+app_id+'/contacts/'+contact_id).once('value').then(function(contactSnapshot) {
-               console.log('contactSnapshot ' + JSON.stringify(contactSnapshot) );        
+               //console.log('contactSnapshot ' + JSON.stringify(contactSnapshot) );        
                 
                 if (contactSnapshot.val()!=null){ 
                     var contact = contactSnapshot.val();
-                    console.log('contact ' + JSON.stringify(contact) );
+                    //console.log('contact ' + JSON.stringify(contact) );
         
                     
                     return resolve(contact);

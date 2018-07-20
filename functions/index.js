@@ -73,83 +73,16 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     const recipient_id = context.params.recipient_id;  
     const app_id = context.params.app_id;;
 //    DEBUG  console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+  
 
-   
-    const message = data.val();
-    console.log('message ' + JSON.stringify(message));
+    const arrived_message = data.val();
+    //console.log('arrived message ' + JSON.stringify(arrived_message));
 
-    if (message.attributes && message.attributes.updateconversation==false) {
-        console.log('not update the conversation because updateconversation is false');
-        return 0;
-    }
-
-    var conversation = {};
-    // console.log("message.status : " + message.status);       
-
-    if (message.status == null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING) { //i'm the sender
-        conversation.is_new = false;
-        conversation.sender = sender_id; //message.sender could be null because saveMessage could be called after
-        conversation.recipient = recipient_id;  ///message.recipient could be null because saveMessage could be called after  
-    } else {
-        conversation.is_new = true;
-        conversation.sender = message.sender;
-        conversation.recipient = message.recipient;  
-    }
-   
-    conversation.last_message_text = message.text;
-    if (message.sender_fullname){ //message potrebbe non avere il sender fullname perche la app non l'ha passato. in questo caso se nn c'è il fullname anche la conversation non ha il fullname
-        conversation.sender_fullname = message.sender_fullname;
-    }
-    if (message.recipient_fullname){        
-        conversation.recipient_fullname = message.recipient_fullname;
-    }
-
-    if (message.channel_type!=null) {
-        conversation.channel_type = message.channel_type;
-    }else {
-        conversation.channel_type = "direct";
-    }
-    
-    if (message.type!=null) {
-        conversation.type = message.type;
-    }
-
-    //conversation.status = message.status;
-    conversation.status = 2;
-
-    conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
-    if (message.timestamp) {
-        console.log("message.timestamp",message.timestamp);
-        conversation.timestamp = message.timestamp;
-    }
-    
-
-    //delete archived conv if present
-//    chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
-
-    // chatApi.deleteArchivedConversationIfExists(sender_id, recipient_id, app_id).then(function(archived_conversation) {
-    //     // console.log('archived_conversation', archived_conversation);
-    //     if (archived_conversation && 
-    //         archived_conversation.recipient.indexOf("support-group")>-1 &&
-    //         (message.status == null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING)
-    //         ){ //the message sender will reopen the support group
-    //         console.log('reopening the support request', archived_conversation);
-    //         if (functions.config().support && functions.config().support.enabled) {
-    //             return chatSupportApi.openChat(archived_conversation.recipient, app_id);
-    //         }
-            
-    //     }
-    // });
-
-
-
-    
-    var path = '/apps/'+app_id+'/users/'+sender_id+'/conversations/'+recipient_id;
-
-    console.log('creating conversation ' + JSON.stringify(conversation) + " to: "+ path);
-
-    return admin.database().ref(path).set(conversation);
-        
+    // return chatApi.getLastMessage(sender_id, recipient_id, app_id).then(function(message) {
+    //     return chatApi.createConversationInternal(sender_id, recipient_id, app_id, message);
+    // }).catch(function() {
+        return chatApi.createConversationInternal(sender_id, recipient_id, app_id, arrived_message);
+    // })
    
   });
 
@@ -411,7 +344,25 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
                 console.log("fullname", fullname);
                 return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP", parameters:{member_id: member_id, fullname:fullname} }});
             }, function (error) {
-                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP", parameters:{member_id: member_id} }});
+            
+                var parameters = {member_id: member_id};
+                
+                if (group.attributes) {
+                    var prechatFullname = "";
+                    if (group.attributes.userName) {
+                        prechatFullname = group.attributes.userName;
+                    }
+                    if (group.attributes.userEmail) {
+                        prechatFullname = prechatFullname + " (" + group.attributes.userEmail + ")";
+                    }
+                    if (prechatFullname.length>0) {
+                        parameters["fullname"] = prechatFullname;
+                    }
+                }
+
+                console.log("parameters", parameters);
+
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP",  parameters}});
             });
     
         }
