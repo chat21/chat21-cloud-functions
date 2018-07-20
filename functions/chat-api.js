@@ -230,9 +230,11 @@ class ChatApi {
                 
                 if (lastMessageSnapshot.val()!=null){ 
                 
-                    var message = lastMessageSnapshot.val();
-                    //console.log('message ' + JSON.stringify(message) );
+                    var messageWithId = lastMessageSnapshot.val();
+                    // console.log('messageWithId ' + JSON.stringify(messageWithId) );
         
+
+                    const message =  messageWithId[Object.keys(messageWithId)[0]]; 
                     
                     return resolve(message);
                 }else {

@@ -9,6 +9,10 @@ const chatApi = require('./chat-api');
 // const chatSupportApi = require('./chat-support-api');
 
 const chatHttpApi = require('./chat-http-api');
+
+
+//console.log("index.js loaded");
+
 exports.api = functions.https.onRequest(chatHttpApi.api);
 
 //let functions.config() = JSON.parse(process.env.FIREBASE_CONFIG);
@@ -71,18 +75,32 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id;    
     const recipient_id = context.params.recipient_id;  
-    const app_id = context.params.app_id;;
-//    DEBUG  console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    const app_id = context.params.app_id;
+    // console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
   
 
     const arrived_message = data.val();
     //console.log('arrived message ' + JSON.stringify(arrived_message));
 
-    // return chatApi.getLastMessage(sender_id, recipient_id, app_id).then(function(message) {
-    //     return chatApi.createConversationInternal(sender_id, recipient_id, app_id, message);
-    // }).catch(function() {
+    return chatApi.getLastMessage(sender_id, recipient_id, app_id).then(function(lastmessage) {
+        //  console.log('message',message);
+        //  console.log('message.timestamp',message.timestamp);
+        // console.log('arrived_message.timestamp',arrived_message.timestamp);
+        if (lastmessage.timestamp && arrived_message.timestamp 
+            && arrived_message.attributes.updateconversation!=false //arriva un messaggio che deve aggiornare la conversazione
+            && lastmessage.attributes.updateconversation!=false //last message è un messaggio che deve aggiornare la conversazione
+            && lastmessage.timestamp > arrived_message.timestamp) {
+            console.log('lastmessage.timestamp',lastmessage.timestamp, "greater than arrived_message", arrived_message.timestamp);
+            return chatApi.createConversationInternal(sender_id, recipient_id, app_id, lastmessage);
+        }else {
+            //console.log('message.timestamp',message.timestamp, "<= than arrived_message", arrived_message.timestamp);
+            return chatApi.createConversationInternal(sender_id, recipient_id, app_id, arrived_message);
+        }
+        
+    }).catch(function(error) {
+        console.log('catch arrived_message',arrived_message);
         return chatApi.createConversationInternal(sender_id, recipient_id, app_id, arrived_message);
-    // })
+    })
    
   });
 

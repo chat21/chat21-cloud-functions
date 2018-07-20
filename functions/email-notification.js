@@ -22,18 +22,19 @@ const nodemailer = require('nodemailer');
 var moment = require('moment');
 
 
+//console.log("email-notification.js loaded");
 
 let mailTransport;
 
 if (!mailTransport) {
   if (functions.config().email.endpoint) {
-    console.log('mail enabled with mailTrasport endpoint ',functions.config().email.endpoint);
+    //console.log('mail enabled with mailTrasport endpoint ',functions.config().email.endpoint);
     mailTransport = nodemailer.createTransport(functions.config().email.endpoint);
   }
 
   if (functions.config().email.gmail && functions.config().email.gmail.user  && functions.config().email.gmail.password) {
-    console.log('mail enabled with mailTrasport gmail user',functions.config().email.gmail.user);
-    console.log('mail enabled with mailTrasport gmail password',functions.config().email.gmail.password);
+    // console.log('mail enabled with mailTrasport gmail user',functions.config().email.gmail.user);
+    // console.log('mail enabled with mailTrasport gmail password',functions.config().email.gmail.password);
 
     mailTransport = nodemailer.createTransport({
         service: 'gmail',
@@ -44,7 +45,7 @@ if (!mailTransport) {
       });
   }
 }else{
-  console.log('mailTransport already init');
+  // console.log('mailTransport already init');
 }
 
 

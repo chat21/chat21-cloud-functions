@@ -19,6 +19,9 @@ const http = require('http');
 const agent = new http.Agent({keepAlive: true});
 
 
+
+//console.log("chat-support.js loaded");
+
 // function keeplive() {
 //     if (functions.config().support.keeplive && functions.config().support.keeplive.enabled && functions.config().support.keeplive.enabled=="true") {
 //         console.log('PING enabled');  
@@ -662,7 +665,7 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 
     // DEBUG console.log('it s a support message ');
 
-    
+
     var group_id = recipient_id;
 
     //if contains \agent

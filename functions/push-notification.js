@@ -5,6 +5,7 @@ const admin = require('firebase-admin');
 const chatApi = require('./chat-api');
 
 
+//console.log("push-notification.js loaded");
 
 
 //PUSH NOTIFICATION
