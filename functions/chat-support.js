@@ -246,29 +246,29 @@ function saveNewRequest (message, departmentid, group_members, agents, available
 
     //Save to mongo
 
-    // if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
-    //     return request({
-    //         uri: "http://api.chat21.org/"+projectid+"/requests",
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-    //         },
-    //         method: 'POST',
-    //         json: true,
-    //         body: newRequest,
-    //         //resolveWithFullResponse: true
-    //         }).then(response => {
-    //         if (response.statusCode >= 400) {
-    //             // throw new Error(`HTTP Error: ${response.statusCode}`);
-    //             console.error(`HTTP Error: ${response.statusCode}`);
-    //         }else {
-    //             console.log('Saved successfully to backend with response', response);  
-    //         }
+    if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
+        return request({
+            uri: "http://api.chat21.org/"+projectid+"/requests",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+            },
+            method: 'POST',
+            json: true,
+            body: newRequest,
+            //resolveWithFullResponse: true
+            }).then(response => {
+            if (response.statusCode >= 400) {
+                // throw new Error(`HTTP Error: ${response.statusCode}`);
+                console.error(`HTTP Error: ${response.statusCode}`);
+            }else {
+                console.log('Saved successfully to backend with response', response);  
+            }
 
-    //         return response;             
+            return response;             
             
-    //     });
-    // }
+        });
+    }
     
 
 }
@@ -363,15 +363,19 @@ exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_
    return admin.firestore().collection("conversations").doc(group_id).get().then(docConvRef => {
         if (docConvRef.exists) {
 
-            console.log("docConvRef", docConvRef);
+            // console.log("docConvRef", docConvRef);
                 
                 var docConv = docConvRef.data();
 
                 console.log("docConv.members", docConv.members);
 
-                if (!docConv.members || !docConv.members.hasOwnProperty(member_id)) {
+               
+                if (!docConv.members.hasOwnProperty(member_id)) {
 
-                    console.log("member_id not present into docConv");
+                //if (!docConv.members || !docConv.members.hasOwnProperty(member_id)) {
+                    //generate the bot removing BUG becasue mombers count become 4 and bot is removed. TODO with !docConv.members
+
+                    console.log(member_id + " not present into docConv");
 
                         return admin.firestore().collection('conversations').doc(group_id).set(dataToUpdate,{merge:true}).then(writeResult => {
                 
@@ -385,7 +389,7 @@ exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_
 
                     // });
                 } else {
-                    console.log("member_id already present into docConv");
+                    console.log(member_id + " already present into docConv");
                     return 0;
 
                 }

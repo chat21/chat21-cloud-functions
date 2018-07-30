@@ -5,7 +5,8 @@
           "contacts": {
             ".read": "auth != null",
             "$uid":{
-                ".write": "$uid === auth.uid"
+                ".write": "$uid === auth.uid",
+                ".indexOn": ["timestamp"]       
             }
           },
           "groups":{
@@ -23,7 +24,10 @@
           },
           "typings": {
             ".read": "auth != null",
-            ".write": "auth != null"
+            ".write": "auth != null",
+            "$recipient_id":{
+              ".indexOn": ["timestamp"]                
+              } 
           },
           "users":{
             "$uid":{
