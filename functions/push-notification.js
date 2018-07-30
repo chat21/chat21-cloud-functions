@@ -97,7 +97,8 @@ const chatApi = require('./chat-api');
             icon : "ic_notification_small",
             sound : "default",
             //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
-            click_action: "NEW_MESSAGE", // uncomment for intent filter in your custom project
+            click_action: "NEW_MESSAGE",   // uncomment for intent filter in your custom project
+            badge : "1"
         },
     
             data: {
