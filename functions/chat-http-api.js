@@ -121,6 +121,7 @@ app.post('/:app_id/messages', (req, res) => {
 
 
 
+
     /**
  * Delete a message
  * 
@@ -476,6 +477,47 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
       });
     });
 
+
+
+    /**
+ * Get a contact
+ 
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.get('/:app_id/contacts/:contact_id', (req, res) => {
+  console.log('get a contact');
+
+   
+    if (req.method !== 'GET') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+       
+        if (!req.params.contact_id) {
+            res.status(405).send('contact_id is not present!');
+        }
+
+        if (!req.params.app_id) {
+          res.status(405).send('app_id is not present!');
+        }
+
+
+    
+        let contact_id = req.params.contact_id;
+        let app_id = req.params.app_id;
+
+        console.log('contact_id', contact_id);
+        console.log('app_id', app_id);
+
+        chatApi.getContactById(contact_id, app_id).then(function(contact) {
+          res.status(200).send(contact);
+        });
+       
+      });
+    });
 
 
     /**
