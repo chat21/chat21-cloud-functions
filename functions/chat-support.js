@@ -143,19 +143,19 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
 
         return createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, message, app_id, group_members, 
-            departmentid, agents, availableAgents, assigned_operator_id);
+            departmentid, agents, availableAgents, assigned_operator_id, projectid);
     }).catch(error => {
 
         console.error("catch", error);     
 
         return createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, message, app_id, group_members, 
-            departmentid, agents, availableAgents, assigned_operator_id);
+            departmentid, agents, availableAgents, assigned_operator_id, projectid);
     });
 
 });
 
 function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, message, app_id, group_members, 
-    departmentid, agents, availableAgents, assigned_operator_id) {
+    departmentid, agents, availableAgents, assigned_operator_id, projectid) {
     
     if (!idBot) {
         if (availableAgentsCount==0) {
@@ -167,7 +167,7 @@ function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, 
 
     chatApi.stopTyping("system", group_id, app_id);
 
-    return Promise.all([createNewGroup(message, group_id, group_members, app_id), saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id)]);
+    return Promise.all([createNewGroup(message, group_id, group_members, app_id), saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id, projectid)]);
 
     // createNewGroup(message, group_id, group_members, app_id);
     // return saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id);
@@ -204,7 +204,7 @@ function createNewGroup(message, group_id, group_members, app_id) {
 
 }
 
-function saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id) {
+function saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id, projectid) {
         //creare firestore conversation
         var newRequest = {};
         newRequest.created_on = admin.firestore.FieldValue.serverTimestamp();
@@ -237,7 +237,8 @@ function saveNewRequest (message, departmentid, group_members, agents, available
         console.log('newRequest', newRequest);
 
 
-        return admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true });
+       
+        admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true })
         // .then(writeResult => {
         //     // Send back a message that we've succesfully written the message
         //     console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
@@ -246,7 +247,10 @@ function saveNewRequest (message, departmentid, group_members, agents, available
 
     //Save to mongo
 
+    
     if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
+        console.log('support.storetobackend', 'enabled');
+
         return request({
             uri: "http://api.chat21.org/"+projectid+"/requests",
             headers: {
@@ -268,6 +272,8 @@ function saveNewRequest (message, departmentid, group_members, agents, available
             return response;             
             
         });
+    }else {
+        console.log('support.storetobackend', 'disabled');
     }
     
 
@@ -799,6 +805,11 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
 
 
     if (message.text.indexOf("\\agent") > -1) { //not reply to a message containing \\agent
+        return 0;
+    }
+
+
+    if (message.text.indexOf("\\close") > -1) { //not reply to a message containing \\close
         return 0;
     }
 
