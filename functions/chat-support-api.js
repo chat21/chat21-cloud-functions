@@ -9,6 +9,30 @@ const request = require('request-promise');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 
+var BASE_API_URL;
+var AUTHORIZATION_TOKEN_API;
+
+const functions = require('firebase-functions');
+
+if (functions.config().support.api && functions.config().support.api.url) {
+    BASE_API_URL = functions.config().support.api.url;
+    console.log('BASE_API_URL', BASE_API_URL);
+
+}
+if (!BASE_API_URL) {
+    console.error('BASE_API_URL is not defined');
+}
+
+
+if (functions.config().support.api && functions.config().support.api.authtoken) {
+    AUTHORIZATION_TOKEN_API = functions.config().support.api.authtoken;
+    console.log('AUTHORIZATION_TOKEN_API', AUTHORIZATION_TOKEN_API);
+
+}
+if (!AUTHORIZATION_TOKEN_API) {
+    console.error('AUTHORIZATION_TOKEN_API is not defined');
+}
+
 class ChatSupportApi {
 
     //unused
@@ -107,7 +131,7 @@ class ChatSupportApi {
       }
 
 
-      getDepartmentOperator(projectid, departmentid,agent) {
+      getDepartmentOperator(projectid, departmentid, agent, nobot) {
 
 
         var that = this;
@@ -122,12 +146,20 @@ class ChatSupportApi {
             
             var objectyToReturn = {};
 
-           
+            var url = BASE_API_URL+ "/"+projectid+"/departments/"+departmentid+"/operators";
+            
+            if (nobot){
+                url = url + '?nobot=true';
+            }
+
+            console.log(`url`, url);
+
 
                 return request({
-                    uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid+"/operators",
+                    uri : url,
                     headers: {
-                        'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
+                        // 'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
+                        'Authorization': AUTHORIZATION_TOKEN_API,
                         'Content-Type': 'application/json'
                     },
                     method: 'GET',
@@ -174,6 +206,7 @@ class ChatSupportApi {
                                 objectyToReturn["agents"] = agents;
                                 objectyToReturn["availableAgents"] = availableAgents;
                                 objectyToReturn["availableAgentsCount"] = availableAgentsCount;
+                                objectyToReturn["departmentid"] = response.department._id;
                                 console.log('objectyToReturn', objectyToReturn);
 
 
@@ -194,6 +227,109 @@ class ChatSupportApi {
       }
 
 
+      getBot(bot_id, projectid, departmentid, agent) {
+        var that = this;
+
+        return new Promise(function(resolve, reject) {
+
+            var url = BASE_API_URL+ "/" +projectid+"/faq_kb/"+bot_id;
+
+            if (departmentid) {
+                url = url +"?departmentid="+departmentid;
+            }
+            console.log('url', url);  
+
+            return request({
+                uri: url,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTHORIZATION_TOKEN_API,
+                    //'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+                },
+                method: 'GET',
+                json: true,
+                agent: agent,
+                //resolveWithFullResponse: true
+                }).then(response => {
+                    if (!response) {
+                       // throw new Error(`HTTP Error`);
+                       console.error('HTTP Error', response);  
+                       return reject(response);       
+                    }else {
+                        console.log('SUCCESS! response', response);
+
+                        return resolve(response);
+                    }
+                });
+        });
+      }
+
+
+
+      createRequest(projectid, newRequest) {
+        var that = this;
+
+        return new Promise(function(resolve, reject) {
+
+            return request({
+                uri: BASE_API_URL+ "/" + projectid + "/requests",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTHORIZATION_TOKEN_API,
+                    // 'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+                },
+                method: 'POST',
+                json: true,
+                body: newRequest,
+                //resolveWithFullResponse: true
+                }).then(response => {
+                if (response.statusCode >= 400) {
+                    // throw new Error(`HTTP Error: ${response.statusCode}`);
+                    console.error(`HTTP Error: ${response.statusCode}`);
+                    return reject(response);  
+                }else {
+                    console.log('Saved successfully to backend with response', response);  
+                }
+
+                return resolve(response);
+                // return response;             
+                
+            });
+        });
+      }
+
+
+      saveMessage(message,projectid ) {
+        var that = this;
+
+        return new Promise(function(resolve, reject) {
+            return request({
+                uri: BASE_API_URL+ "/" + projectid + "/messages",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTHORIZATION_TOKEN_API,
+                    // 'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+                },
+                method: 'POST',
+                json: true,
+                body: message,
+                //resolveWithFullResponse: true
+                }).then(response => {
+                if (response.statusCode >= 400) {
+                    // throw new Error(`HTTP Error: ${response.statusCode}`);
+                    console.error(`HTTP Error: ${response.statusCode}`);
+                    return reject(response);  
+                }
+
+                // console.log('SUCCESS! Posted', data.ref);        
+                console.log('SUCCESS! response', response);           
+                
+                return resolve(response);
+
+                });
+        });
+
+      }
       
   
 

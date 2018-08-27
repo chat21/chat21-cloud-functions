@@ -119,7 +119,7 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     var availableAgents= [];
     var availableAgentsCount= 0;
 
-    return chatSupportApi.getDepartmentOperator(projectid, departmentid,agent).then(response => {
+    return chatSupportApi.getDepartmentOperator(projectid, departmentid,agent, false).then(response => {
 
         idBot = response.idBot;
         console.log("idBot", idBot);     
@@ -135,6 +135,9 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
 
         availableAgentsCount = response.availableAgentsCount;
         console.log("availableAgentsCount", availableAgentsCount);     
+
+        departmentid = response.departmentid;
+        console.log("departmentid", departmentid);     
 
         if (assigned_operator_id) {
             group_members[assigned_operator_id] = 1;
@@ -251,27 +254,28 @@ function saveNewRequest (message, departmentid, group_members, agents, available
     if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
         console.log('support.storetobackend', 'enabled');
 
-        return request({
-            uri: "http://api.chat21.org/"+projectid+"/requests",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-            },
-            method: 'POST',
-            json: true,
-            body: newRequest,
-            //resolveWithFullResponse: true
-            }).then(response => {
-            if (response.statusCode >= 400) {
-                // throw new Error(`HTTP Error: ${response.statusCode}`);
-                console.error(`HTTP Error: ${response.statusCode}`);
-            }else {
-                console.log('Saved successfully to backend with response', response);  
-            }
+        return chatSupportApi.createRequest(projectid, newRequest);
+        // return request({
+        //     uri: "http://api.chat21.org/"+projectid+"/requests",
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+        //     },
+        //     method: 'POST',
+        //     json: true,
+        //     body: newRequest,
+        //     //resolveWithFullResponse: true
+        //     }).then(response => {
+        //     if (response.statusCode >= 400) {
+        //         // throw new Error(`HTTP Error: ${response.statusCode}`);
+        //         console.error(`HTTP Error: ${response.statusCode}`);
+        //     }else {
+        //         console.log('Saved successfully to backend with response', response);  
+        //     }
 
-            return response;             
+        //     return response;             
             
-        });
+        // });
     }else {
         console.log('support.storetobackend', 'disabled');
     }
@@ -594,41 +598,51 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
         }
         console.log('departmentid', departmentid);
 
-        
-        return request({
-            uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid+"/operators?nobot=true",
-            headers: {
-                'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
-                'Content-Type': 'application/json'
-            },
-            method: 'GET',
-            agent: agent,
-            json: true,
-            //resolveWithFullResponse: true
-            }).then(response => {
-               
-                if (!response) {
-                    // throw new Error(`HTTP Error: ${response.statusCode}`);
-                    console.log(`Error getting department.`);
-                    return 0;
-                }else {
-                    console.log('SUCCESS! response', response);
-    
-                    if (response) {
-                        if (response.operators  && response.operators.length>0) {
-                            // var id_bot = "bot_"+response.id_bot;
-                            var assigned_operator_id = response.operators[0].id_user;
-                            console.log('assigned_operator_id', assigned_operator_id);
+        return chatSupportApi.getDepartmentOperator(projectid, departmentid, agent, true).then(response => {
 
-                           return chatApi.joinGroup(assigned_operator_id, group_id, app_id);
+            var assigned_operator_id= response.assigned_operator_id;
+
+            console.log("assigned_operator_id", assigned_operator_id);     
+            if (assigned_operator_id) {
+               return chatApi.joinGroup(assigned_operator_id, group_id, app_id);
+            } else {
+                return 0;
+            }              
+
+        // return request({
+        //     uri :  "http://api.chat21.org/"+projectid+"/departments/"+departmentid+"/operators?nobot=true",
+        //     headers: {
+        //         'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     method: 'GET',
+        //     agent: agent,
+        //     json: true,
+        //     //resolveWithFullResponse: true
+        //     }).then(response => {
+               
+        //         if (!response) {
+        //             // throw new Error(`HTTP Error: ${response.statusCode}`);
+        //             console.log(`Error getting department.`);
+        //             return 0;
+        //         }else {
+        //             console.log('SUCCESS! response', response);
     
-                        } else {
-                            return 0;
-                        }                        
-                    }else {
-                        return 0;
-                    }
-                }
+        //             if (response) {
+                        // if (response.operators  && response.operators.length>0) {
+                        //     // var id_bot = "bot_"+response.id_bot;
+                        //     var assigned_operator_id = response.operators[0].id_user;
+                        //     console.log('assigned_operator_id', assigned_operator_id);
+
+                        //    return chatApi.joinGroup(assigned_operator_id, group_id, app_id);
+    
+                        // } else {
+                        //     return 0;
+                        // }                        
+                    // }else {
+                    //     return 0;
+                    // }
+                // }
             
     
             })
@@ -744,31 +758,33 @@ if (functions.config().support.storetobackend && functions.config().support.stor
         var projectid = message.projectid;
         console.log('projectId',projectid);
         
-        return request({
-            uri: "http://api.chat21.org/"+projectid+"/messages",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-            },
-            method: 'POST',
-            json: true,
-            body: message,
-            //resolveWithFullResponse: true
-            }).then(response => {
-            if (response.statusCode >= 400) {
-                // throw new Error(`HTTP Error: ${response.statusCode}`);
-                console.error(`HTTP Error: ${response.statusCode}`);
-            }else {
-                console.log('SUCCESS! Posted', data.ref);        
-                console.log('SUCCESS! response', response);        
-            }
+        return chatSupportApi.saveMessage(message, projectid);
 
-            console.log('SUCCESS! Posted', data.ref);        
-            console.log('SUCCESS! response', response);           
+        // return request({
+        //     uri: "http://api.chat21.org/"+projectid+"/messages",
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+        //     },
+        //     method: 'POST',
+        //     json: true,
+        //     body: message,
+        //     //resolveWithFullResponse: true
+        //     }).then(response => {
+        //     if (response.statusCode >= 400) {
+        //         // throw new Error(`HTTP Error: ${response.statusCode}`);
+        //         console.error(`HTTP Error: ${response.statusCode}`);
+        //     }else {
+        //         console.log('SUCCESS! Posted', data.ref);        
+        //         console.log('SUCCESS! response', response);        
+        //     }
+
+        //     console.log('SUCCESS! Posted', data.ref);        
+        //     console.log('SUCCESS! response', response);           
             
-            return response;
+        //     return response;
 
-            });
+        //     });
 
         
         
@@ -831,23 +847,25 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
     }
     console.log('departmentid', departmentid);
 
-    return request({
-        uri: "http://api.chat21.org/"+projectid+"/faq_kb/"+bot_id+"?departmentid="+departmentid,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-        },
-        method: 'GET',
-        json: true,
-        agent: agent,
-        //resolveWithFullResponse: true
-        }).then(response => {
-            if (!response) {
-               // throw new Error(`HTTP Error`);
-               console.error('HTTP Error', response);         
-            }
+    // return request({
+    //     uri: "http://api.chat21.org/"+projectid+"/faq_kb/"+bot_id+"?departmentid="+departmentid,
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+    //     },
+    //     method: 'GET',
+    //     json: true,
+    //     agent: agent,
+    //     //resolveWithFullResponse: true
+    //     }).then(response => {
+    //         if (!response) {
+    //            // throw new Error(`HTTP Error`);
+    //            console.error('HTTP Error', response);         
+    //         }
 
-            console.log('SUCCESS! response', response);           
+    //         console.log('SUCCESS! response', response);    
+    
+       return chatSupportApi.getBot(bot_id, projectid, departmentid, agent).then(response => {
             
             let kbkey_remote = response.kbkey_remote;
             console.log('kbkey_remote', kbkey_remote); 
@@ -909,6 +927,7 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
         
             });
 
+        //GET BOT END
         });
 
 
