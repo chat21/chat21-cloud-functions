@@ -18,7 +18,9 @@
     "moment": "^2.22.2",
     "nodemailer": "^4.6.7",
     "request": "^2.87.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "child-process-promise": "^2.2.0"
+
   },
   "private": true
 }

@@ -365,22 +365,37 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
             
                 var parameters = {member_id: member_id};
                 
-                if (group.attributes) {
-                    var prechatFullname = "";
-                    if (group.attributes.userName) {
-                        prechatFullname = group.attributes.userName;
+                if (member_id.startsWith("bot_")) { 
+                    
+                    parameters["fullname"] = "Bot";
+
+                    console.log("parameters", parameters);
+    
+                    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP",  parameters}});
+
+
+                } else {
+
+                    if (group.attributes) {
+                        var prechatFullname = "";
+                        if (group.attributes.userName) {
+                            prechatFullname = group.attributes.userName;
+                        }
+                        if (group.attributes.userEmail) {
+                            prechatFullname = prechatFullname + " (" + group.attributes.userEmail + ")";
+                        }
+                        if (prechatFullname.length>0) {
+                            parameters["fullname"] = prechatFullname;
+                        }
                     }
-                    if (group.attributes.userEmail) {
-                        prechatFullname = prechatFullname + " (" + group.attributes.userEmail + ")";
-                    }
-                    if (prechatFullname.length>0) {
-                        parameters["fullname"] = prechatFullname;
-                    }
+    
+                    console.log("parameters", parameters);
+    
+                    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP",  parameters}});
+
                 }
-
-                console.log("parameters", parameters);
-
-                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP",  parameters}});
+                
+                
             });
     
         }
@@ -440,3 +455,8 @@ if (functions.config().email && functions.config().email.enabled ) {
     const emailNotificationsFunction = require('./email-notification');
     exports.emailNotificationsFunction = emailNotificationsFunction;
 }
+
+
+
+const thumbnailFunction = require('./chat-thumbnail');
+exports.thumbnailFunction = thumbnailFunction;
