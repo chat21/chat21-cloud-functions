@@ -792,7 +792,7 @@ if (functions.config().support.storetobackend && functions.config().support.stor
 }  
 
 
-
+/*
 
 exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
@@ -830,6 +830,12 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
     }
 
 
+    if (message.text.startsWith("\\")) { //not reply to a message containing \
+        return 0;
+    }
+
+
+
     console.log('it s a message to bot ', message);
 
     const bot_id = sender_id.replace("bot_","");
@@ -846,24 +852,6 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
         departmentid =  message.attributes.departmentId;
     }
     console.log('departmentid', departmentid);
-
-    // return request({
-    //     uri: "http://api.chat21.org/"+projectid+"/faq_kb/"+bot_id+"?departmentid="+departmentid,
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-    //     },
-    //     method: 'GET',
-    //     json: true,
-    //     agent: agent,
-    //     //resolveWithFullResponse: true
-    //     }).then(response => {
-    //         if (!response) {
-    //            // throw new Error(`HTTP Error`);
-    //            console.error('HTTP Error', response);         
-    //         }
-
-    //         console.log('SUCCESS! response', response);    
     
        return chatSupportApi.getBot(bot_id, projectid, departmentid, agent).then(response => {
             
@@ -930,10 +918,149 @@ exports.botreply = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
         //GET BOT END
         });
 
+});
+*/
+
+
+
+
+
+exports.botreplyWithTwoReply = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+
+    // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
+    const message_id = context.params.message_id;
+
+    const sender_id = context.params.sender_id;
+
+   
+    const recipient_id = context.params.recipient_id;
+    const app_id = context.params.app_id;;
+    // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+    
+    const message = data.val();
+
+    if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+        return 0;
+    }
+    if (message.sender == "system") {  //evita che il bot risponda a messaggi di system (es: Gruppo Creato)
+        return 0;
+    }
+
+    if (!sender_id.startsWith("bot_")) {
+        return 0;
+    }
+
+
+    if (message.text.indexOf("\\agent") > -1) { //not reply to a message containing \\agent
+        return 0;
+    }
+
+
+    if (message.text.indexOf("\\close") > -1) { //not reply to a message containing \\close
+        return 0;
+    }
+
+
+    if (message.text.startsWith("\\")) { //not reply to a message containing \
+        return 0;
+    }
+
+
+
+    console.log('it s a message to bot ', message);
+
+    const bot_id = sender_id.replace("bot_","");
+
+
+    chatApi.typing(sender_id, recipient_id, app_id);
+
+
+    var projectid = message.projectid;
+    console.log('projectId',projectid);
+
+    var departmentid="";
+    if (message.attributes && message.attributes.departmentId && !message.attributes.departmentId==""){
+        departmentid =  message.attributes.departmentId;
+    }
+    console.log('departmentid', departmentid);
+    
+       return chatSupportApi.getBot(bot_id, projectid, departmentid, agent).then(response => {
+            
+            let kbkey_remote = response.kbkey_remote;
+            console.log('kbkey_remote', kbkey_remote); 
+            
+            
+            // return chatBotSupportApi.askToQnaBot(message.text, "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/608f7647-2608-4600-b1e2-c7d4baf21e77/generateAnswer", "5e9c35eada754400852ccfb34e6711cb").then(function(qnaresp) {
+            return chatBotSupportApi.askToInternalQnaBot(kbkey_remote, message.text, message).then(function(qnaresp) {
+            
+             
+        
+                var answer="";
+
+                var bot_answer="";
+                // var response_options;
+
+                if (qnaresp.answer) {
+
+                    answer = qnaresp.answer;
+
+                    if (qnaresp.score>100) {
+
+                    }else {
+                        var message_key = "DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE";
+                        if (response.department.bot_only){
+                            message_key = "DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE";
+                        }
+    
+                        bot_answer = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+                    }
+                   
+
+                    // response_options = { "question" : "Sei soddisfatto della risposta?",
+                    // "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
+
+                }else if (qnaresp.answer == "\\agent"){ //if \\agent dont append se sei siddisfatto...
+        
+                }else {
+
+                    var message_key = "DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE";
+                    if (response.department.bot_only){
+                        message_key = "DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE";
+                    }
+
+                    bot_answer = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+        
+                    // response_options = { "question" : "Vuoi parlare con un operatore?",
+                    // "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
+
+                }
+
+
+                chatApi.stopTyping(sender_id, recipient_id, app_id);
+        
+                // var sender_fullname = "Bot";
+                var sender_fullname = response.name;
+                console.log('sender_fullname', sender_fullname); 
+
+                var recipient_group_fullname = message.recipient_fullname;
+
+                if (bot_answer.length>0) {
+                    var timestamp = Date.now();
+                    // var timestamp = Date.now();
+                    return Promise.all([chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, answer, app_id, null, null, timestamp), chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, bot_answer, app_id, null, null, timestamp+1)]);
+                }else {
+                    return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, answer, app_id);
+                    // return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, qnaresp.answer, app_id, qnaresp.response_options);
+                }
+                
+        
+            });
+
+        //GET BOT END
+        });
+
 
 
 
 
 });
-
-
