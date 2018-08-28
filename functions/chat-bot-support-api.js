@@ -8,7 +8,7 @@ const request = require('request-promise');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const chatUtil = require('./chat-util');
-// const chatSupportApi = require('./chat-support-api');
+const chatSupportApi = require('./chat-support-api');
 
 class ChatBotSupportApi {
 
@@ -171,6 +171,73 @@ class ChatBotSupportApi {
 
     }
       
+
+    getBotMessage(qnaresp, projectid, departmentid, message, bot, agent) {
+
+        return new Promise(function(resolve, reject) {
+
+
+            return chatSupportApi.getDepartmentOperator(projectid, departmentid, agent, false).then(dep_op_response => {
+
+                    var bot_answer="";
+                    // var response_options;
+
+                    if (qnaresp.answer) {
+
+                        if (qnaresp.answer.startsWith("\\")) { //if \\agent dont append se sei siddisfatto...
+
+                        } else {
+                            if (qnaresp.score>100) {
+
+                            }else {
+
+                                if (dep_op_response.availableAgentsCount>0) {
+                                    var message_key = "DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE";
+                                    if (bot.department.bot_only){
+                                        message_key = "DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE";
+                                    }
+                                } else {
+                                    message_key = "DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE";
+                                }
+                                
+
+                                bot_answer = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+                            }
+                        }
+                       
+
+                    } else {
+
+                        if (dep_op_response.availableAgentsCount>0) {
+
+                            var message_key = "DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE";
+                            if (bot.department.bot_only){
+                                message_key = "DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE";                            
+                            }
+
+                        }else {
+                            message_key = "DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE";
+                        }   
+                        bot_answer = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+
+                        // response_options = { "question" : "Vuoi parlare con un operatore?",
+                        // "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
+
+                    }
+
+
+                
+                    if (bot_answer.length>0) {
+                        return resolve(bot_answer);
+                    } else {
+                        return resolve(null);
+                    }
+                
+            });
+
+    });
+
+    }
   
 }
 

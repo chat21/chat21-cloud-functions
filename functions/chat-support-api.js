@@ -265,6 +265,7 @@ class ChatSupportApi {
       }
 
 
+   
 
       createRequest(projectid, newRequest) {
         var that = this;
@@ -286,7 +287,9 @@ class ChatSupportApi {
                 if (response.statusCode >= 400) {
                     // throw new Error(`HTTP Error: ${response.statusCode}`);
                     console.error(`HTTP Error: ${response.statusCode}`);
-                    return reject(response);  
+                   return reject(response); 
+                   // return resolve(response);
+
                 }else {
                     console.log('Saved successfully to backend with response', response);  
                 }
