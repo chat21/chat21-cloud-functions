@@ -8,7 +8,7 @@ class ChatApi {
 
 
 
-    sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes) {
+    sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp) {
 
             var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_id;
             // console.log("path", path);
@@ -24,7 +24,12 @@ class ChatApi {
             message.sender_fullname = sender_fullname;
             message.recipient = recipient_id;
             message.recipient_fullname = recipient_fullname;
-            // message.timestamp = admin.database.ServerValue.TIMESTAMP;
+            
+            message.timestamp = admin.database.ServerValue.TIMESTAMP;
+            if (timestamp) {
+                message.timestamp = timestamp;
+            }
+
             message.channel_type = "direct";
             message.text = text;
             message.type = "text";
@@ -37,7 +42,7 @@ class ChatApi {
 
 
 
-    sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid) {
+    sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp) {
 
         var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_group_id;
         // console.log("path", path);
@@ -53,7 +58,12 @@ class ChatApi {
         message.sender_fullname = sender_fullname;
         message.recipient = recipient_group_id;
         message.recipient_fullname = recipient_group_fullname;
-        // message.timestamp = admin.database.ServerValue.TIMESTAMP;
+
+        message.timestamp = admin.database.ServerValue.TIMESTAMP;
+        if (timestamp) {
+            message.timestamp = timestamp;
+        }
+
         message.channel_type = "group";
         message.text = text;
         message.type = "text";
