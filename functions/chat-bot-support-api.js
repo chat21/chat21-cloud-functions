@@ -246,25 +246,25 @@ var chatBotSupportApi = new ChatBotSupportApi();
 
 chatBotSupportApi.LABELS = {
     EN : {
-        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \n If you are satisfied, type \\close to close the support chat or \\agent to talk to an operator.",
-        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "I did not find an answer in the knowledge base. \n Do you want to talk to an operator or reformulate your question? \n Type \\agent to talk to an operator or type a new question.",
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "If you want digit \\agent to talk to a human agent.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "I can not provide an adequate answer. \n Write a new question or type \\agent to talk to a human agent.",
         //DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Are you satisfied with the answer ?. \ n If you are satisfied, type \\ close to close the support chat or reformulate your question.",
         DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "",
         DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "I did not find an answer in the knowledge base. \ n Please reformulate your question?"
     },
     IT : {
-        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.",
-        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.",
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Se vuoi digita \\agent per parlare con un operatore umano.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Formula una nuova domanda oppure digita \\agent per parlare con un operatore umano.",
         DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "",
         // DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure riformula la tua domanda.",
-        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Prego riformula la  domanda."
+        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Prego riformula la  domanda."
     },
     "IT-IT" : {
-        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure \\agent per parlare con un operatore.",
-        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.",
+        DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Se vuoi digita \\agent per parlare con un operatore umano.",
+        DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Formula una nuova domanda oppure digita \\agent per parlare con un operatore umano.",
         DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "",
         // DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure riformula la tua domanda.",
-        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non ho trovato una risposta nella knowledge base. \n Prego riformula la domanda."
+        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Prego riformula la domanda."
     }
 }
 
