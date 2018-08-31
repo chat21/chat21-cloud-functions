@@ -28,10 +28,10 @@ class ChatBotSupportApi {
         console.log('qnaServiceUrl', qnaServiceUrl);
 
         try {
-            if (question.indexOf("oggi")>-1) {
+            if (question.toLowerCase().indexOf("oggi")>-1) {
                 question = question + " " + new Date().toJSON().slice(0,10);
             }
-            if (question.indexOf("domani")>-1) {
+            if (question.toLowerCase().indexOf("domani")>-1) {
                 var tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
                 question = question + " " + tomorrow.toJSON().slice(0,10);
             }
