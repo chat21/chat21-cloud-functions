@@ -199,7 +199,64 @@ app.post('/:app_id/requests', (req, res) => {
             // [END sendResponse]
           });
         });
-  
+
+  /**
+ * rating
+ 
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.put('/:app_id/requests/:request_id/rate', (req, res) => {
+  console.log('rate support group');
+
+   
+    if (req.method !== 'PUT') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+        if (!req.params.request_id) {
+            res.status(405).send('request_id is not present!');
+        }
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+
+        let request_id = req.params.request_id;
+        let app_id = req.params.app_id;
+        let user_id = req.user.uid;
+
+        let rating = req.query.rating
+        let rating_message = "";
+        if (req.query.rating_message) {
+          rating_message = req.query.rating_message;
+        }
+
+
+        console.log('request_id', request_id);
+        console.log('app_id', app_id);
+        console.log('user_id', user_id);
+        console.log('rating', rating);
+        console.log('rating_message', rating_message);
+
+       let updates = {
+          rating: rating,
+          rating_message: rating_message
+       };
+       
+        return admin.firestore().collection('conversations').doc(request_id).set(updates, { merge: true }).then(function(writeResult){
+          console.log('writeResult', writeResult);
+          res.status(200).send();
+
+        });
+
+
+       
+      });
+    });
+
  /**
  * Close support group
  

@@ -356,6 +356,63 @@ Example:
 ```
 
 
+## Upload photo profile
+
+Upload my photo profile
+
+```
+
+  curl -X PUT \
+      -H 'Content-Type: application/json' \
+      -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
+      https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/contacts/me/photo
+```
+
+
+Where :
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+
+
+Example:
+
+```
+   curl -v -X PUT \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImEwY2ViNDY3NDJhNjNlMTk2NDIxNjNhNzI4NmRjZDQyZjc0MzYzNjYifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUzNjIyNzExMywidXNlcl9pZCI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsInN1YiI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsImlhdCI6MTUzNjIyNzExMywiZXhwIjoxNTM2MjMwNzEzLCJlbWFpbCI6ImFuZHJlYS5sZW9AZnJvbnRpZXJlMjEuaXQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.P4S3eNL7o6MN97JF_mKcfH3qc8neO4Hf66SgdJn_Nzkmn78v9Pl6rZWQS4zohufNcocHwkZow-Cc1Mg3-X9q_huttBGhFqyhH5bMqT5cojXivgcvlHOYNZk84tFXzCHakgh9ahucJy_Fgc3s6dnglcSr5xm83TOfeL5vr4wbGJJE17WnPKxr2lhnw_T0hyJuLrG3Cdjo37FI6sMZDLw1rgqEBScTcwoC-TwxjuvT43mGhlX_aIlM0RpJz4zg56iAqARaTpoZOM7icIqx-MfVRo2A766PUrciS-54h2NZ98dLXsdqZV9eZ4Sftctfrax9mrPV2XiXxd3vpgtdc85A1A' \
+       -F "image=@/Users/andrealeo/Downloads/a.jpg" \
+    https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts/me/photo
+```
+
+
+## Delete photo profile
+
+Delete my photo profile
+
+```
+
+  curl -X DELETE \
+      -H 'Content-Type: application/json' \
+      -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
+      https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/contacts/me/photo
+```
+
+
+Where :
+- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
+- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
+- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+
+
+Example:
+
+```
+   curl -v -X DELETE \
+       -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImEwY2ViNDY3NDJhNjNlMTk2NDIxNjNhNzI4NmRjZDQyZjc0MzYzNjYifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUzNjIyNzExMywidXNlcl9pZCI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsInN1YiI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsImlhdCI6MTUzNjIyNzExMywiZXhwIjoxNTM2MjMwNzEzLCJlbWFpbCI6ImFuZHJlYS5sZW9AZnJvbnRpZXJlMjEuaXQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.P4S3eNL7o6MN97JF_mKcfH3qc8neO4Hf66SgdJn_Nzkmn78v9Pl6rZWQS4zohufNcocHwkZow-Cc1Mg3-X9q_huttBGhFqyhH5bMqT5cojXivgcvlHOYNZk84tFXzCHakgh9ahucJy_Fgc3s6dnglcSr5xm83TOfeL5vr4wbGJJE17WnPKxr2lhnw_T0hyJuLrG3Cdjo37FI6sMZDLw1rgqEBScTcwoC-TwxjuvT43mGhlX_aIlM0RpJz4zg56iAqARaTpoZOM7icIqx-MfVRo2A766PUrciS-54h2NZ98dLXsdqZV9eZ4Sftctfrax9mrPV2XiXxd3vpgtdc85A1A' \
+    https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/contacts/me/photo
+```
+
 
 # REST API for Support
 
@@ -375,6 +432,24 @@ Example:
        -H 'Content-Type: application/json' \
        -d '{"sender_fullname": "Andrea Leo", "text":"hello from API","projectid":"5ab0f32757066e0014bfd718"}' \
        'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/requests?token=chat21-secret-orgAa,'
+```
+
+
+
+## Rate the request
+
+```
+  curl -X PUT \
+      -H 'Content-Type: application/json' \
+      -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
+      https://us-central1-<project-id>.cloudfunctions.net/supportapi/<APP_ID>/requests/<REQUEST_ID>/rate?rating=2&rating_message=ciao
+```
+
+Example: 
+```
+   curl -X PUT \
+       -H 'Content-Type: application/json' \
+       'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/requests/support-group-LM879tEdviVwDkNmo94/rate?token=chat21-secret-orgAa,&rating=2&rating_message=ciao'
 ```
 
 ## Close Support group
