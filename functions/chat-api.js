@@ -3,6 +3,7 @@
 'use strict';
 
 const admin = require('firebase-admin');
+const gcs = require('@google-cloud/storage')();
 
 class ChatApi {
 
@@ -85,6 +86,57 @@ class ChatApi {
 
     }
 
+    copyGroupMessagesToUserTimeline(group_id, user_id, app_id) {
+
+      
+        const fromPath = '/apps/'+app_id+'/messages/' + group_id;
+       //  console.log("fromPath", fromPath);
+   
+       return admin.database().ref(fromPath).orderByChild("timestamp").once('value').then(function(messagesSnap) {
+        // console.log('messagesSnap ' + JSON.stringify(messagesSnap) );
+       
+            //called multiple time for each message
+            if (messagesSnap.val()!=null){
+                    var messagesWithMessageIdAsObject = messagesSnap.val();
+                    console.log('messagesWithMessageIdAsObject ' + JSON.stringify(messagesWithMessageIdAsObject) );
+                
+                    var messagesIdasArray = Object.keys(messagesWithMessageIdAsObject);
+                    console.log('messagesIdasArray ' + JSON.stringify(messagesIdasArray) );
+                    
+                    //disable notification
+                    // if (message.attributes) {
+                    // message.attributes.sendnotification = false;
+                    // }
+                
+                    // disable notification
+                    var i = 0;
+                    messagesIdasArray.forEach(function(messageId) {
+                
+                        const message = messagesWithMessageIdAsObject[messageId];
+                        // console.log('messageWithOutMessageId ' + JSON.stringify(messageWithOutMessageId));
+                    
+                    
+                        if (i>0) {
+                            if (message.attributes) {
+                                message.attributes.sendnotification = false;
+                            }
+                        } 
+                        console.log('message ' + JSON.stringify(message));
+                        i++;
+                    });
+                    
+                    const toPath = '/apps/'+app_id+'/users/' + user_id+'/messages/'+group_id;
+                    // console.log("toPath", toPath);
+                
+                    console.log('duplicating message ' + JSON.stringify(messagesWithMessageIdAsObject) + " from : " + fromPath + " to " + toPath);
+                    return admin.database().ref(toPath).update(messagesWithMessageIdAsObject);
+            } else {
+                console.log("message is null. Nothing to duplicate");
+                return 0;
+            }
+        });
+    }
+
     deleteMessageForAll(sender_id, recipient_id, message_id, app_id) {
         this.deleteMessage(sender_id, recipient_id, message_id, app_id);
         return this.deleteMessage(recipient_id, sender_id, message_id, app_id);
@@ -120,7 +172,7 @@ class ChatApi {
 
         var updates = {};
 
-        return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
+        return chatApi.getAllGroupMembers(group_id, app_id).then(function (groupMembers) {
             
             groupMembers.forEach(function(groupMember) {
             //   DEBUG console.log('groupMember ' + groupMember);            
@@ -181,7 +233,7 @@ class ChatApi {
 
     archiveConversationForAllGroupMembers(group_id, app_id) {
         var that = this;
-        return chatApi.getGroupMembers(group_id, app_id).then(function (groupMembers) {
+        return chatApi.getAllGroupMembers(group_id, app_id).then(function (groupMembers) {
             
             groupMembers.forEach(function(groupMember) {
                     console.log('groupMember ' + groupMember);            
@@ -402,6 +454,52 @@ class ChatApi {
         });
     }
 
+    getAllGroupMembers(group_id, app_id) {
+        // DEBUG console.log('getGroupMembers ', this );
+        var that = this;
+
+        return new Promise(function(resolve, reject) {
+
+            return that.getGroupById(group_id, app_id)
+                .then(function(group) {
+
+                    var groupMembers = group.members;
+
+                     if (groupMembers) {
+                        
+                        // DEBUG console.log("groupMembers", groupMembers);
+                        var groupMembersAsArray = Object.keys(groupMembers);
+                        
+                        var allMembers = groupMembersAsArray;
+
+                        var invitedGroupMembers = group.invited_members;
+
+                        if (invitedGroupMembers) {
+                            var invitedGroupMembersAsArray = Object.keys(invitedGroupMembers);
+                            console.log("invitedGroupMembersAsArray", invitedGroupMembersAsArray);
+    
+                            allMembers = groupMembersAsArray.concat(invitedGroupMembersAsArray);
+                        }
+                       
+
+                        console.log("allMembers", allMembers);
+
+                        return resolve(allMembers);
+
+                     } else {
+                        var error = 'Warning: Group members for '+ group_id +' not found ';
+                        console.log(error );
+                        return reject(error);
+                     }
+
+
+                
+                }).catch(function(error){
+                    return reject(error);
+                });
+        });
+    }
+
         
     createGroup(group_name, group_owner, group_members, app_id) {
 
@@ -558,6 +656,32 @@ class ChatApi {
         return admin.database().ref(path).set(contact);
     }
 
+    deleteContactBucket(uid, app_id) {
+        // https://stackoverflow.com/questions/37749647/firebasestorage-how-to-delete-directory
+        //var fileBucket = 'profiles/'+uid+'/';
+        var fileBucket = uid+'/';
+        //var fileBucket = 'a.jpg';
+        //var fileBucket = '1234/';
+        console.log("fileBucket", fileBucket);
+        //const bucket = admin.storage().bucket(functions.config().firebase.storageBucket);
+
+        //return gcs.bucket('gs://chat-v2-dev.appspot.com').file(fileBucket).delete();
+        //return admin.storage().bucket(functions.config().firebase.storageBucket).file('profile/').file(fileBucket).delete();
+        //return admin.storage().bucket('chat-v2-dev.appspot.com').file('profile/').file(fileBucket).delete();
+
+        return admin.storage().bucket('chat-v2-dev.appspot.com').deleteFiles({
+            prefix: `profiles/${uid}/`
+          });
+        //   , function(err) {
+        //     if (err) {
+        //       console.log(err);
+        //     } else {
+        //       console.log(`All the Firebase Storage files in users/${userId}/ have been deleted`);
+        //     }
+        //   });
+
+    }
+
 
     typing(writer_id, group_id, app_id) {
 
@@ -695,7 +819,7 @@ class ChatApi {
 
         var updates = {};
         
-        return chatApi.getGroupMembers(recipient_group_id, app_id).then(function (groupMembers) {
+        return chatApi.getAllGroupMembers(recipient_group_id, app_id).then(function (groupMembers) {
           
             groupMembers.forEach(function(groupMember) {
               //   DEBUG console.log('groupMember ' + groupMember);
