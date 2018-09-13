@@ -285,46 +285,59 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
     // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
      
      
-     const fromPath = '/apps/'+app_id+'/messages/' + group_id;
-    //  console.log("fromPath", fromPath);
+    return chatApi.copyGroupMessagesToUserTimeline(group_id, member_id, app_id);
 
-     return admin.database().ref(fromPath).orderByChild("timestamp").once('value').then(function(messageSnap) {
-        // console.log('messagesSnap ' + JSON.stringify(messagesSnap) );
+    //  const fromPath = '/apps/'+app_id+'/messages/' + group_id;
+    // //  console.log("fromPath", fromPath);
 
-        //called multiple time for each message
-            if (messageSnap.val()!=null){
-                var message = messageSnap.val();
-                console.log('message ' + JSON.stringify(message) );
+    //  return admin.database().ref(fromPath).orderByChild("timestamp").once('value').then(function(messageSnap) {
+    //     // console.log('messagesSnap ' + JSON.stringify(messagesSnap) );
 
-                //disable notification
-                // if (message.attributes) {
-                //     message.attributes.sendnotification = false;
-                // }
+    //     //called multiple time for each message
+    //         if (messageSnap.val()!=null){
+    //             var message = messageSnap.val();
+    //             console.log('message ' + JSON.stringify(message) );
 
-                //disable notification
-                // var i = 0;
-                // messages.forEach(function(message) {
-                //     if (i>0) {
-                //         if (message.attributes) {
-                //             message.attributes.sendnotification = false;
-                //         }
-                //     }                          
-                //     console.log('message ' + message);    
-                // });
+    //             //disable notification
+    //             // if (message.attributes) {
+    //             //     message.attributes.sendnotification = false;
+    //             // }
+
+    //             //disable notification
+    //             // var i = 0;
+    //             // messages.forEach(function(message) {
+    //             //     if (i>0) {
+    //             //         if (message.attributes) {
+    //             //             message.attributes.sendnotification = false;
+    //             //         }
+    //             //     }                          
+    //             //     console.log('message ' + message);    
+    //             // });
                 
-                const toPath = '/apps/'+app_id+'/users/' + member_id+'/messages/'+group_id;
-                // console.log("toPath", toPath);
+    //             const toPath = '/apps/'+app_id+'/users/' + member_id+'/messages/'+group_id;
+    //             // console.log("toPath", toPath);
 
-                console.log('duplicating message ' + JSON.stringify(message) + " from : " + fromPath + " to " + toPath);
-                return admin.database().ref(toPath).update(message);
-            } else {
-                console.log("message is null. Nothing to duplicate");
-                return 0;
-            }
-        });
+    //             console.log('duplicating message ' + JSON.stringify(message) + " from : " + fromPath + " to " + toPath);
+    //             return admin.database().ref(toPath).update(message);
+    //         } else {
+    //             console.log("message is null. Nothing to duplicate");
+    //             return 0;
+    //         }
+    //     });
     
 });
 
+
+exports.duplicateTimelineOnJoinGroupForInvitedMembers = functions.database.ref('/apps/{app_id}/groups/{group_id}/invited_members/{member_id}').onCreate((data, context) => {
+    
+    const member_id = context.params.member_id;
+    const group_id = context.params.group_id;
+    const app_id = context.params.app_id;;
+   // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+    
+    
+   return chatApi.copyGroupMessagesToUserTimeline(group_id, member_id, app_id);
+});
 
 exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     

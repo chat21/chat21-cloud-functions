@@ -22,6 +22,7 @@ const admin = require('firebase-admin');
 const chatApi = require('./chat-api');
 const express = require('express');
 const cors = require('cors')({origin: true});
+// var formidable = require('formidable');
 
 const app = express();
 const chatHttpAuth = require('./chat-http-auth');
@@ -625,6 +626,107 @@ app.put('/:app_id/contacts/me', (req, res) => {
       });
     });
 
+    // app.put('/:app_id/contacts/me/photo', (req, res) => {
+    //   var form = new formidable.IncomingForm();
+    //   return new Promise((resolve, reject) => {
+    //     form.parse(req, function(err, fields, files) {
+    //       var file = files.fileToUpload;
+    //       if(!file){
+    //         reject("no file to upload, please choose a file.");
+    //         return;
+    //       }
+    //       console.info("about to upload file as a json: " + file.type);
+    //       var filePath = file.path;
+    //       console.log('File path: ' + filePath);
+   
+    //       const bucket = admin.storage().bucket('chat-v2-dev.appspot.com');
+    //       return bucket.upload(filePath, {
+    //           destination: file.name
+    //       }).then(() => {
+    //         resolve();  // Whole thing completed successfully.
+    //       }).catch((err) => {
+    //         reject('Failed to upload: ' + JSON.stringify(err));
+    //       });
+    //     });
+    //   }).then(() => {
+    //     res.status(200).send('Yay!');
+    //     return null
+    //   }).catch(err => {
+    //     console.error('Error while parsing form: ' + err);
+    //     res.status(500).send('Error while parsing form: ' + err);
+    //   });
+    // });
+// Deprecated
+app.put('/:app_id/contacts/me/photo', (req, res) => {
+  console.log('upload my photo profile information');
+
+  if (req.method !== 'PUT') {
+    res.status(403).send('Forbidden!');
+  }
+    
+    cors(req, res, () => {
+      console.log('req.body', req.body);
+      console.log('JSON.stringify(req.body)', JSON.stringify(req.body));
+
+
+          const img = JSON.parse(JSON.stringify(req.body));
+          console.log('img', img);
+
+          const bucket = admin.storage().bucket('chat-v2-dev.appspot.com');
+
+          //return bucket.file('blog/foo.jpg').save(img.data, { 
+          return bucket.file('a.jpg').save(img.data, { 
+            resumable: false, 
+            metadata: { 
+              contentType: 'image/jpeg' 
+            } 
+          })
+            .then(() => {
+                return cors(req, res, () => {
+                    res.status(200).send({ "url": bucket.file('a.jpg').getSignedUrl()});
+                  });
+              });
+      });
+  });
+
+    /**
+ * Delete my photo profile
+ 
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.delete('/:app_id/contacts/me/photo', (req, res) => {
+  console.log('delete my photo profile information');
+
+   
+    if (req.method !== 'DELETE') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+       
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+
+      
+        let current_user = req.user.uid;
+
+        let app_id = req.params.app_id;
+
+
+        console.log('current_user', current_user);
+        console.log('app_id', app_id);
+
+
+        chatApi.deleteContactBucket(current_user, app_id).then(() => {
+          console.log(`Bucket  deleted.`);
+          res.status(204).send();
+        });
+
+      });
+    });
 
 
     /**

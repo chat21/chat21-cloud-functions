@@ -96,7 +96,7 @@ exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{se
       return 0;
     }
 
-    if (group_id.indexOf("support-group")>-1 ){
+    if (recipient_id.indexOf("support-group")>-1 ){
       console.log('exit for support-group');
       return 0;
      }
