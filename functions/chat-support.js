@@ -250,27 +250,7 @@ function saveNewRequest (message, departmentid, group_members, agents, available
         console.log('support.storetobackend', 'enabled');
 
         return chatSupportApi.createRequest(projectid, newRequest);
-        // return request({
-        //     uri: "http://api.chat21.org/"+projectid+"/requests",
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
-        //     },
-        //     method: 'POST',
-        //     json: true,
-        //     body: newRequest,
-        //     //resolveWithFullResponse: true
-        //     }).then(response => {
-        //     if (response.statusCode >= 400) {
-        //         // throw new Error(`HTTP Error: ${response.statusCode}`);
-        //         console.error(`HTTP Error: ${response.statusCode}`);
-        //     }else {
-        //         console.log('Saved successfully to backend with response', response);  
-        //     }
-
-        //     return response;             
-            
-        // });
+       
     }else {
         console.log('support.storetobackend', 'disabled');
     }
