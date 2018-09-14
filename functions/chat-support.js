@@ -145,14 +145,32 @@ function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, 
 
     chatApi.stopTyping("system", group_id, app_id);
 
-    return Promise.all([createNewGroup(message, group_id, group_members, app_id), saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id, projectid)]);
+
+    //pooled invite other members
+    var invited_members;
+    if (!assigned_operator_id) {
+        if (availableAgentsCount>0 ){
+            invited_members = {};
+            availableAgents.forEach(function(aAgent) {
+                invited_members[aAgent.id_user] = 1;
+            });
+        }
+        
+    }
+
+    console.debug("invited_members", invited_members);     
+
+    return Promise.all([
+        createNewGroup(message, group_id, group_members, app_id, invited_members), 
+        saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id, projectid)
+    ]);
 
     // createNewGroup(message, group_id, group_members, app_id);
     // return saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id);
 
 }
 
-function createNewGroup(message, group_id, group_members, app_id) {
+function createNewGroup(message, group_id, group_members, app_id, invited_members) {
     // var group_name = " Support Group";
     var group_name = "";
 
@@ -165,7 +183,7 @@ function createNewGroup(message, group_id, group_members, app_id) {
 
     var group_owner = "system";
     group_members.system = 1;
-    group_members[message.sender] = 1;  //add system                
+    group_members[message.sender] = 1;  //the requester user              
 
 
 
@@ -178,7 +196,7 @@ function createNewGroup(message, group_id, group_members, app_id) {
     console.log('gAttributes', gAttributes);
 
     
-    return chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, gAttributes);
+    return chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, gAttributes, invited_members);
 
 }
 
@@ -211,6 +229,8 @@ function saveNewRequest (message, departmentid, group_members, agents, available
         }
 
         newRequest.app_id = app_id;
+
+        newRequest.first_message = message;
         
         console.log('newRequest', newRequest);
 

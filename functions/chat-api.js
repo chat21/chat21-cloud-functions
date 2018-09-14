@@ -501,7 +501,7 @@ class ChatApi {
     }
 
         
-    createGroup(group_name, group_owner, group_members, app_id) {
+    createGroup(group_name, group_owner, group_members, app_id, attributes, invited_members) {
 
         var path = '/apps/'+app_id+'/groups/';
         // console.log("path", path);
@@ -514,12 +514,20 @@ class ChatApi {
         group.iconURL = "NOICON";
         group.createdOn = admin.database.ServerValue.TIMESTAMP;
         
+        if (attributes) {
+            group.attributes = attributes;
+        }
+
+        if (invited_members) {
+            group.invited_members = invited_members;
+        }
+        
         console.log("creating group " + JSON.stringify(group) + " to "+ path);
         return admin.database().ref(path).push(group);
     }
 
   
-    createGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes) {
+    createGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members) {
 
         var path = '/apps/'+app_id+'/groups/'+group_id;
         // console.log("path", path);
@@ -534,6 +542,10 @@ class ChatApi {
         
         if (attributes) {
             group.attributes = attributes;
+        }
+
+        if (invited_members) {
+            group.invited_members = invited_members;
         }
 
         console.log("creating group " + JSON.stringify(group) + " to "+ path);
