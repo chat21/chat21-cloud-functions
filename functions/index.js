@@ -28,7 +28,7 @@ if (functions.config().support && functions.config().support.enabled && function
 }
 
 
-if (functions.config().webhook && functions.config().webhook.enabled && functions.config().eebhook.enabled=="true") {
+if (functions.config().webhook && functions.config().webhook.enabled && functions.config().webhook.enabled=="true") {
 
     const chatWebHook = require('./chat-webhook');
     exports.webhook = chatWebHook;

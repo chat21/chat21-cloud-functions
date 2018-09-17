@@ -3,6 +3,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const request = require('request-promise');  
+const chatApi = require('./chat-api');
 
 
 var ONMESSAGE_URL;
@@ -53,7 +54,7 @@ exports.onMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/mes
       return 0;
     } else {
       console.error("Unable to send message:" + err);
-      return err;
+      return 0;
     }
   }); 
 
