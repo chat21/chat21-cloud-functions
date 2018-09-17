@@ -185,21 +185,21 @@ exports.onMemberJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group
     if (group) {
     
       data.group = group;
-      
-      return request({
-        "uri": URL,
-        "method": "POST",
-        //"agent": agent,
-        "json": json
-      }, (err, res, body) => {
-        if (!err) {
-          console.log('http sent!');
-          return 0;
-        } else {
-          console.error("Unable to send http:" + err);
-          return 0;
-        }
-      }); 
+
+        return request({
+          "uri": URL,
+          "method": "POST",
+          //"agent": agent,
+          "json": json
+        }, (err, res, body) => {
+          if (!err) {
+            console.log('http sent!');
+            return 0;
+          } else {
+            console.error("Unable to send http:" + err);
+            return 0;
+          }
+        }); 
 
     }
   });

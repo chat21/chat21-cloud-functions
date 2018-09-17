@@ -236,7 +236,7 @@ function saveNewRequest (message, departmentid, group_members, agents, available
 
 
        
-        admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true })
+        return admin.firestore().collection('conversations').doc(group_id).set(newRequest, { merge: true })
         // .then(writeResult => {
         //     // Send back a message that we've succesfully written the message
         //     console.log(`Conversation with ID: ${group_id} created with value.`, newRequest);
@@ -246,14 +246,14 @@ function saveNewRequest (message, departmentid, group_members, agents, available
     //Save to mongo
 
     
-    if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
-        console.log('support.storetobackend', 'enabled');
+    // if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
+    //     console.log('support.storetobackend', 'enabled');
 
-        return chatSupportApi.createRequest(projectid, newRequest);
+    //     return chatSupportApi.createRequest(projectid, newRequest);
        
-    }else {
-        console.log('support.storetobackend', 'disabled');
-    }
+    // }else {
+    //     console.log('support.storetobackend', 'disabled');
+    // }
     
 
 }
