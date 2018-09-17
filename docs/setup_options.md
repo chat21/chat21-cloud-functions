@@ -38,5 +38,5 @@ Run the follow command to retrieve your environment variables ```firebase functi
 * Create a webhook with a URL like this https://us-central1-chat-v2-dev.cloudfunctions.net/webhookapi/<PROJECT_ID>.  
     Example: https://us-central1-chat-v2-dev.cloudfunctions.net/webhookapi/5ae1aaca86724100146e1e74/
 
-* Enable FB webhook with ```firebase functions:config:set webhook.enabled=true```
-* Set FB secret with ```firebase functions:config:set webhook.secret=<WEBHOOK FB SECRET>```
+* Enable FB webhook with ```firebase functions:config:set fbwebhook.enabled=true```
+* Set FB secret with ```firebase functions:config:set fbwebhook.secret=<WEBHOOK FB SECRET>```

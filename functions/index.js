@@ -28,12 +28,19 @@ if (functions.config().support && functions.config().support.enabled && function
 }
 
 
-if (functions.config().webhook && functions.config().webhook.enabled && functions.config().webhook.enabled=="true") {
-    const chatWebHookHttpApi = require('./chat-webhook-http-api');
-    exports.webhookapi = functions.https.onRequest(chatWebHookHttpApi.api);
+if (functions.config().webhook && functions.config().webhook.enabled && functions.config().eebhook.enabled=="true") {
 
     const chatWebHook = require('./chat-webhook');
     exports.webhook = chatWebHook;
+}
+
+
+if (functions.config().fbwebhook && functions.config().fbwebhook.enabled && functions.config().fbwebhook.enabled=="true") {
+    const chatFBWebHookHttpApi = require('./chat-fbwebhook-http-api');
+    exports.fbwebhookapi = functions.https.onRequest(chatFBWebHookHttpApi.api);
+
+    const chatFBWebHook = require('./chat-fbwebhook');
+    exports.fbwebhook = chatFBWebHook;
 }
 
   exports.insertAndSendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
@@ -286,44 +293,6 @@ exports.duplicateTimelineOnJoinGroup = functions.database.ref('/apps/{app_id}/gr
      
      
     return chatApi.copyGroupMessagesToUserTimeline(group_id, member_id, app_id);
-
-    //  const fromPath = '/apps/'+app_id+'/messages/' + group_id;
-    // //  console.log("fromPath", fromPath);
-
-    //  return admin.database().ref(fromPath).orderByChild("timestamp").once('value').then(function(messageSnap) {
-    //     // console.log('messagesSnap ' + JSON.stringify(messagesSnap) );
-
-    //     //called multiple time for each message
-    //         if (messageSnap.val()!=null){
-    //             var message = messageSnap.val();
-    //             console.log('message ' + JSON.stringify(message) );
-
-    //             //disable notification
-    //             // if (message.attributes) {
-    //             //     message.attributes.sendnotification = false;
-    //             // }
-
-    //             //disable notification
-    //             // var i = 0;
-    //             // messages.forEach(function(message) {
-    //             //     if (i>0) {
-    //             //         if (message.attributes) {
-    //             //             message.attributes.sendnotification = false;
-    //             //         }
-    //             //     }                          
-    //             //     console.log('message ' + message);    
-    //             // });
-                
-    //             const toPath = '/apps/'+app_id+'/users/' + member_id+'/messages/'+group_id;
-    //             // console.log("toPath", toPath);
-
-    //             console.log('duplicating message ' + JSON.stringify(message) + " from : " + fromPath + " to " + toPath);
-    //             return admin.database().ref(toPath).update(message);
-    //         } else {
-    //             console.log("message is null. Nothing to duplicate");
-    //             return 0;
-    //         }
-    //     });
     
 });
 

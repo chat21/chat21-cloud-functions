@@ -497,6 +497,11 @@ Example:
 
 
 ## Webhook
+
+* Enable webhook with ```firebase functions:config:set webhook.enabled=true```
+* Set on new message webhook url with : ```firebase functions:config:set webhook.onmessage.url=http://localhost:3000/requests```
+
+
 TODO
 
 ```
