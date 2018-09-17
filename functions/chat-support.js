@@ -673,38 +673,38 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 // });
 
 
-if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
-    exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
-        const message_id = context.params.message_id;
-        const recipient_id = context.params.recipient_id;
-        const app_id = context.params.app_id;
-        // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
+// if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
+//     exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+//         const message_id = context.params.message_id;
+//         const recipient_id = context.params.recipient_id;
+//         const app_id = context.params.app_id;
+//         // DEBUG console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
         
-        const message = data.val();
-        // DEBUG console.log('message ' + JSON.stringify(message));
+//         const message = data.val();
+//         // DEBUG console.log('message ' + JSON.stringify(message));
 
-        // DEBUG console.log("message.status : " + message.status);     
+//         // DEBUG console.log("message.status : " + message.status);     
 
-        if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
-            return 0;
-        }
+//         if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+//             return 0;
+//         }
 
-        if (recipient_id.indexOf("support-group")==-1 ){
-            console.log('exit for recipient');
-            return 0;
-        }
+//         if (recipient_id.indexOf("support-group")==-1 ){
+//             console.log('exit for recipient');
+//             return 0;
+//         }
 
-        console.log('it s a message to nodejs ');
+//         console.log('it s a message to nodejs ');
 
-        var projectid = message.projectid;
-        console.log('projectId',projectid);
+//         var projectid = message.projectid;
+//         console.log('projectId',projectid);
         
-        return chatSupportApi.saveMessage(message, projectid);
+//         return chatSupportApi.saveMessage(message, projectid);
 
         
         
-    });
-}  
+//     });
+// }  
 
 
 exports.botreplyWithTwoReply = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
