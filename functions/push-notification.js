@@ -99,7 +99,7 @@ const chatApi = require('./chat-api');
             //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
             click_action: "NEW_MESSAGE",   // uncomment for intent filter in your custom project
             // "content-available": "1",
-            "content_available": true,
+            "content_available": "true",
             badge : "1"
         },
     
