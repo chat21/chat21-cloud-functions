@@ -31,6 +31,10 @@ exports.onMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/mes
   const app_id = context.params.app_id;;
   // console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
   
+
+  console.log('data', JSON.stringify(data));
+  console.log('context', JSON.stringify(context));
+  
   const message = data.val();
 
   if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
@@ -74,6 +78,9 @@ exports.onFirstMessage = functions.database.ref('/apps/{app_id}/messages/{recipi
   const app_id = context.params.app_id;;
   // console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
   
+  console.log('data', JSON.stringify(data));
+  console.log('context', JSON.stringify(context));
+
   // const messageRef = data.ref;
   // console.log('messageRef ' + messageRef);
 
