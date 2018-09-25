@@ -20,11 +20,9 @@ if (!URL) {
 }
 
 
-exports.onMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.onMessage = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
   const message_id = context.params.message_id;
-
-  const sender_id = context.params.sender_id;
 
  
   const recipient_id = context.params.recipient_id;
@@ -129,6 +127,83 @@ exports.onFirstMessage = functions.database.ref('/apps/{app_id}/messages/{recipi
 
 });
 
+exports.onDeleteConversation = functions.database.ref('/apps/{app_id}/users/{user_id}/conversations/{recipient_id}').onDelete((snap, context) => {
+  const app_id = context.params.app_id;
+  const user_id = context.params.user_id;
+  const recipient_id = context.params.recipient_id;
+  console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", user_id: " + user_id);
+
+
+
+  const deletedData = snap.val(); // data that was deleted
+
+  console.log('deletedData', deletedData);
+
+
+
+  var json = {
+    event_type: "deleted-conversation",
+    createdAt: new Date().getTime(),
+    data: deletedData
+  };
+
+  return request({
+    "uri": URL,
+    "method": "POST",
+    //"agent": agent,
+    "json": json
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('http sent!');
+      return 0;
+    } else {
+      console.error("Unable to send http:" + err);
+      return 0;
+    }
+  }); 
+
+
+});
+
+exports.onDeleteArchivedConversation = functions.database.ref('/apps/{app_id}/users/{user_id}/archived_conversations/{recipient_id}').onDelete((snap, context) => {
+  const app_id = context.params.app_id;
+  const user_id = context.params.user_id;
+  const recipient_id = context.params.recipient_id;
+  console.log("recipient_id : " + recipient_id + ", app_id: " + app_id + ", user_id: " + user_id);
+
+
+
+  const deletedData = snap.val(); // data that was deleted
+
+  console.log('deletedData', deletedData);
+
+
+
+  var json = {
+    event_type: "deleted-archivedconversation",
+    createdAt: new Date().getTime(),
+    data: deletedData
+  };
+
+  return request({
+    "uri": URL,
+    "method": "POST",
+    //"agent": agent,
+    "json": json
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('http sent!');
+      return 0;
+    } else {
+      console.error("Unable to send http:" + err);
+      return 0;
+    }
+  }); 
+
+
+});
+
+
 
 
 exports.onGroupCreated = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
@@ -211,6 +286,52 @@ exports.onMemberJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group
     }
   });
 
+});
+
+
+exports.onMemberLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
+    
+    const member_id = context.params.member_id;
+    const group_id = context.params.group_id;
+    const app_id = context.params.app_id;;
+   // DEBUG  console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+
+
+
+  var data = {
+    member_id: member_id
+  };
+
+  var json = {
+    event_type: "leave-member",
+    createdAt: new Date().getTime(),
+    data: data
+  };
+
+  return chatApi.getGroupById(group_id, app_id).then(function (group) {
+    console.log("group", group);
+    if (group) {
+    
+      data.group = group;
+
+        return request({
+          "uri": URL,
+          "method": "POST",
+          //"agent": agent,
+          "json": json
+        }, (err, res, body) => {
+          if (!err) {
+            console.log('http sent!');
+            return 0;
+          } else {
+            console.error("Unable to send http:" + err);
+            return 0;
+          }
+        }); 
+
+    }
+
+  });
 
 
 });
