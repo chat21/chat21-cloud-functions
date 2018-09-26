@@ -45,6 +45,9 @@ exports.onMessage = functions.database.ref('/apps/{app_id}/messages/{recipient_i
   var json = {
     event_type: "new-message",
     createdAt: new Date().getTime(),
+    recipient_id: recipient_id,
+    app_id: app_id,
+    message_id: message_id,
     data: message
   };
 
@@ -106,6 +109,8 @@ exports.onFirstMessage = functions.database.ref('/apps/{app_id}/messages/{recipi
   var json = {
     event_type: "first-message",
     createdAt: new Date().getTime(),
+    recipient_id: recipient_id,
+    app_id: app_id,
     data: message
   };
 
@@ -144,6 +149,9 @@ exports.onDeleteConversation = functions.database.ref('/apps/{app_id}/users/{use
   var json = {
     event_type: "deleted-conversation",
     createdAt: new Date().getTime(),
+    app_id: app_id,
+    user_id: user_id,
+    recipient_id: recipient_id,
     data: deletedData
   };
 
@@ -182,6 +190,9 @@ exports.onDeleteArchivedConversation = functions.database.ref('/apps/{app_id}/us
   var json = {
     event_type: "deleted-archivedconversation",
     createdAt: new Date().getTime(),
+    app_id: app_id,
+    user_id: user_id,
+    recipient_id: recipient_id,
     data: deletedData
   };
 
@@ -219,6 +230,8 @@ exports.onGroupCreated = functions.database.ref('/apps/{app_id}/groups/{group_id
   var json = {
     event_type: "new-group",
     createdAt: new Date().getTime(),
+    app_id: app_id,
+    group_id: group_id,
     data: group
   };
 
@@ -259,6 +272,9 @@ exports.onMemberJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group
   var json = {
     event_type: "join-member",
     createdAt: new Date().getTime(),
+    group_id: group_id,
+    app_id: app_id,
+    member_id: member_id,
     data: data
   };
 
@@ -305,6 +321,9 @@ exports.onMemberLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{grou
   var json = {
     event_type: "leave-member",
     createdAt: new Date().getTime(),
+    group_id: group_id,
+    app_id: app_id,
+    member_id: member_id,
     data: data
   };
 

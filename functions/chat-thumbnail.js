@@ -68,10 +68,12 @@ exports.generateThumbnail = functions.storage.object().onFinalize((object) => {
     console.log('Image downloaded locally to', tempFilePath);
     // Generate a thumbnail using ImageMagick.
     return spawn('convert', [tempFilePath, '-thumbnail', '200x200>', tempFilePath]);
+    // return spawn('convert', [tempFilePath, '-thumbnail', '200x200>', 'photo.jpg']);
   }).then(() => {
     console.log('Thumbnail created at', tempFilePath);
     // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
     const thumbFileName = `thumb_${fileName}`;
+    // const thumbFileName = 'thumb_photo.jpg';
     const thumbFilePath = path.join(path.dirname(filePath), thumbFileName);
     // Uploading the thumbnail.
     return bucket.upload(tempFilePath, {
