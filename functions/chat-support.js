@@ -148,15 +148,17 @@ function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, 
 
     //pooled invite other members
     var invited_members;
-    if (!assigned_operator_id) {
-        if (availableAgentsCount>0 ){
-            invited_members = {};
-            availableAgents.forEach(function(aAgent) {
-                invited_members[aAgent.id_user] = 1;
-            });
-        }
+
+    // if (!assigned_operator_id) {
+    //     if (availableAgentsCount>0 ){
+    //         invited_members = {};
+    //         availableAgents.forEach(function(aAgent) {
+    //             invited_members[aAgent.id_user] = 1;
+    //         });
+    //     }
         
-    }
+    // }
+    //end pooled
 
     console.debug("invited_members", invited_members);     
 
