@@ -163,7 +163,7 @@ function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, 
     console.debug("invited_members", invited_members);     
 
     return Promise.all([
-        createNewGroup(message, group_id, group_members, app_id, invited_members), 
+        createNewGroup(message, group_id, group_members, app_id, projectid, invited_members), 
         saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id, projectid)
     ]);
 
@@ -172,7 +172,7 @@ function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, 
 
 }
 
-function createNewGroup(message, group_id, group_members, app_id, invited_members) {
+function createNewGroup(message, group_id, group_members, app_id, projectid, invited_members) {
     // var group_name = " Support Group";
     var group_name = "";
 
@@ -195,6 +195,9 @@ function createNewGroup(message, group_id, group_members, app_id, invited_member
     if (message.attributes){
         gAttributes =  message.attributes;
     }
+    // if (gAttributes) { //add projectid to the group attributes (for webhook)
+    //     gAttributes.projectid = projectid;
+    // }
     console.log('gAttributes', gAttributes);
 
     

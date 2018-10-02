@@ -363,6 +363,10 @@ class ChatApi {
             //console.log("message.timestamp",message.timestamp);
             conversation.timestamp = message.timestamp;
         }
+
+        if (message.attributes) {
+            conversation.attributes = message.attributes;
+        }
         
     
         //delete archived conv if present
