@@ -72,65 +72,68 @@ exports.onMessage = functions.database.ref('/apps/{app_id}/messages/{recipient_i
 
 
 
-
-exports.onFirstMessage = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
-  // const sender_id = context.params.sender_id; 
-  const recipient_id = context.params.recipient_id;
-  const app_id = context.params.app_id;;
-  // console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
+//DEPRECATED REMOVE IT
+// exports.onFirstMessage = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
+//   // const sender_id = context.params.sender_id; 
+//   const recipient_id = context.params.recipient_id;
+//   const app_id = context.params.app_id;;
+//   // console.log("recipient_id : " + recipient_id + ", app_id: " + app_id );
   
-  console.log('data', JSON.stringify(data));
-  console.log('context', JSON.stringify(context));
+//   console.log('data', JSON.stringify(data));
+//   console.log('context', JSON.stringify(context));
 
-  // const messageRef = data.ref;
-  // console.log('messageRef ' + messageRef);
+//   // const messageRef = data.ref;
+//   // console.log('messageRef ' + messageRef);
 
-  // // const messageKey = data.current.key;
-  // const messageKey = messageRef.key;
-  // console.log('messageKey ' + messageKey);
-
-
-  const messageWithMessageId = data.val();
-  // console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
-
-  const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
-  // console.log('message ' + JSON.stringify(message));
-
-  // console.log("message.status : " + message.status);     
-
-  if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
-      console.log('exit for status');
-      return 0;
-  }
+//   // // const messageKey = data.current.key;
+//   // const messageKey = messageRef.key;
+//   // console.log('messageKey ' + messageKey);
 
 
-  console.log("message ", JSON.stringify(message));     
+//   const messageWithMessageId = data.val();
+//   // console.log('messageWithMessageId ' + JSON.stringify(messageWithMessageId));
+
+//   const message =  messageWithMessageId[Object.keys(messageWithMessageId)[0]]; //returns 'someVal'
+//   // console.log('message ' + JSON.stringify(message));
+
+//   // console.log("message.status : " + message.status);     
+
+//   if (message.status != chatApi.CHAT_MESSAGE_STATUS.DELIVERED){
+//       console.log('exit for status');
+//       return 0;
+//   }
+
+
+//   console.log("message ", JSON.stringify(message));     
   
-  var json = {
-    event_type: "first-message",
-    createdAt: new Date().getTime(),
-    recipient_id: recipient_id,
-    app_id: app_id,
-    data: message
-  };
+//   var json = {
+//     event_type: "first-message",
+//     createdAt: new Date().getTime(),
+//     recipient_id: recipient_id,
+//     app_id: app_id,
+//     data: message
+//   };
 
-  return request({
-    "uri": URL,
-    "method": "POST",
-    //"agent": agent,
-    "json": json
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('http sent!');
-      return 0;
-    } else {
-      console.error("Unable to send http:" + err);
-      return 0;
-    }
-  }); 
+//   return request({
+//     "uri": URL,
+//     "method": "POST",
+//     //"agent": agent,
+//     "json": json
+//   }, (err, res, body) => {
+//     if (!err) {
+//       console.log('http sent!');
+//       return 0;
+//     } else {
+//       console.error("Unable to send http:" + err);
+//       return 0;
+//     }
+//   }); 
 
 
-});
+// });
+
+
+
 
 exports.onDeleteConversation = functions.database.ref('/apps/{app_id}/users/{user_id}/conversations/{recipient_id}').onDelete((snap, context) => {
   const app_id = context.params.app_id;
