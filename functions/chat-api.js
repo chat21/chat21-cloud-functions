@@ -3,7 +3,7 @@
 'use strict';
 
 const admin = require('firebase-admin');
-const gcs = require('@google-cloud/storage')();
+const gcs = require('@google-cloud/storage');
 
 class ChatApi {
 
