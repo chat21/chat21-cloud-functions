@@ -5,6 +5,12 @@
 const admin = require('firebase-admin');
 const gcs = require('@google-cloud/storage');
 
+const removeEmpty = (obj) => 
+  Object.entries(obj).forEach(([key, val]) => {
+    if (val && typeof val === 'object') removeEmpty(val)
+    else if (val == null) delete obj[key]
+});
+
 class ChatApi {
 
 
@@ -368,6 +374,9 @@ class ChatApi {
             conversation.attributes = message.attributes;
         }
         
+        if (message.senderAuthInfo) {
+            conversation.senderAuthInfo = message.senderAuthInfo;
+        }
     
         //delete archived conv if present
     //    chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
@@ -583,6 +592,45 @@ class ChatApi {
         return admin.database().ref(path).remove();
     }
 
+    saveMemberInfo(member_id, group_id, app_id) {
+
+        var path = '/apps/'+app_id+'/groups/'+group_id+'/membersinfo/'+member_id;
+        // DEBUG console.log("path", path);
+
+
+        return admin.auth().getUser(member_id)
+            .then(function(userRecord) {
+                // See the UserRecord reference doc for the contents of userRecord.
+                // console.log("Successfully fetched user data:", userRecord.toJSON());
+                console.log("saving membersinfo " + JSON.stringify(userRecord) + " to group " + path);
+                
+                //Object.keys(userRecord).forEach(key => userRecord[key] === undefined ? delete userRecord[key] : '');
+                var userRecordJson = userRecord.toJSON();
+
+                removeEmpty(userRecordJson);
+                console.log("userRecordJson",userRecordJson);
+                
+                return admin.database().ref(path).set(userRecordJson);
+
+            })
+            .catch(function(error) {
+                console.log("Error fetching user data:", error);
+                return 0;
+            });
+
+       
+    }
+    deleteMemberInfo(member_id, group_id, app_id) {
+
+        var path = '/apps/'+app_id+'/groups/'+group_id+'/membersinfo/'+member_id;
+        // DEBUG console.log("path", path);
+
+        
+        console.log("deleteMemberInfo " + path);
+        
+        return admin.database().ref(path).remove();
+    }
+
 
 
     setMembersGroup(members, group_id, app_id) {
@@ -735,6 +783,16 @@ class ChatApi {
             timestamp = message.timestamp;
         }
 
+        // var senderUser =  admin.auth().currentUser;
+        // console.log("senderUser", senderUser);
+        // var senderUserInfo = senderUser.toJSON();
+        // console.log("senderUserInfo", senderUserInfo);
+
+        // if (message.attributes) {
+        //     message.reserved_attributes = senderUserInfo;
+        // }
+
+        console.log("insertAndSendMessageInternal.message", message);
     
         return Promise.all([ this.insertMessageInternal(messageRef, message, sender_id, recipient_id, timestamp),
             this.sendMessageToTimelineInternal(message, sender_id, recipient_id, message_id, app_id, timestamp)]);

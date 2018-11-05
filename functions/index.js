@@ -3,7 +3,11 @@ const functions = require('firebase-functions');
 var admin = require('firebase-admin');
 admin.initializeApp();
 
-
+const removeEmpty = (obj) => 
+  Object.entries(obj).forEach(([key, val]) => {
+    if (val && typeof val === 'object') removeEmpty(val)
+    else if (val == null) delete obj[key]
+});
 
 const chatApi = require('./chat-api');
 // const chatSupportApi = require('./chat-support-api');
@@ -43,6 +47,8 @@ if (functions.config().fbwebhook && functions.config().fbwebhook.enabled && func
     exports.fbwebhook = chatFBWebHook;
 }
 
+
+
   exports.insertAndSendMessage = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
    
     const message_id = context.params.message_id;
@@ -58,6 +64,22 @@ if (functions.config().fbwebhook && functions.config().fbwebhook.enabled && func
     //console.log('messageRef ' + messageRef );
 
     
+    const authVar = context.auth; // Auth information for the user.
+    console.log('authVar ' + JSON.stringify(authVar) );
+    const authType = context.authType; // Permissions level for the user.
+    console.log('authType ' + JSON.stringify(authType) );
+
+   
+
+    
+    if (authVar && authType) {//First argument contains undefined in property 'apps.bbb2.messages.-LPkg7hrcixsLUSu7DAz.-LPkg8BKMeO-6AWEgNxy.senderAuthInfo.authVar'
+        //Object.keys(authVar).forEach(key => authVar[key] === undefined ? delete userRecord[key] : '');
+        message.senderAuthInfo = {"authVar":authVar, "authType": authType};
+        //message.senderAuthInfo = {"authVar":removeEmpty(authVar), "authType": authType};
+    }
+    
+    
+
 
     //set the status = 100 only if message.status is null. If message.status==200 (came form sendMessage) saveMessage not must modify the value
     // console.log("message.status : " + message.status);        
@@ -308,6 +330,8 @@ exports.duplicateTimelineOnJoinGroupForInvitedMembers = functions.database.ref('
    return chatApi.copyGroupMessagesToUserTimeline(group_id, member_id, app_id);
 });
 
+
+
 exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
      const member_id = context.params.member_id;
@@ -384,6 +408,34 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
      });
     
 });
+
+
+
+exports.saveMemberInfoOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
+    
+    const member_id = context.params.member_id;
+    const group_id = context.params.group_id;
+    const app_id = context.params.app_id;;
+    console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+    
+    // const member = data.val();
+    // console.log("member", member);
+
+    return chatApi.saveMemberInfo(member_id, group_id, app_id);
+
+});
+
+exports.removeMemberInfoOnLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
+    
+    const member_id = context.params.member_id;
+    const group_id = context.params.group_id;
+    const app_id = context.params.app_id;;
+    console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+
+   return chatApi.deleteMemberInfo(member_id, group_id, app_id);
+});
+
+
 
 if (functions.config().group && functions.config().group.general && functions.config().group.general.autojoin ) {
     exports.addToGeneralMembersOnContantCreation = functions.database.ref('/apps/{app_id}/contacts/{contact_id}').onCreate((data, context) => {
