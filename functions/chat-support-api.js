@@ -266,7 +266,7 @@ class ChatSupportApi {
 
 
    
-
+      //UNUSED
       createRequest(projectid, newRequest) {
         var that = this;
 
@@ -301,7 +301,7 @@ class ChatSupportApi {
         });
       }
 
-
+      //UNUSED
       saveMessage(message,projectid ) {
         var that = this;
 

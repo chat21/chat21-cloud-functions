@@ -2,7 +2,7 @@
 
 'use strict';
 
-const admin = require('firebase-admin');
+// const admin = require('firebase-admin');
 const request = require('request-promise');  
 
 const Entities = require('html-entities').AllHtmlEntities;
@@ -257,7 +257,7 @@ chatBotSupportApi.LABELS = {
         DEFAULT_NOTFOUND_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Formula una nuova domanda oppure digita \\agent per parlare con un operatore umano.",
         DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "",
         // DEFAULT_CLOSING_NOBOT_SENTENCE_REPLY_MESSAGE : "Sei soddisfatto della risposta?. \n Se sei soddisfatto digita \\close per chiudere la chat di supporto oppure riformula la tua domanda.",
-        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Prego riformula la  domanda."
+        DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE: "Non sono in grado di fornirti una risposta adeguata. \n Prego riformula la domanda."
     },
     "IT-IT" : {
         DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE : "Se vuoi digita \\agent per parlare con un operatore umano.",
