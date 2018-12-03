@@ -191,18 +191,18 @@ function createNewGroup(message, group_id, group_members, app_id, projectid, inv
 
     console.log("group_members", group_members);     
 
-    var gAttributes = null;
-    
+    var gAttributes = {};
+
     if (message.attributes){
         gAttributes =  message.attributes;
     }
      if (message.senderAuthInfo) {
-         if (!gAttributes) {
-            gAttributes = {};
-         }
-        gAttributes["senderAuthInfo"] = message.senderAuthInfo;
-        
+        gAttributes["senderAuthInfo"] = message.senderAuthInfo;   
      }
+
+     gAttributes["requester_id"] = message.sender;
+
+
      //TODO implement the case 
     
 
