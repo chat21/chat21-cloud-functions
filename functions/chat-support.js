@@ -192,9 +192,20 @@ function createNewGroup(message, group_id, group_members, app_id, projectid, inv
     console.log("group_members", group_members);     
 
     var gAttributes = null;
+    
     if (message.attributes){
         gAttributes =  message.attributes;
     }
+     if (message.senderAuthInfo) {
+         if (!gAttributes) {
+            gAttributes = {};
+         }
+        gAttributes["senderAuthInfo"] = message.senderAuthInfo;
+        
+     }
+     //TODO implement the case 
+    
+
     // if (gAttributes) { //add projectid to the group attributes (for webhook)
     //     gAttributes.projectid = projectid;
     // }
