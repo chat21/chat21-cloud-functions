@@ -370,9 +370,9 @@ class ChatApi {
             conversation.timestamp = message.timestamp;
         }
 
-        if (message.attributes) {
-            conversation.attributes = message.attributes;
-        }
+        // if (message.attributes) {
+        //     conversation.attributes = message.attributes;
+        // }
         
         if (message.senderAuthInfo) {
             conversation.senderAuthInfo = message.senderAuthInfo;
@@ -402,7 +402,16 @@ class ChatApi {
     
         console.log('creating conversation ' + JSON.stringify(conversation) + " to: "+ path);
     
-        return admin.database().ref(path).set(conversation);
+        return admin.database().ref(path).update(conversation).then(writeResult => {
+            console.log(`conversation created`);
+    
+            if (message.attributes) {
+                return admin.database().ref(path + '/attributes').update(message.attributes);
+            }
+            return 0;
+
+            
+        });
     }
 
 
