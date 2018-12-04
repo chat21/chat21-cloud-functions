@@ -72,36 +72,73 @@ const chatApi = require('./chat-api');
     
     // DEBUG console.log(`--->/apps/${app_id}/users/${sender_id}/instanceId`);
 
-    return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instances`).once('value').then(function(instancesIdAsObj) {
+    var path = `/apps/${app_id}/users/${sender_id}/instances`;
+
+    return admin.database().ref(path).once('value').then(function(instancesIdAsFbObj) {
     // return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
       
-        console.log('instancesIdAsObj ' + instancesIdAsObj); 
+        console.log('instancesIdAsFbObj ' + instancesIdAsFbObj); 
 
         // var instancesId = instancesIdAsObj.val();
 
         // Check if there are any device tokens.
-        if (!instancesIdAsObj.hasChildren()) {
+        if (!instancesIdAsFbObj.hasChildren()) {
             return console.log('There are no notification tokens to send to.');
         }
 
-        const tokens = Object.keys(instancesIdAsObj.val());
+        
+        var instancesIdAsObj = instancesIdAsFbObj.val();
+
+        const tokens = Object.keys(instancesIdAsObj);
         console.log('tokens',tokens);
 
-        // DEBUG console.log('instanceId ' + instanceId); 
+
+
         
-        //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
+        for (var i = 0; i< tokens.length; i++ ){
+        // instancesIdAsObj.forEach(function(instanceIdAsFbObj) {
+            // console.log('instanceIdAsFbObj', instanceIdAsFbObj);
+
+            
+
+            const token = tokens[i];
+            console.log('token', token);
+
+
+            var instanceIdAsObj = instancesIdAsObj[token];
+            console.log('instanceIdAsObj', instanceIdAsObj);
+
+            const platform = instanceIdAsObj.platform;
+            console.log('platform', platform);
+
+
+
+            var clickAction = "NEW_MESSAGE";
+            var icon = "ic_notification_small";
+            if (platform=="ionic"){
+                //clickAction="https://support.tiledesk.com/chat/?recipient="+message.sender;
+                //clickAction="https://support.tiledesk.com/chat/#"+message.sender;
+                clickAction = "https://support.tiledesk.com/chat/";
+                icon = "/chat/assets/img/icon.png"
+            }
+            console.log('clickAction', clickAction);
+
+
+              //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
         const payload = {
             notification: {
-            title: message.sender_fullname,
-            body: text,
-            icon : "ic_notification_small",
-            sound : "default",
-            //click_action: "ACTION_DEFAULT_CHAT_INTENT", // uncomment for default intent filter in the sdk module
-            click_action: "NEW_MESSAGE",   // uncomment for intent filter in your custom project
-            // "content-available": "1",
-            "content_available": "true",
-            badge : "1"
-        },
+                title: message.sender_fullname,
+                body: text,
+                icon : icon,
+                sound : "default",
+                click_action: clickAction,
+                //click_action: "https://support.tiledesk.com/chat/",   // uncomment for intent filter in your custom project
+                //click_action: "NEW_MESSAGE",   // uncomment for intent filter in your custom project
+                
+                // "content-available": "1",
+                "content_available": "true",
+                badge : "1"
+            },
     
             data: {
                 recipient: message.recipient,
@@ -113,11 +150,20 @@ const chatApi = require('./chat-api');
                 //timestamp : JSON.stringify(admin.database.ServerValue.TIMESTAMP)
                 timestamp : new Date().getTime().toString()
             }
+            
+            // ,webpush:{
+            //     notification: {
+            //         click_action: "https://support.tiledesk.com/chat/",
+            //     }
+            // }
+
         };
         
         // DEBUG console.log('payload ', payload);
 
-        return admin.messaging().sendToDevice(tokens, payload)
+         admin.messaging().sendToDevice(token, payload)
+        // return admin.messaging().sendToDevice(tokens, payload)
+        
              .then(function (response) {
             console.log("Push notification for message "+ JSON.stringify(message) + " with payload "+ JSON.stringify(payload) +" sent with response ",  JSON.stringify(response));
             
@@ -126,27 +172,56 @@ const chatApi = require('./chat-api');
 
 
                         // For each message check if there was an error.
-            const tokensToRemove = [];
+            // const tokensToRemove = [];
+
             response.results.forEach((result, index) => {
                 const error = result.error;
                 if (error) {
-                console.error('Failure sending notification to', tokens[index], error);
+
+                //console.error('Failure sending notification to', tokens[index], error);
+                console.error('Failure sending notification to', token, error);
+
                 // Cleanup the tokens who are not registered anymore.
                     if (error.code === 'messaging/invalid-registration-token' ||
                         error.code === 'messaging/registration-token-not-registered') {
-                        tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
+
+                        console.error('Invalid regid. Removing it', token, error);
+
+                       var tokenToRemove = path+'/'+token;
+                       console.log('tokenToRemove',tokenToRemove);
+
+                       admin.database().ref(tokenToRemove).remove();
+
+                            //ERRORE BUG
+                        // tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
+
+                        
                     }
 
                     return error;
+
+
                 }
             });
-            return Promise.all(tokensToRemove);
+
+            // return Promise.all(tokensToRemove);
 
         })
         .catch(function (error) {
-            console.log("Error sending message:", error);
+            console.error("Error sending message:", error);
             return 0;
         });
+
+
+
+
+
+
+        }//end for
+
+      
+        
+      
 
     });
 
