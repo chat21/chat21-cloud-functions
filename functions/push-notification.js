@@ -77,9 +77,8 @@ const chatApi = require('./chat-api');
     return admin.database().ref(path).once('value').then(function(instancesIdAsFbObj) {
     // return admin.database().ref(`/apps/${app_id}/users/${sender_id}/instanceId`).once('value').then(function(instanceIdAsObj) {
       
-        console.log('instancesIdAsFbObj ' + instancesIdAsFbObj); 
+        // console.log('instancesIdAsFbObj ' + instancesIdAsFbObj); 
 
-        // var instancesId = instancesIdAsObj.val();
 
         // Check if there are any device tokens.
         if (!instancesIdAsFbObj.hasChildren()) {
@@ -90,7 +89,7 @@ const chatApi = require('./chat-api');
         var instancesIdAsObj = instancesIdAsFbObj.val();
 
         const tokens = Object.keys(instancesIdAsObj);
-        console.log('tokens',tokens);
+        //console.log('tokens',tokens);
 
 
 
@@ -102,14 +101,14 @@ const chatApi = require('./chat-api');
             
 
             const token = tokens[i];
-            console.log('token', token);
+            // console.log('token', token);
 
 
             var instanceIdAsObj = instancesIdAsObj[token];
-            console.log('instanceIdAsObj', instanceIdAsObj);
+            //console.log('instanceIdAsObj', instanceIdAsObj);
 
             const platform = instanceIdAsObj.platform;
-            console.log('platform', platform);
+            //console.log('platform', platform);
 
 
 
@@ -121,7 +120,7 @@ const chatApi = require('./chat-api');
                 clickAction = "https://support.tiledesk.com/chat/";
                 icon = "/chat/assets/img/icon.png"
             }
-            console.log('clickAction', clickAction);
+            //console.log('clickAction', clickAction);
 
 
               //https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
@@ -165,10 +164,9 @@ const chatApi = require('./chat-api');
         // return admin.messaging().sendToDevice(tokens, payload)
         
              .then(function (response) {
-            console.log("Push notification for message "+ JSON.stringify(message) + " with payload "+ JSON.stringify(payload) +" sent with response ",  JSON.stringify(response));
-            
-            // console.log("Successfully sent message: stringifiedresponse: ", JSON.stringify(response));
-            console.log("Message.results[0]:", JSON.stringify(response.results[0]));
+            console.log("Push notification for message "+ JSON.stringify(message) + " with payload "+ JSON.stringify(payload) +" for token "+token+" and platform "+platform+" sent with response ",  JSON.stringify(response));
+                        
+            //console.log("Message.results[0]:", JSON.stringify(response.results[0]));
 
 
                         // For each message check if there was an error.
@@ -185,10 +183,12 @@ const chatApi = require('./chat-api');
                     if (error.code === 'messaging/invalid-registration-token' ||
                         error.code === 'messaging/registration-token-not-registered') {
 
-                        console.error('Invalid regid. Removing it', token, error);
+                        var tokenToRemove = path+'/'+token;
+                        // console.log('tokenToRemove',tokenToRemove);
 
-                       var tokenToRemove = path+'/'+token;
-                       console.log('tokenToRemove',tokenToRemove);
+                        console.error('Invalid regid. Removing it', token, ' from ',tokenToRemove,error);
+
+                      
 
                        admin.database().ref(tokenToRemove).remove().then(function () {
                         console.log('tokenToRemove removed',tokenToRemove);
