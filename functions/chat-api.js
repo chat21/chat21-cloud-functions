@@ -337,10 +337,12 @@ class ChatApi {
             conversation.is_new = false;
             conversation.sender = sender_id; //message.sender could be null because saveMessage could be called after
             conversation.recipient = recipient_id;  ///message.recipient could be null because saveMessage could be called after  
+            conversation.status = chatApi.CHAT_MESSAGE_STATUS.SENDING;
         } else {
             conversation.is_new = true;
             conversation.sender = message.sender;
             conversation.recipient = message.recipient;  
+            conversation.status = message.status;
         }
        
         conversation.last_message_text = message.text;
@@ -362,7 +364,7 @@ class ChatApi {
         }
     
         //conversation.status = message.status;
-        conversation.status = 2;
+        //conversation.status = 2;
     
         conversation.timestamp = admin.database.ServerValue.TIMESTAMP;
         if (message.timestamp) {

@@ -190,7 +190,9 @@ const chatApi = require('./chat-api');
                        var tokenToRemove = path+'/'+token;
                        console.log('tokenToRemove',tokenToRemove);
 
-                       admin.database().ref(tokenToRemove).remove();
+                       admin.database().ref(tokenToRemove).remove().then(function () {
+                        console.log('tokenToRemove removed',tokenToRemove);
+                       });
 
                             //ERRORE BUG
                         // tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
