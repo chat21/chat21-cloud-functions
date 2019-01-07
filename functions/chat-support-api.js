@@ -226,6 +226,55 @@ class ChatSupportApi {
 
       }
 
+    sendEmail(request_id, user_id, projectid, message) {
+
+        var url = BASE_API_URL + "/public/requests/" + request_id + "/notify/email?user_id=" + user_id;
+        console.log(`url`, url);
+
+        var requestData = {
+            first_text: message.text,
+            requester_id: message.sender,
+            id_project: projectid,
+            request_id: request_id
+          };
+
+        // var data = {
+        //     // request_id: request_id,
+        //     user_id: user_id,
+        //     // app_id: app_id,
+        //     // projectid: projectid
+        // };
+
+        console.log(`requestData`, requestData);
+
+        return request({
+            uri : url,
+            headers: {
+                // 'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
+                'Authorization': AUTHORIZATION_TOKEN_API,
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            json: true,
+            body: requestData,
+            //agent: agent //The same approach works for HTTPS—just use https.Agent instead of http.Agent.
+            //resolveWithFullResponse: true
+            }).then(response => {
+            
+                if (!response) {
+                    // throw new Error(`HTTP Error: ${response.statusCode}`);
+                    console.log(`Error sending email.`);
+                    return 0;
+
+                }else {
+                    console.log(`Email sent from cloud code.`);
+                    return 0;
+                }
+            }).catch(function(error) { 
+                console.log("Error sending email.", error); 
+                return 0;
+            });
+    }
 
       getBot(bot_id, projectid, departmentid, agent) {
         var that = this;

@@ -164,13 +164,16 @@ function createNewGroupAndSaveNewRequest(idBot, availableAgentsCount, group_id, 
 
     return Promise.all([
         createNewGroup(message, group_id, group_members, app_id, projectid, invited_members), 
-        saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id, projectid)
+        saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id, projectid),
+        chatSupportApi.sendEmail(group_id, assigned_operator_id, projectid, message)
     ]);
 
     // createNewGroup(message, group_id, group_members, app_id);
     // return saveNewRequest (message, departmentid, group_members, agents, availableAgents, assigned_operator_id, group_id, app_id);
 
 }
+
+
 
 function createNewGroup(message, group_id, group_members, app_id, projectid, invited_members) {
     // var group_name = " Support Group";
