@@ -19,8 +19,11 @@ Run the follow command to retrieve your environment variables ```firebase functi
 
 # SUPPORT MODE
 * Enable Support features with: ```firebase functions:config:set support.enabled=true```
-* Set API url with: ```firebase functions:config:set support.api.url=http://api.chat21.org```
-* Set api auth token with: ```firebase functions:config:set support.api.authtoken='Basic BLABLA'```
+* Set Tiledesk-server endpoint with: ```firebase functions:config:set support.api.url=http://<YOUR_TILEDESK_SERVER>```. For example 
+```firebase functions:config:set support.api.url=https://tiledesk-server-test03.herokuapp.com```
+* Create a Tiledesk user with ```curl -v -X POST -d 'email=api@f21.it&password=123456' https://tiledesk-server-pre.herokuapp.com/auth/signup```
+
+* Set the api basic auth token for the new user with: ```firebase functions:config:set support.api.authtoken='Basic BLABLA'```
 * Enable Firestore database under Firebase Console with Allow All permissions
 * Configure billing account to make external network call to web services
 

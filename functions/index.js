@@ -410,7 +410,7 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
 });
 
 
-
+//DEPRECATED UNUSED. REMOVE IT
 exports.saveMemberInfoOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
     const member_id = context.params.member_id;
@@ -424,7 +424,7 @@ exports.saveMemberInfoOnJoinGroup = functions.database.ref('/apps/{app_id}/group
     return chatApi.saveMemberInfo(member_id, group_id, app_id);
 
 });
-
+//DEPRECATED UNUSED. REMOVE IT
 exports.removeMemberInfoOnLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
     
     const member_id = context.params.member_id;
