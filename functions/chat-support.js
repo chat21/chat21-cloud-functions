@@ -15,8 +15,11 @@ const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const chatUtil = require('./chat-util');
 
-const http = require('http');
-const agent = new http.Agent({keepAlive: true});
+const https = require('https');
+
+//const http = require('http');
+//const agent = new http.Agent({keepAlive: true});
+const agent = new https.Agent({keepAlive: true});
 
 
 

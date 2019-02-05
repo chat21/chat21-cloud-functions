@@ -26,6 +26,8 @@ Run the follow command to retrieve your environment variables ```firebase functi
 * Set the api basic auth token for the new user with: ```firebase functions:config:set support.api.authtoken='Basic BLABLA'```
 * Enable Firestore database under Firebase Console with Allow All permissions
 * Configure billing account to make external network call to web services
+* Enable webhook ```firebase functions:config:set webhook.enabled=true```
+* Set webhook endpoint ```firebase functions:config:set webhook.url=https://tiledesk-server-pre.herokuapp.com/chat21/requests```
 
 # CHANNEL GENERAL
 
