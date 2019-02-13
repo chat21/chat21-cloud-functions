@@ -791,7 +791,14 @@ exports.botreplyWithTwoReply = functions.database.ref('/apps/{app_id}/users/{sen
     console.log('departmentid', departmentid);
     
        return chatSupportApi.getBot(bot_id, projectid, departmentid, agent).then(response => {
-            
+            let external = response.external;
+            console.log('external', external); 
+
+            if (external==true) {
+                console.log('it s an external bot.exit'); 
+                return 0;
+            }
+
             let kbkey_remote = response.kbkey_remote;
             console.log('kbkey_remote', kbkey_remote); 
             
