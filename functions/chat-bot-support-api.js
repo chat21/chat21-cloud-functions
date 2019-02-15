@@ -49,7 +49,8 @@ class ChatBotSupportApi {
                 return request({            
                     uri :  qnaServiceUrl,
                     headers: {
-                        'Authorization': "Basic ZnJvbnRpZXJlMjE6cGFzc3dvcmQ=",
+                        //'Authorization': "Basic ZnJvbnRpZXJlMjE6cGFzc3dvcmQ=",
+                        'Authorization': 'Basic YWRtaW46YWRtaW5wNHNzdzByZA==',
                         'Content-Type': 'application/json'
                     },
                     method: 'POST',
