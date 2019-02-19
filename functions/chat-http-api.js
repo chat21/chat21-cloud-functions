@@ -94,7 +94,7 @@ app.post('/:app_id/messages', (req, res) => {
         let text = req.body.text;
         let app_id = req.params.app_id;
         let channel_type = req.body.channel_type;
-
+        let attributes = req.body.attributes;
 
         console.log('sender_id', sender_id);
         console.log('sender_fullname', sender_fullname);
@@ -103,12 +103,14 @@ app.post('/:app_id/messages', (req, res) => {
         console.log('text', text);
         console.log('app_id', app_id);
         console.log('channel_type', channel_type);
+        console.log('attributes', attributes);
+        
 
 
         if (channel_type==null || channel_type=="direct") {  //is a direct message
-          var result =  chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id);
+          var result =  chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes);
         }else if (channel_type=="group") {
-          var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id);
+          var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes);
         }else {
           res.status(405).send('channel_type error!');
         }
