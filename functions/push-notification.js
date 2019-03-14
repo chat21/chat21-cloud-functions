@@ -7,6 +7,12 @@ const chatApi = require('./chat-api');
 
 //console.log("push-notification.js loaded");
 
+let webClickAction = "http://localhost:4200/";
+
+if (functions.config().push && functions.config().push && functions.config().push.web.click_action) {
+    webClickAction = functions.config().push.web.click_action;
+    console.log('webClickAction', webClickAction);
+}
 
 //PUSH NOTIFICATION
 
@@ -111,13 +117,14 @@ const chatApi = require('./chat-api');
             //console.log('platform', platform);
 
 
-
+           
             var clickAction = "NEW_MESSAGE";
             var icon = "ic_notification_small";
-            if (platform=="ionic"){
+            if (platform=="ionic" || platform.indexOf("web/")>-1){
                 //clickAction="https://support.tiledesk.com/chat/?recipient="+message.sender;
                 //clickAction="https://support.tiledesk.com/chat/#"+message.sender;
-                clickAction = "https://support.tiledesk.com/chat/";
+                //clickAction = "https://support.tiledesk.com/chat/";
+                clickAction = webClickAction;
                 icon = "/chat/assets/img/icon.png"
             }
             //console.log('clickAction', clickAction);

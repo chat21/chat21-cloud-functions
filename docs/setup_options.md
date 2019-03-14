@@ -5,6 +5,9 @@ Use with Google Cloud environment to configure the platform.
 # Retrieve your configuration
 Run the follow command to retrieve your environment variables ```firebase functions:config:get``` 
 
+## Push Notification
+* Set click_action parameter with: ```firebase functions:config:set push.web.click_action=https://www.your_chat_url.com```
+
 ## Email Notification
 * Enable email notification with: ```firebase functions:config:set email.enabled=true```
 
@@ -13,6 +16,7 @@ Run the follow command to retrieve your environment variables ```firebase functi
         (Unset with ```firebase functions:config:unset email.endpoint```)
 
 * Set email sender with: ```firebase functions:config:set email.from=<sender_email>```
+
 ### Gmail
 * Set Gmail account with  : ```firebase functions:config:set email.gmail.user=<EMAIL>``` and ```firebase functions:config:set email.gmail.password=<PASSWORD>``` More info here https://community.nodemailer.com/using-gmail/ and here https://medium.com/@manojsinghnegi/sending-an-email-using-nodemailer-gmail-7cfa0712a799
 
