@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/%40chat21%2Fchat21-cloud-functions-public.svg)](https://badge.fury.io/js/%40chat21%2Fchat21-cloud-functions-public)
+
 Chat21 is the core of the open source live chat platform [Tiledesk.com](http://www.tiledesk.com).
 
 # Introduction
