@@ -320,8 +320,8 @@ app.post('/:app_id/groups', (req, res) => {
         console.log('group_members', group_members);
         console.log('app_id', app_id);
 
-
-        var result =  chatApi.createGroup(group_name, group_owner, group_members, app_id);
+        // createGroup(group_name, group_owner, group_members, app_id, attributes, invited_members) {
+        var result =  chatApi.createGroup(group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members);
       
         console.log('result', result);
 

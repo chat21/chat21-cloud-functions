@@ -201,7 +201,7 @@ function createNewGroup(message, group_id, group_members, app_id, projectid, inv
 
     var gAttributes = {};
 
-    if (message.attributes){
+    if (message.attributes) {
         gAttributes =  message.attributes;
     }
      if (message.senderAuthInfo) {
