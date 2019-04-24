@@ -297,6 +297,7 @@ app.post('/:app_id/groups', (req, res) => {
         }
 
         let group_name = req.body.group_name;
+        let group_id = req.body.group_id;
         let current_user = req.user.uid;
 
         if (req.body.current_user) {
@@ -316,13 +317,20 @@ app.post('/:app_id/groups', (req, res) => {
 
 
         console.log('group_name', group_name);
+        console.log('group_id', group_id);        
         console.log('group_owner', group_owner);
         console.log('group_members', group_members);
         console.log('app_id', app_id);
 
-        // createGroup(group_name, group_owner, group_members, app_id, attributes, invited_members) {
-        var result =  chatApi.createGroup(group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members);
+        if (group_id) {
+          // createGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members) {
+            var result =  chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members);
+        }else {
+          // createGroup(group_name, group_owner, group_members, app_id, attributes, invited_members) {
+            var result =  chatApi.createGroup(group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members);
       
+        }
+        
         console.log('result', result);
 
         res.status(201).send(result);
