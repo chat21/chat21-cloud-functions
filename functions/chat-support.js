@@ -798,6 +798,7 @@ exports.botreplyWithTwoReply = functions.database.ref('/apps/{app_id}/users/{sen
 
             if (external==true) {
                 console.log('it s an external bot.exit'); 
+                chatApi.stopTyping(sender_id, recipient_id, app_id);
                 return 0;
             }
 
