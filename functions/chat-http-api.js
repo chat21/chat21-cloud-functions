@@ -490,6 +490,95 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
 
 
 
+     /**
+ * Typing
+ 
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.put('/:app_id/typings/:group_id/', (req, res) => {
+  console.log('set Typing');
+
+   
+    if (req.method !== 'PUT') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+        if (!req.params.group_id) {
+            res.status(405).send('group_id is not present!');
+        }
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+        let writer_id = req.user.uid;
+        if (req.body.writer_id) {
+          writer_id = req.body.writer_id;
+        }
+       
+        let group_id = req.params.group_id;
+        let app_id = req.params.app_id;
+
+
+        console.log('members', members);
+        console.log('group_id', group_id);
+        console.log('app_id', app_id);
+
+
+        var result =  chatApi.typing(writer_id, group_id, app_id);
+      
+        console.log('result', result);
+
+        res.status(200).send(result);
+      });
+    });
+
+
+
+
+    app.delete('/:app_id/typings/:group_id', (req, res) => {
+      console.log('set Typing stop');
+    
+       
+        if (req.method !== 'PUT') {
+          res.status(403).send('Forbidden!');
+        }
+          
+          cors(req, res, () => {
+    
+            if (!req.params.group_id) {
+                res.status(405).send('group_id is not present!');
+            }
+            if (!req.params.app_id) {
+                res.status(405).send('app_id is not present!');
+            }
+            let writer_id = req.user.uid;
+            if (req.body.writer_id) {
+              writer_id = req.body.writer_id;
+            }
+           
+            let group_id = req.params.group_id;
+            let app_id = req.params.app_id;
+    
+    
+            console.log('members', members);
+            console.log('group_id', group_id);
+            console.log('app_id', app_id);
+    
+    
+            var result =  chatApi.stopTyping(writer_id, group_id, app_id);
+          
+            console.log('result', result);
+    
+            res.status(200).send(result);
+          });
+        });
+
+
+
+
     /**
  * Get a contact
  
