@@ -28,7 +28,9 @@ const agent = new https.Agent({keepAlive: true});
 //console.log("chat-support.js loaded");
 
 
-exports.createGroupForNewSupportRequest = functions.database.ref('/DEPRECATED/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
+exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
+    // exports.createGroupForNewSupportRequest = functions.database.ref('/DEPRECATED/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
+
     // const sender_id = context.params.sender_id; 
     const recipient_id = context.params.recipient_id;
     const app_id = context.params.app_id;;
