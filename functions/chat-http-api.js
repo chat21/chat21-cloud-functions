@@ -95,6 +95,7 @@ app.post('/:app_id/messages', (req, res) => {
         let app_id = req.params.app_id;
         let channel_type = req.body.channel_type;
         let attributes = req.body.attributes;
+        let type = req.body.type;
         let metadata = req.body.metadata;
 
         console.log('sender_id', sender_id);
@@ -105,16 +106,17 @@ app.post('/:app_id/messages', (req, res) => {
         console.log('app_id', app_id);
         console.log('channel_type', channel_type);
         console.log('attributes', attributes);
+        console.log('type', type);
         console.log('metadata', metadata);
         
 
 
         if (channel_type==null || channel_type=="direct") {  //is a direct message
-          // sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, metadata) {
-          var result =  chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, metadata);
+          // sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, type, metadata) {
+          var result =  chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, type, metadata);
         }else if (channel_type=="group") {
-          // sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, metadata) {
-          var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, undefined, metadata);
+          // sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, type, metadata) {
+          var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, undefined, type, metadata);
         }else {
           res.status(405).send('channel_type error!');
         }

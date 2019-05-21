@@ -15,7 +15,7 @@ class ChatApi {
 
 
 
-    sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, metadata) {
+    sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, type, metadata) {
 
             var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_id;
             // console.log("path", path);
@@ -39,7 +39,14 @@ class ChatApi {
 
             message.channel_type = "direct";
             message.text = text;
-            message.type = "text";
+
+
+            if (type) {
+                message.type = type;
+            }else {
+                message.type = "text";
+            }
+
         
             if (metadata) {
                 message.metadata = metadata;
@@ -53,7 +60,7 @@ class ChatApi {
 
 
 
-    sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, metadata) {
+    sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, type, metadata) {
 
         var path = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_group_id;
         // console.log("path", path);
@@ -77,7 +84,13 @@ class ChatApi {
 
         message.channel_type = "group";
         message.text = text;
-        message.type = "text";
+      
+        
+        if (type) {
+            message.type = type;
+        }else {
+            message.type = "text";
+        }
 
         if (projectid) {
             message.projectid = projectid;
@@ -86,7 +99,7 @@ class ChatApi {
         if (metadata) {
             message.metadata = metadata;
         }
-        
+
 
         console.log("sendGroupMessage with  message " + JSON.stringify(message)  + " to " + path);
         return admin.database().ref(path).push(message);   //send message to group timeline
