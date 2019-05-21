@@ -1,6 +1,6 @@
 {
   "name": "@chat21/chat21-cloud-functions-public",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Cloud Functions for Chat21",
   "author": "Andrea Leo - Frontiere21 SRL",
   "license": "AGPL-3.0",
