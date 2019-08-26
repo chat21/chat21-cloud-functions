@@ -18,4 +18,5 @@ RUN npm install
 COPY . .
 
 #EXPOSE 3000
-CMD [ "firebase", "login:ci", "--interactive" ]
+
+#CMD [ "firebase", "login:ci", "--interactive" ]
