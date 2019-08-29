@@ -17,6 +17,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-#EXPOSE 3000
+EXPOSE 9005 5000
 
 #CMD [ "firebase", "login:ci", "--interactive" ]
