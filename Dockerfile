@@ -23,7 +23,9 @@ RUN yarn global add firebase-tools@${VERSION} && \
     chown -R node:node $HOME
 USER node
 VOLUME $HOME/.cache
-WORKDIR $HOME
+
+#WORKDIR $HOME
+WORKDIR /usr/app
 
 COPY package*.json ./
 
@@ -33,8 +35,6 @@ RUN npm install
 
 # Bundle app source
 COPY . .
-
-RUN chown -R node:node $HOME
 
 CMD ["sh"]
 
