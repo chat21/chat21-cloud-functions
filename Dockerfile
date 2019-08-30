@@ -38,5 +38,7 @@ COPY . .
 
 RUN cd ./functions && npm install
 
+EXPOSE 9005 5000
+
 CMD ["sh"]
 
