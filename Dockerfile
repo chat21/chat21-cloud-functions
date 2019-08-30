@@ -27,7 +27,7 @@ VOLUME $HOME/.cache
 #WORKDIR $HOME
 WORKDIR /usr/app
 
-COPY package*.json ./
+#COPY package*.json ./
 
 
 # If you are building your code for production
@@ -36,9 +36,7 @@ COPY package*.json ./
 # Bundle app source
 COPY . .
 
-RUN cd ./functions
-
-RUN npm install
+RUN cd ./functions & npm install
 
 CMD ["sh"]
 
