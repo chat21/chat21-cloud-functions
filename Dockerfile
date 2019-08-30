@@ -36,7 +36,7 @@ WORKDIR /usr/app
 # Bundle app source
 COPY . .
 
-RUN cd ./functions & npm install
+RUN cd ./functions && npm install
 
 CMD ["sh"]
 
