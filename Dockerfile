@@ -36,6 +36,8 @@ COPY package*.json ./
 # Bundle app source
 COPY . .
 
+RUN cd functions
+
 RUN npm install
 
 CMD ["sh"]
