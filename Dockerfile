@@ -21,7 +21,7 @@ RUN yarn global add firebase-tools@${VERSION} && \
     firebase -V && \
     mkdir $HOME/.cache && \
     chown -R node:node $HOME
-USER node
+#USER node
 VOLUME $HOME/.cache
 
 #WORKDIR $HOME
