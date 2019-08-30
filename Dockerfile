@@ -34,5 +34,7 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+RUN chown -R node:node $HOME
+
 CMD ["sh"]
 
