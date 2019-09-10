@@ -42,7 +42,7 @@ class ChatBotSupportApi {
 
 
 
-    askToInternalQnaBot (id_faq_kb, question, message) {
+    askToInternalQnaBot (id_faq_kb, question, projectid, message) {
 
         
         var url = BASE_API_URL+ "/"+projectid+"/faq_kb/askbot";
