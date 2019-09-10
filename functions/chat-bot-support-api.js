@@ -10,7 +10,113 @@ const entities = new Entities();
 const chatUtil = require('./chat-util');
 const chatSupportApi = require('./chat-support-api');
 
+
+
+
+var BASE_API_URL;
+var AUTHORIZATION_TOKEN_API;
+const functions = require('firebase-functions');
+
+if (functions.config().support.api && functions.config().support.api.url) {
+    BASE_API_URL = functions.config().support.api.url;
+    console.log('BASE_API_URL', BASE_API_URL);
+
+}
+if (!BASE_API_URL) {
+    console.error('BASE_API_URL is not defined');
+}
+
+
+if (functions.config().support.api && functions.config().support.api.authtoken) {
+    AUTHORIZATION_TOKEN_API = functions.config().support.api.authtoken;
+    console.log('AUTHORIZATION_TOKEN_API', AUTHORIZATION_TOKEN_API);
+
+}
+if (!AUTHORIZATION_TOKEN_API) {
+    console.error('AUTHORIZATION_TOKEN_API is not defined');
+}
+
+
 class ChatBotSupportApi {
+
+
+
+
+    askToInternalQnaBot (id_faq_kb, question, message) {
+
+        
+        var url = BASE_API_URL+ "/"+projectid+"/faq_kb/askbot";
+
+        console.log('url', url);
+
+        console.log('question', question);
+
+
+
+        return new Promise(function(resolve, reject) {
+
+                return request({            
+                    uri :  url,
+                    headers: {
+                        // 'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA==',
+                        'Authorization': AUTHORIZATION_TOKEN_API,
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                    json: true,
+                    body: {"id_faq_kb":id_faq_kb ,"question": question},
+                    //resolveWithFullResponse: true
+                    }).then(response => {
+                    if (response.statusCode >= 400) {
+                        // throw new Error(`HTTP Error: ${response.statusCode}`);
+                        return reject(`HTTP Error: ${response.statusCode}`);
+                    }
+            
+                    // console.log('SUCCESS! Posted', event.data.ref);        
+                    console.log('SUCCESS! response', JSON.stringify(response));
+                    
+
+                    var answer = null;
+                    // var response_options;
+                    var score = 0;
+
+                    if (response.hits && response.hits.length>0) {
+                        answer = entities.decode(response.hits[0].answer);
+                        console.log('answer', answer);    
+
+                        score = response.hits[0].score;
+                        console.log('score', score);    
+
+                    }
+                        // answer = answer + " " +  chatUtil.getMessage("DEFAULT_CLOSING_SENTENCE_REPLY_MESSAGE", message.language, chatBotSupportApi.LABELS);
+
+                        // response_options = { "question" : "Sei soddisfatto della risposta?",
+                        // "answers":[{"close":"Si grazie, chiudi la chat di supporto."}, {"agent":"NO, voglio parlare con un operatore"}]};
+
+                    // }else if (answer == "\\agent"){ //if \\agent dont append se sei siddisfatto...
+            
+                    // }else {
+                    //     answer = "Non ho trovato una risposta nella knowledge base. \n Vuoi parlare con un operatore oppure riformulare la tua domanda ? \n Digita \\agent per parlare con un operatore oppure formula un nuova domanda.";
+            
+                    //     response_options = { "question" : "Vuoi parlare con un operatore?",
+                    //     "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
+
+                    // }
+                        
+            
+                    // let resp = {answer:answer, response_options:response_options};
+                    let resp = {answer:answer, score: score};
+
+                    
+                    
+                    return resolve(resp);
+
+                });
+
+        });
+
+    }
+
 
     /*
 
@@ -21,7 +127,7 @@ class ChatBotSupportApi {
 'http://ec2-52-47-168-118.eu-west-3.compute.amazonaws.com/qnamaker/v2.0/knowledgebases/2f5d6f6e-fb26-4ba2-b705-91d24b96cf79/generateAnswer'
 
 */
-    askToInternalQnaBot (kq_id, question, message) {
+    askToInternalAdvancedQnaBot (kq_id, question, message) {
 
         let qnaServiceUrl = "http://ec2-52-47-168-118.eu-west-3.compute.amazonaws.com/qnamaker/v2.0/knowledgebases/"+kq_id+"/generateAnswer";
         

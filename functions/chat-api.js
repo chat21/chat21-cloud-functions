@@ -402,6 +402,19 @@ class ChatApi {
             conversation.senderAuthInfo = message.senderAuthInfo;
         }
     
+
+
+
+        // // Reference.update failed: First argument contains a path /5c596c7872b9dc001611eab7 that is ancestor of another path /5c596c7872b9dc001611eab7/attributes 
+        // var path = '/apps/'+app_id+'/users/'+sender_id+'/conversations';    
+        // var updates = {};
+        // updates["/"+recipient_id] = conversation;
+        // updates["/"+recipient_id+"/attributes"] = message.attributes;
+        // console.log('creating conversation updates ' + JSON.stringify(updates) + " to: "+ path);    
+        // return admin.database().ref(path).update(updates);
+
+
+
         //delete archived conv if present
     //    chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
     

@@ -798,16 +798,16 @@ exports.botreplyWithTwoReply = functions.database.ref('/apps/{app_id}/users/{sen
 
             if (external==true) {
                 console.log('it s an external bot.exit'); 
-                chatApi.stopTyping(sender_id, recipient_id, app_id);
-                return 0;
+                return chatApi.stopTyping(sender_id, recipient_id, app_id);
+                // return 0;
             }
 
-            let kbkey_remote = response.kbkey_remote;
-            console.log('kbkey_remote', kbkey_remote); 
+            // let kbkey_remote = response.kbkey_remote;
+            // console.log('kbkey_remote', kbkey_remote); 
             
             
             // return chatBotSupportApi.askToQnaBot(message.text, "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/608f7647-2608-4600-b1e2-c7d4baf21e77/generateAnswer", "5e9c35eada754400852ccfb34e6711cb").then(function(qnaresp) {
-            return chatBotSupportApi.askToInternalQnaBot(kbkey_remote, message.text, message).then(function(qnaresp) {
+            return chatBotSupportApi.askToInternalQnaBot(bot_id, message.text, message).then(function(qnaresp) {
             
                 chatApi.stopTyping(sender_id, recipient_id, app_id);
         
