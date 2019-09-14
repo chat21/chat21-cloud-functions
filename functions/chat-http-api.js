@@ -113,17 +113,23 @@ app.post('/:app_id/messages', (req, res) => {
 
         if (channel_type==null || channel_type=="direct") {  //is a direct message
           // sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, type, metadata) {
-          var result =  chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, type, metadata);
+          chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, type, metadata).then(function(result) {
+            console.log('result', result);
+
+            res.status(201).send(result);
+          });
         }else if (channel_type=="group") {
           // sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, type, metadata) {
-          var result =  chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, undefined, type, metadata);
+          chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, undefined, type, metadata).then(function(result) {
+            console.log('result', result);
+
+            res.status(201).send(result);
+          });
         }else {
           res.status(405).send('channel_type error!');
         }
 
-        console.log('result', result);
-
-        res.status(201).send(result);
+        
         // [END sendResponse]
       });
     });
@@ -188,27 +194,38 @@ app.delete('/:app_id/messages/:recipient_id/:message_id', (req, res) => {
         console.log('channel_type', channel_type);
 
 
-        var result;
+        
         if (channel_type=="direct") {
           if (all==false) {
-            result =  chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id);
+            chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id).then(function(result) {
+              console.log('result', result);
+              res.status(204).send({"success":true});
+            });
+
           }else {
-            result =  chatApi.deleteMessageForAll(sender_id, recipient_id, message_id, app_id);
+            chatApi.deleteMessageForAll(sender_id, recipient_id, message_id, app_id).then(function(result) {
+              console.log('result', result);
+              res.status(204).send({"success":true});
+            });
           }
         }else if (channel_type=="group") {
           if (all==false) {
-            result =  chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id);
+            chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id).then(function(result) {
+              console.log('result', result);
+              res.status(204).send({"success":true});
+            });
           }else {
-            result =  chatApi.deleteMessageGroupForAll(recipient_id, message_id, app_id);
+            chatApi.deleteMessageGroupForAll(recipient_id, message_id, app_id).then(function(result) {
+              console.log('result', result);
+              res.status(204).send({"success":true});
+            });
           }
         }else {
           res.status(405).send('channel_type error');
         }
         
       
-        console.log('result', result);
-
-        res.status(204).send(result);
+       
       });
     });
 
@@ -258,19 +275,19 @@ app.delete('/:app_id/conversations/:recipient_id/', (req, res) => {
         console.log('user_id', user_id);
 
 
-        var result;
+      
     
         if (physicsDelete==false) {
-          result =  chatApi.archiveConversation(user_id, recipient_id, app_id);
+          chatApi.archiveConversation(user_id, recipient_id, app_id).then(function(result) {
+            console.log('result', result);
+            res.status(204).send({"success":true});
+          });
         }else {
-          result =  chatApi.deleteConversation(user_id, recipient_id, app_id);
-        }
-      
-        
-      
-        console.log('result', result);
-
-        res.status(204).send(result);
+          chatApi.deleteConversation(user_id, recipient_id, app_id).then(function(result) {
+            console.log('result', result);
+            res.status(204).send({"success":true});
+          });
+        }                         
       });
     });
 
@@ -330,16 +347,18 @@ app.post('/:app_id/groups', (req, res) => {
 
         if (group_id) {
           // createGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members) {
-            var result =  chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members);
+           chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members).then(function(result) {
+            console.log('result', result);
+            res.status(201).send({"success":true});
+          });
         }else {
           // createGroup(group_name, group_owner, group_members, app_id, attributes, invited_members) {
-            var result =  chatApi.createGroup(group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members);
+            chatApi.createGroup(group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members).then(function(result) {
+              console.log('result', result);
+              res.status(201).send({"success":true});
+            });
       
-        }
-        
-        console.log('result', result);
-
-        res.status(201).send(result);
+        }               
       });
     });
 
@@ -389,11 +408,10 @@ app.post('/:app_id/groups/:group_id/members', (req, res) => {
         console.log('app_id', app_id);
 
 
-        var result =  chatApi.joinGroup(member_id, group_id, app_id);
-      
+       chatApi.joinGroup(member_id, group_id, app_id).then(function(result) {
         console.log('result', result);
-
-        res.status(201).send(result);
+        res.status(201).send({"success":true});
+      });             
       });
     });
 
@@ -443,11 +461,10 @@ app.delete('/:app_id/groups/:group_id/members/:member_id', (req, res) => {
         console.log('app_id', app_id);
 
 
-        var result =  chatApi.leaveGroup(member_id, group_id, app_id);
-      
-        console.log('result', result);
-
-        res.status(204).send(result);
+        chatApi.leaveGroup(member_id, group_id, app_id).then(function(result) {
+          console.log('result', result);
+          res.status(204).send({"success":true});
+        });      
       });
     });
 
@@ -486,11 +503,10 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
         console.log('app_id', app_id);
 
 
-        var result =  chatApi.setMembersGroup(members, group_id, app_id);
-      
-        console.log('result', result);
-
-        res.status(200).send(result);
+        chatApi.setMembersGroup(members, group_id, app_id).then(function(result) {
+          console.log('result', result);
+          res.status(200).send({"success":true});
+        });   
       });
     });
 
@@ -533,11 +549,10 @@ app.put('/:app_id/typings/:group_id/', (req, res) => {
         console.log('app_id', app_id);
 
 
-        var result =  chatApi.typing(writer_id, group_id, app_id);
-      
-        console.log('result', result);
-
-        res.status(200).send(result);
+        chatApi.typing(writer_id, group_id, app_id).then(function(result) {
+          console.log('result', result);
+          res.status(200).send({"success":true});
+        });      
       });
     });
 
@@ -574,11 +589,11 @@ app.put('/:app_id/typings/:group_id/', (req, res) => {
             console.log('app_id', app_id);
     
     
-            var result =  chatApi.stopTyping(writer_id, group_id, app_id);
-          
-            console.log('result', result);
-    
-            res.status(200).send(result);
+            chatApi.stopTyping(writer_id, group_id, app_id).then(function(result) {
+              console.log('result', result);
+              res.status(200).send({"success":true});
+            });
+                    
           });
         });
 
@@ -668,11 +683,10 @@ app.post('/:app_id/contacts', (req, res) => {
         console.log('app_id', app_id);
 
 
-        var result =  chatApi.createContactWithId(current_user, firstname, lastname, email, app_id);
-      
+       chatApi.createContactWithId(current_user, firstname, lastname, email, app_id).then(function(result) {
         console.log('result', result);
-
-        res.status(201).send(result);
+        res.status(201).send({"success":true});
+      });      
       });
     });
 
@@ -722,12 +736,10 @@ app.put('/:app_id/contacts/me', (req, res) => {
         console.log('app_id', app_id);
 
 
-        var result =  chatApi.changeContactFullname(current_user, firstname, lastname, app_id);
-        // var result =  chatApi.updateContactWithId(current_user, firstname, lastname, email, app_id);
-        
+       chatApi.changeContactFullname(current_user, firstname, lastname, app_id).then(function(result) {
         console.log('result', result);
-
-        res.status(200).send(result);
+        res.status(200).send({"success":true});
+      });     
       });
     });
 
