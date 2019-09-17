@@ -90,6 +90,10 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
             projectid = message.attributes.projectId;
         }     
     } 
+
+    if (!projectid) { //BACKcompatibility
+        projectid = message.projectid
+    }
     console.log('departmentid', departmentid);
     console.log('projectId',projectid);
 
