@@ -74,15 +74,24 @@ exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}
     chatApi.typing("system", group_id, app_id);
 
 
-    var projectid = message.projectid;
-    console.log('projectId',projectid);
+    // var projectid = message.projectid;
+    // console.log('projectId',projectid);
 
 
     var departmentid = "default";
-    if (message.attributes && message.attributes.departmentId && !message.attributes.departmentId==""){
-        departmentid =  message.attributes.departmentId;
-    }
+    var projectid = undefined;
+
+    if (message.attributes) {
+
+        if (message.attributes.departmentId && !message.attributes.departmentId==""){
+            departmentid =  message.attributes.departmentId;
+        }
+        if (message.attributes.projectId) {
+            projectid = message.attributes.projectId;
+        }     
+    } 
     console.log('departmentid', departmentid);
+    console.log('projectId',projectid);
 
 
 
