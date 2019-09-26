@@ -36,6 +36,22 @@ class ChatTenantApi {
         });
     }
 
+   
+   
+     create(app_id, owner, webhookUrl) {
+
+        var path = '/apps/'+app_id+'/setting/';
+        // console.log("path", path);
+
+
+        var setting = {};
+        setting.owner = owner;
+        setting.webhookUrl = webhookUrl;       
+        group.createdOn = admin.database.ServerValue.TIMESTAMP;
+                     
+        console.log("creating tenant " + JSON.stringify(setting) + " to "+ path);
+        return admin.database().ref(path).push(setting);
+    }
 
     
 }
