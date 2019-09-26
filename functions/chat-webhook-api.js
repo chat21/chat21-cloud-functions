@@ -7,14 +7,14 @@ const functions = require('firebase-functions');
 
 
 
-class ChatWebhookApi {
+class ChatTenantApi {
 
    getById(app_id) {
         // DEBUG console.log("ChatWebhookApi getById " + app_id + ");
 
         return new Promise(function(resolve, reject) {
             // Do async job
-            return admin.database().ref('/apps/'+app_id+'/webhooks/').once('value').then(function(snapshot) {
+            return admin.database().ref('/apps/'+app_id+'/setting/').once('value').then(function(snapshot) {
                     
                 
                 if (snapshot.val()!=null){ //recipient_id is a GROUP
@@ -41,7 +41,7 @@ class ChatWebhookApi {
 }
 
 
-var chatWebhookApi = new ChatWebhookApi();
+var chatTenantApi = new ChatTenantApi();
 
 
-module.exports = chatWebhookApi;
+module.exports = chatTenantApi;
