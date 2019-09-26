@@ -18,11 +18,11 @@ class ChatTenantApi {
                     
                 
                 if (snapshot.val()!=null){ //recipient_id is a GROUP
-                    var group = groupSnapshot.val();
+                    var setting = snapshot.val();
                     // DEBUG console.log('group ' + JSON.stringify(group) );
         
                     
-                    return resolve(group);
+                    return resolve(setting);
                 }else {
                     var error = 'Warning: webhooks '+ app_id +' not found ';
                     console.log(error );                 
