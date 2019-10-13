@@ -38,6 +38,8 @@ COPY . .
 
 RUN cd ./functions && npm install
 
+RUN ln -s /home/node/.firebaserc /usr/app/.firebaserc
+
 EXPOSE 9005 5000
 
 CMD ["sh"]
