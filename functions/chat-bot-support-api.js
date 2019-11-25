@@ -77,12 +77,18 @@ class ChatBotSupportApi {
                     
 
                     var answer = null;
+                    var questionQNA = null;
+                    var idQNA = null;
                     // var response_options;
                     var score = 0;
 
                     if (response.hits && response.hits.length>0) {
                         answer = entities.decode(response.hits[0].answer);
                         console.log('answer', answer);    
+
+                        questionQNA = entities.decode(response.hits[0].question);
+
+                        idQNA = entities.decode(response.hits[0]._id);
 
                         score = response.hits[0].score;
                         console.log('score', score);    
@@ -105,7 +111,7 @@ class ChatBotSupportApi {
                         
             
                     // let resp = {answer:answer, response_options:response_options};
-                    let resp = {answer:answer, score: score};
+                    let resp = {_id: idQNA, question: questionQNA, answer:answer, score: score};
 
                     
                     
@@ -277,16 +283,124 @@ class ChatBotSupportApi {
         });
 
     }
+
+    getButtonFromText(text, message, bot,qna) { 
+        var that = this;
+        return new Promise(function(resolve, reject) {
+
+            var repl_message = {};
+            // cerca i bottoni eventualmente definiti
+            var button_pattern = /^\*.*/mg; // buttons are defined as a line starting with an asterisk
+            var text_buttons = text.match(button_pattern);
+            if (text_buttons) {
+                var text_with_removed_buttons = text.replace(button_pattern,"").trim();
+                repl_message.text = text_with_removed_buttons
+                var buttons = []
+                text_buttons.forEach(element => {
+                console.log("button ", element)
+                var remove_extra_from_button = /^\*/mg;
+                var button_text = element.replace(remove_extra_from_button, "").trim()
+                var button = {}
+                button["type"] = "text"
+                button["value"] = button_text
+                buttons.push(button)
+                });
+                repl_message.attributes =
+                { 
+                attachment: {
+                    type:"template",
+                    buttons: buttons
+                }
+                }
+                repl_message.type = "text";
+            } else {
+                // no buttons
+                repl_message.text = text
+                repl_message.type = "text";
+            }
+
+            var image_pattern = /^\\image:.*/mg; 
+            var imagetext = text.match(image_pattern);
+            if (imagetext && imagetext.length>0) {
+                var imageurl = imagetext[0].replace("\\image:","").trim();
+                console.log("imageurl ", imageurl)
+                var text_with_removed_image = text.replace(image_pattern,"").trim();
+                repl_message.text = text_with_removed_image + " " + imageurl
+                repl_message.metadata = {src: imageurl, width:200, height:200};
+                repl_message.type = "image";
+            }
+
+
+            var webhook_pattern = /^\\webhook:.*/mg; 
+            var webhooktext = text.match(webhook_pattern);
+            if (webhooktext && webhooktext.length>0) {
+                var webhookurl = webhooktext[0].replace("\\webhook:","").trim();
+                console.log("webhookurl ", webhookurl)
+
+                return request({                        
+                    uri :  webhookurl,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                    json: true,
+                    body: {text: text, bot: bot, message: message, qna: qna},
+                    }).then(response => {
+                        if (response.statusCode >= 400) {                  
+                            return reject(`HTTP Error: ${response.statusCode}`);
+                        }
+                        console.log("webhookurl repl_message ", response);
+                        that.getButtonFromText(response.text,message, bot,qna).then(function(bot_answer) {
+                            return resolve(bot_answer);
+                        });
+                    });
+             
+            }else {
+                console.log("repl_message ", repl_message)
+                return resolve(repl_message);
+            }
+
+
+           
+        });
+    }
       
+    getBotMessageOnlyDefaultFallBack(qnaresp, projectid, departmentid, message, bot, agent) {
+        var that = this;
+        return new Promise(function(resolve, reject) {
+            var bot_answer={};
+            if (!qnaresp.answer) {
+                                    // getFaq(bot_id, projectid, text, agent) {
+                return chatSupportApi.getFaq(bot._id, projectid, "defaultFallback", agent).then(faqres => {
+                    console.log("faqres ", faqres)
+                    if (faqres && faqres.length>0 ) {
+                        bot_answer.text=faqres[0].answer;
+                        that.getButtonFromText(bot_answer.text,message, bot,qnaresp).then(function(bot_answerres) {
+                            return resolve(bot_answerres);
+                        });
+
+                        // return resolve(bot_answer);
+                    }else {
+                        var message_key = "DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE";                             
+                        bot_answer.text = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);                        
+                        console.log("bot_answer ", bot_answer)
+                        return resolve(bot_answer);
+                    }
+                    
+                });
+               
+            }
+        });
+    }
 
     getBotMessage(qnaresp, projectid, departmentid, message, bot, agent) {
-
+        var that = this;
         return new Promise(function(resolve, reject) {
 
 
             return chatSupportApi.getDepartmentOperator(projectid, departmentid, agent, false).then(dep_op_response => {
 
-                    var bot_answer="";
+                    var bot_answer={};
                     // var response_options;
 
                     if (qnaresp.answer) {
@@ -308,7 +422,27 @@ class ChatBotSupportApi {
                                 }
                                 
 
-                                bot_answer = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+                                bot_answer.text = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+
+                                // var attributes = {
+                                    // attachment: {
+                                    //     type:"template",
+                                    //       buttons:[
+                                    //         {
+                                    //           type:"text",
+                                    //           value:`Sales graph for`
+                                    //         },
+                                    //         {
+                                    //           type:"text",
+                                    //            value:`Orders graph for`
+                                    //         }                                            
+                                    //       ]
+                                    // }
+                                //   };
+
+                                // bot_answer.attributes = attributes;
+                                
+
                             }
                         }
                        
@@ -325,7 +459,25 @@ class ChatBotSupportApi {
                         }else {
                             message_key = "DEFAULT_NOTFOUND_NOBOT_SENTENCE_REPLY_MESSAGE";
                         }   
-                        bot_answer = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+                        bot_answer.text = chatUtil.getMessage(message_key, message.language, chatBotSupportApi.LABELS);
+
+                        // var attributes = {
+                            // attachment: {
+                            //     type:"template",
+                            //       buttons:[
+                            //         {
+                            //           type:"text",
+                            //           value:`Sales graph for`
+                            //         },
+                            //         {
+                            //           type:"text",
+                            //            value:`Orders graph for`
+                            //         }                                    
+                            //       ]
+                            // }
+                        //   };
+
+                        //   bot_answer.attributes = attributes;
 
                         // response_options = { "question" : "Vuoi parlare con un operatore?",
                         // "answers":[{"agent":"Si, voglio parlare con un operatore."}, {"noperation":"NO, riformulo la domanda"}]};
@@ -334,8 +486,12 @@ class ChatBotSupportApi {
 
 
                 
-                    if (bot_answer.length>0) {
-                        return resolve(bot_answer);
+                    if (bot_answer && bot_answer.text) {
+                        that.getButtonFromText(bot_answer.text,message, bot,qnaresp).then(function(bot_answer) {
+                            return resolve(bot_answer);
+                        });
+                            
+                        // return resolve(bot_answer);
                     } else {
                         return resolve(null);
                     }

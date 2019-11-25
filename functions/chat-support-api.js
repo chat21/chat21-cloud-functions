@@ -314,6 +314,50 @@ class ChatSupportApi {
       }
 
 
+
+
+      getFaq(bot_id, projectid, text, agent) {
+        var that = this;
+
+        return new Promise(function(resolve, reject) {
+
+            var url = BASE_API_URL+ "/" +projectid+"/faqpub/?id_faq_kb="+bot_id;
+            // var url = BASE_API_URL+ "/" +projectid+"/faq/?id_faq_kb="+bot_id+"&text="+text;
+
+           
+            console.log('url', url);  
+
+            return request({
+                uri: url,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTHORIZATION_TOKEN_API,
+                    //'Authorization': 'Basic YWRtaW5AZjIxLml0OmFkbWluZjIxLA=='
+                },
+                method: 'GET',
+                json: true,
+                agent: agent,
+                //resolveWithFullResponse: true
+                }).then(response => {
+                    if (!response) {
+                       // throw new Error(`HTTP Error`);
+                       console.error('HTTP Error', response);  
+                       return reject(response);       
+                    }else {
+                        console.log('SUCCESS! response', response);
+
+                        var faqfound = response.filter(function (item) {
+                            return item.question===text;
+                           });
+                           console.log('SUCCESS! faqfound', faqfound);
+
+                        return resolve(faqfound);
+                    }
+                });
+        });
+      }
+
+
    
       //UNUSED
       createRequest(projectid, newRequest) {

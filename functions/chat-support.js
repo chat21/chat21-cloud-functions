@@ -842,19 +842,32 @@ exports.botreplyWithTwoReply = functions.database.ref('/apps/{app_id}/users/{sen
                 }
 
                 var timestamp = Date.now();
-
-                var botask = chatBotSupportApi.getBotMessage(qnaresp, projectid, departmentid, message, response, agent).then(function(bot_answer) {
-                    if (bot_answer) {
-                        return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, bot_answer, app_id, null, null, timestamp+1)
+                                            // getBotMessageOnlyDefaultFallBack(qnaresp, projectid, departmentid, message, bot, agent)
+                var botask = chatBotSupportApi.getBotMessageOnlyDefaultFallBack(qnaresp, projectid, departmentid, message, response, agent).then(function(bot_answer) {
+                // var botask = chatBotSupportApi.getBotMessage(qnaresp, projectid, departmentid, message, response, agent).then(function(bot_answer) {
+                    
+                    if (bot_answer.text) {
+                        console.log('bot_answer.text', bot_answer.text); 
+                                    // sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, type, metadata) {
+                        return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, bot_answer.text, app_id, bot_answer.attributes, null, timestamp+1)
+                        
                     }
                 });
 
+
+                
                 var botreply = function() {
                     if (answer && answer.length>0) {
-                        chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, answer, app_id, null, null, timestamp);
+                        // getButtonFromText(text, message, bot) { 
+                        chatBotSupportApi.getButtonFromText(answer, message, response,qnaresp).then(function(parsedText) {
+                            // sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, type, metadata) {
+                                chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_group_fullname, parsedText.text, app_id, parsedText.attributes, null, timestamp, parsedText.type, parsedText.metadata);
+                        });
+
+                      
                     }
                 }
-               
+                               
                 return Promise.all([botreply(), botask]);
                 
         
