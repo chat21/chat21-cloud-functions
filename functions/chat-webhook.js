@@ -19,7 +19,7 @@ if (!URL) {
     console.info('URL is not defined');
 }
 
-
+//rename to onGroupMessage
 exports.onMessage = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
   const message_id = context.params.message_id;
