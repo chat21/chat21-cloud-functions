@@ -6,7 +6,7 @@ Use with Google Cloud environment to configure the platform.
 Run the follow command to retrieve your environment variables ```firebase functions:config:get``` 
 
 ## Push Notification
-* Set click_action parameter with: ```firebase functions:config:set push.web.click_action=https://www.your_chat_url.com```
+* Set click_action parameter with: ```firebase functions:config:set push.web.click_action=https://www.your_chat_url.com``` for example:  ```firebase functions:config:set push.web.click_action=https://support.YOURDOMAIN.COM/chat```
 
 ## Email Notification
 * Enable email notification with: ```firebase functions:config:set email.enabled=true```
