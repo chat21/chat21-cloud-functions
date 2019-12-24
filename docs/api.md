@@ -184,7 +184,7 @@ With this API you can set the group members
 Where :
 - <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <MEMBER_ID>: it's the user ids of the group members
+- <MEMBER_IDs>: it's the user ids of the group members
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 - <GROUP_ID>: it's the existing group id
 
