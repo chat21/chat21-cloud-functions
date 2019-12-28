@@ -793,9 +793,9 @@ class ChatApi {
     }
 
 
-    typing(writer_id, group_id, app_id) {
+    typing(writer_id, recipient_id, app_id) {
 
-        var path = '/apps/'+app_id+'/typings/'+group_id;
+        var path = '/apps/'+app_id+'/typings/'+recipient_id;
         // DEBUG  console.log("path", path);
     
     
@@ -806,9 +806,9 @@ class ChatApi {
         return admin.database().ref(path).update(typing);
     }
 
-    stopTyping(writer_id, group_id, app_id) {
+    stopTyping(writer_id, recipient_id, app_id) {
 
-        var path = '/apps/'+app_id+'/typings/'+group_id+"/"+ writer_id;
+        var path = '/apps/'+app_id+'/typings/'+recipient_id+"/"+ writer_id;
         // DEBUG  console.log("path", path);
     
     

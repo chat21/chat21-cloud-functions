@@ -263,6 +263,11 @@ app.delete('/:app_id/conversations/:recipient_id/', (req, res) => {
         let app_id = req.params.app_id;
         let user_id = req.user.uid;
 
+        if (req.body.user_id) {
+          console.log('user_id from body', req.body.user_id);
+          user_id = req.body.user_id;
+        }
+
         let physicsDelete = false;
         if (req.query.delete) {
           physicsDelete = true;
@@ -519,7 +524,7 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
  * This endpoint supports CORS.
  */
 // [START trigger]
-app.put('/:app_id/typings/:group_id/', (req, res) => {
+app.put('/:app_id/typings/:recipient_id', (req, res) => {
   console.log('set Typing');
 
    
@@ -529,8 +534,8 @@ app.put('/:app_id/typings/:group_id/', (req, res) => {
       
       cors(req, res, () => {
 
-        if (!req.params.group_id) {
-            res.status(405).send('group_id is not present!');
+        if (!req.params.recipient_id) {
+            res.status(405).send('recipient_id is not present!');
         }
         if (!req.params.app_id) {
             res.status(405).send('app_id is not present!');
@@ -540,16 +545,15 @@ app.put('/:app_id/typings/:group_id/', (req, res) => {
           writer_id = req.body.writer_id;
         }
        
-        let group_id = req.params.group_id;
+        let recipient_id = req.params.recipient_id;
         let app_id = req.params.app_id;
 
 
-        console.log('members', members);
-        console.log('group_id', group_id);
+        console.log('group_id', recipient_id);
         console.log('app_id', app_id);
 
 
-        chatApi.typing(writer_id, group_id, app_id).then(function(result) {
+        chatApi.typing(writer_id, recipient_id, app_id).then(function(result) {
           console.log('result', result);
           res.status(200).send({"success":true});
         });      
@@ -559,18 +563,18 @@ app.put('/:app_id/typings/:group_id/', (req, res) => {
 
 
 
-    app.delete('/:app_id/typings/:group_id', (req, res) => {
+    app.delete('/:app_id/typings/:recipient_id', (req, res) => {
       console.log('set Typing stop');
     
        
-        if (req.method !== 'PUT') {
+        if (req.method !== 'DELETE') {
           res.status(403).send('Forbidden!');
         }
           
           cors(req, res, () => {
     
-            if (!req.params.group_id) {
-                res.status(405).send('group_id is not present!');
+            if (!req.params.recipient_id) {
+                res.status(405).send('recipient_id is not present!');
             }
             if (!req.params.app_id) {
                 res.status(405).send('app_id is not present!');
@@ -580,16 +584,15 @@ app.put('/:app_id/typings/:group_id/', (req, res) => {
               writer_id = req.body.writer_id;
             }
            
-            let group_id = req.params.group_id;
+            let recipient_id = req.params.recipient_id;
             let app_id = req.params.app_id;
     
     
-            console.log('members', members);
-            console.log('group_id', group_id);
+            console.log('recipient_id', recipient_id);
             console.log('app_id', app_id);
     
     
-            chatApi.stopTyping(writer_id, group_id, app_id).then(function(result) {
+            chatApi.stopTyping(writer_id, recipient_id, app_id).then(function(result) {
               console.log('result', result);
               res.status(200).send({"success":true});
             });
