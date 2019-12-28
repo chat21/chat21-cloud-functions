@@ -6,7 +6,7 @@ Use with Google Cloud environment to configure the platform.
 Run the follow command to retrieve your environment variables ```firebase functions:config:get``` 
 
 ## Push Notification
-* Set click_action parameter with: ```firebase functions:config:set push.web.click_action=https://www.your_chat_url.com```
+* Set click_action parameter with: ```firebase functions:config:set push.web.click_action=https://www.your_chat_url.com``` for example:  ```firebase functions:config:set push.web.click_action=https://support.YOURDOMAIN.COM/chat```
 
 ## Email Notification
 * Enable email notification with: ```firebase functions:config:set email.enabled=true```
@@ -23,7 +23,7 @@ Run the follow command to retrieve your environment variables ```firebase functi
 
 # SUPPORT MODE
 * Enable Support features with: ```firebase functions:config:set support.enabled=true```
-* Set Tiledesk-server endpoint with: ```firebase functions:config:set support.api.url=http://<YOUR_TILEDESK_SERVER>```. For example 
+* Set Tiledesk-server endpoint with: ```firebase functions:config:set support.api.url=https://<YOUR_TILEDESK_SERVER>```. For example 
 ```firebase functions:config:set support.api.url=https://tiledesk-server-test03.herokuapp.com```
 * Create a Tiledesk user with ```curl -v -X POST -d 'email=api@f21.it&password=123456' https://tiledesk-server-pre.herokuapp.com/auth/signup```
 
@@ -31,7 +31,7 @@ Run the follow command to retrieve your environment variables ```firebase functi
 * Enable Firestore database under Firebase Console with Allow All permissions
 * Configure billing account to make external network call to web services
 * Enable webhook ```firebase functions:config:set webhook.enabled=true```
-* Set webhook endpoint ```firebase functions:config:set webhook.url=https://tiledesk-server-pre.herokuapp.com/chat21/requests```
+* Set webhook endpoint ```firebase functions:config:set webhook.url=https://<YOUR_TILEDESK_SERVER>/chat21/requests```. For example: ```firebase functions:config:set webhook.url=https://tiledesk-server-pre.herokuapp.com/chat21/requests```
 
 # CHANNEL GENERAL
 

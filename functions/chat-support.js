@@ -270,7 +270,7 @@ function saveNewRequest (message, departmentid, group_members, agents, available
         newRequest.app_id = app_id;
 
         newRequest.first_message = message;
-        
+        newRequest.projectid = projectid; //fix projectid for direct api missing projectid
         console.log('newRequest', newRequest);
 
 

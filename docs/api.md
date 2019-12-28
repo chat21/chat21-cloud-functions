@@ -73,7 +73,7 @@ Example. Send a group message :
    curl -X POST \
        -H 'Content-Type: application/json' \
        -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjY3NmY5MmU1MGQ5ZmUxNzdiM2I5NTJjNGM4ZWU2YjY1ZDk3ZWIwZmMifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTUzNDgzNzQ0OCwidXNlcl9pZCI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsInN1YiI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsImlhdCI6MTUzNDgzNzQ0OCwiZXhwIjoxNTM0ODQxMDQ4LCJlbWFpbCI6ImFuZHJlYS5sZW9AZnJvbnRpZXJlMjEuaXQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.XcP7TiYf1ESbKSs9qXgRIw1o5U5DHC2APSd_r6WQF4h7KlFtXKs34KPuxcrK2tuqtWts7RBPuZC0BXK_uPThN45W-rcN5900r2UaFxwr-VjWoqLAYzWNE3bM4oDM_ib0owijMSfAfIyqX1yzCl1SQ7UnyHH9ntTZBjPHEUOw0adjiM5dsE_tON-zFyOG6M-mSxgpGoQa7My9w7pInFltSPZLbVanvCeb2ZxYRQXIbR-v5aqHb_d4OyOH3cqb7Mn8XLirQIV5z_Rzs-GPxQVJFn-zYZsfNnfw3xeNllLFlM7u6afOMknMFh79bP4flp95XUNC-qIO7MTQcpVSCvC85Q' \
-       -d '{"sender_fullname": "Andrea Leo", "recipient_id": "-LKQQxIY4DDyG17FDiOM", "recipient_fullname":"Test group","text":"hello group from API"}' \
+       -d '{"sender_fullname": "Andrea Leo", "recipient_id": "-LKQQxIY4DDyG17FDiOM", "recipient_fullname":"Test group","text":"hello group from API","channel_type":"group"}' \
        'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages'
 ```
 
@@ -184,7 +184,7 @@ With this API you can set the group members
 Where :
 - <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <MEMBER_ID>: it's the user ids of the group members
+- <MEMBER_IDs>: it's the user ids of the group members
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 - <GROUP_ID>: it's the existing group id
 
