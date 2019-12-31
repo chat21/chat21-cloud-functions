@@ -90,7 +90,15 @@ Example. Send an image to recipient id U4HL3GWjBsd8zLX4Vva0s7W2FN92 :
        -d '{"sender_fullname": "Andrea Leo", "recipient_id": "U4HL3GWjBsd8zLX4Vva0s7W2FN92", "recipient_fullname":"Andrea Leo","text":"alt text", "type":"image", "metadata": { "src": "https://www.tiledesk.com/wp-content/uploads/2018/03/tiledesk-logo.png", "width": 200, "height": 200 } }' \
        'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages'
 ```
-
+Example. Send a message with PDF link to recipient id U4HL3GWjBsd8zLX4Vva0s7W2FN92 : 
+```
+curl -X POST \
+       -H 'Content-Type: application/json' \
+       -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImNlNWNlZDZlNDBkY2QxZWZmNDA3MDQ4ODY3YjFlZDFlNzA2Njg2YTAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2hhdC12Mi1kZXYiLCJhdWQiOiJjaGF0LXYyLWRldiIsImF1dGhfdGltZSI6MTU3Nzc4OTk1OCwidXNlcl9pZCI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsInN1YiI6IjVhYWE5OTAyNGMzYjExMDAxNGI0NzhmMCIsImlhdCI6MTU3Nzc4OTk1OCwiZXhwIjoxNTc3NzkzNTU4LCJlbWFpbCI6ImFuZHJlYS5sZW9AZnJvbnRpZXJlMjEuaXQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiYW5kcmVhLmxlb0Bmcm9udGllcmUyMS5pdCJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.ayGVDUpP0GcPyEHo8dQ82EY6Kz2Wt2pVi8yeLvXeu4GITb4n3BZ-5XeQUFYQbshFx5GSL4gjTOZSdnoMAPoutrNRQNo0MBbnaENsbjpLBqUAomQ0l7BPIGs_S4Hwx69s2N3C5Jr6l3jp0f9PprUZhSxbCbRqx8TO-K3hYpsZ8efMl5NO0gBRl7GH_Dqu95ROZxRMxWNrQcUk0cihL0PtaKr-EcE9V547Og2FgF7p_iUomTKeSZ6Ili3N9m02aAOkEzoYqO0hPGKRnm_1Xi-1UnhTiSiDdAWuuz1hmsiWtYXz5Lru66QVUY6YE8rPWfufz0KYyBFiP2h2akBitHdyuQ' \
+       -d '{"sender_fullname": "Andrea Leo", "recipient_id": "U4HL3GWjBsd8zLX4Vva0s7W2FN92", "recipient_fullname":"Andrea Leo","text":"File: https://www.unipg.it/files/pagine/410/4-PDF-A.pdf", "type":"text" }' \
+       'https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/messages'
+```  
+  
 ### Message attributes
 With attributes you can add custom attribute to the message as described below but you can also control internal behaviors:
 - disable push notification for each message with  attributes = {"sendnotification":false}
