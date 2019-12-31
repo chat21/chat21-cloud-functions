@@ -53,8 +53,8 @@ Where :
 - <RECIPIENT_ID>: it's the recipient id of the message. The recipient id is the user id for direct message and the group id for group messaging.
 - <RECIPIENT_FULLNAME>: is the Recipient Fullname. Ex: Andrea Sponziello
 - <MESSAGE_TEXT>: it's the message text
-- <CHANNEL_TYPE>: it's the channel type. "direct" value for one-to-one direct message and "group" for group messaging. 
-- <TYPE>: it's the message type. "text" value for textual message and "image" for sending image message. Available values: text (default) and image.
+- <CHANNEL_TYPE>: it's the channel type. "direct" value for one-to-one direct message and "group" for group messaging. Available values: direct (default) and group.
+- TYPE: it's the message type. "text" value for textual message and "image" for sending image message. Available values: text (default) and image.
  
 - <ATTRIBUTES>:  it's the message custom attributes. Example: attributes = {"custom_attribute1": "value1"}
  
