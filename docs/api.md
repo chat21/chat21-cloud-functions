@@ -54,12 +54,9 @@ Where :
 - <RECIPIENT_FULLNAME>: is the Recipient Fullname. Ex: Andrea Sponziello
 - <MESSAGE_TEXT>: it's the message text
 - <CHANNEL_TYPE>: it's the channel type. "direct" value for one-to-one direct message and "group" for group messaging. Available values: direct (default) and group.
-- <TYPE>: it's the message type. "text" value for textual message and "image" for sending image message. Available values: text (default) and image.
- 
-- <ATTRIBUTES>:  it's the message custom attributes. Example: attributes = {"custom_attribute1": "value1"}
- 
-- <METADATA>: it's the image properties: src is the absolute source path of the image, width is the image width, height is the image height. Example: metadata = { "src": "https://www.tiledesk.com/wp-content/uploads/2018/03/tiledesk-logo.png", "width": 200, "height": 200 }
- 
+- TYPE: it's the message type. "text" value for textual message and "image" for sending image message. Available values: text (default) and image.
+- ATTRIBUTES:  it's the message custom attributes. Example: attributes = {"custom_attribute1": "value1"}
+- METADATA: it's the image properties: src is the absolute source path of the image, width is the image width, height is the image height. Example: metadata = { "src": "https://www.tiledesk.com/wp-content/uploads/2018/03/tiledesk-logo.png", "width": 200, "height": 200 }
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 
