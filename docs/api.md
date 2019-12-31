@@ -48,17 +48,17 @@ You can send a message making a POST call to the endpoint :
       'https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/messages'
 ```
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <SENDER_FULLNAME>: is the Sender Fullname. Ex: Andrea Leo
-- <RECIPIENT_ID>: it's the recipient id of the message. The recipient id is the user id for direct message and the group id for group messaging.
-- <RECIPIENT_FULLNAME>: is the Recipient Fullname. Ex: Andrea Sponziello
-- <MESSAGE_TEXT>: it's the message text
-- <CHANNEL_TYPE>: it's the channel type. "direct" value for one-to-one direct message and "group" for group messaging. Available values: direct (default) and group.
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- SENDER_FULLNAME: is the Sender Fullname. Ex: Andrea Leo
+- RECIPIENT_ID: it's the recipient id of the message. The recipient id is the user id for direct message and the group id for group messaging.
+- RECIPIENT_FULLNAME: is the Recipient Fullname. Ex: Andrea Sponziello
+- MESSAGE_TEXT: it's the message text
+- CHANNEL_TYPE: it's the channel type. "direct" value for one-to-one direct message and "group" for group messaging. Available values: direct (default) and group.
 - TYPE: it's the message type. "text" value for textual message and "image" for sending image message. Available values: text (default) and image.
 - ATTRIBUTES:  it's the message custom attributes. Example: attributes = {"custom_attribute1": "value1"}
 - METADATA: it's the image properties: src is the absolute source path of the image, width is the image width, height is the image height. Example: metadata = { "src": "https://www.tiledesk.com/wp-content/uploads/2018/03/tiledesk-logo.png", "width": 200, "height": 200 }
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
 
 Example. Send a direct message to recipient id U4HL3GWjBsd8zLX4Vva0s7W2FN92 : 
 
@@ -106,11 +106,11 @@ Create a chat user's group making the following POST call :
 ```
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <GROUP_NAME>: it's the new group name
-- <MEMBER_ID>: it's the user ids of the group members
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- GROUP_NAME: it's the new group name
+- MEMBER_ID: it's the user ids of the group members
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
 
 Example:
 
@@ -136,11 +136,11 @@ With this API the user can join (become a member) of an existing group:
 
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <MEMBER_ID>: it's the user id of the user you want to joing (become a member)
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
-- <GROUP_ID>: it's the existing group id
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- MEMBER_ID: it's the user id of the user you want to joing (become a member)
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
+- GROUP_ID: it's the existing group id
 
 
 Example:
@@ -166,11 +166,11 @@ With this API the user can leave of an existing group:
 ```
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
-- <GROUP_ID>: it's the existing group id
-- <MEMBER_ID>: it's the user id of the user you want to leave a group
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
+- GROUP_ID: it's the existing group id
+- MEMBER_ID: it's the user id of the user you want to leave a group
 
 Example:
 
@@ -197,11 +197,11 @@ With this API you can set the group members
 ```
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <MEMBER_IDs>: it's the user ids of the group members
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
-- <GROUP_ID>: it's the existing group id
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- MEMBER_IDs: it's the user ids of the group members
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
+- GROUP_ID: it's the existing group id
 
 Example:
 
@@ -226,11 +226,11 @@ Delete a message from the personal timeline of a conversation specified by a REC
 ```
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
-- <RECIPIENT_ID>: it's the recipient id
-- <MESSAGE_ID>: it's the message id
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
+- RECIPIENT_ID: it's the recipient id
+- MESSAGE_ID: it's the message id
 
 Example:
 
@@ -255,11 +255,11 @@ Delete a message from all the timelines of a conversation specified by a RECIPIE
 
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
-- <RECIPIENT_ID>: it's the recipient id
-- <MESSAGE_ID>: it's the message id
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
+- RECIPIENT_ID: it's the recipient id
+- MESSAGE_ID: it's the message id
 
 
 Example:
@@ -286,10 +286,10 @@ Archive or delete a conversation from the personal timeline specified by a RECIP
 ```
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
-- <RECIPIENT_ID>: it's the recipient id
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
+- RECIPIENT_ID: it's the recipient id
 - delete:  (Optional) if true permanently deletes the conversation, if false archives the conversation
 
 Example:
@@ -317,12 +317,12 @@ Create a new contact.
 
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIRSTNAME>: it's the firstname of the contact
-- <LASTNAME>: it's the lastname of the contact
-- <EMAIL>: it's the contact email
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIRSTNAME: it's the firstname of the contact
+- LASTNAME: it's the lastname of the contact
+- EMAIL: it's the contact email
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
 
 
 
@@ -352,11 +352,11 @@ Change my first and lastname:
 
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIRSTNAME>: it's the firstname of the contact
-- <LASTNAME>: it's the lastname of the contact
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIRSTNAME: it's the firstname of the contact
+- LASTNAME: it's the lastname of the contact
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
 
 
 
@@ -385,9 +385,9 @@ Upload my photo profile
 
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
 
 
 Example:
@@ -414,9 +414,9 @@ Delete my photo profile
 
 
 Where :
-- <FIREBASE_ID_TOKEN> : is a JWT token generated using JWT Authentication Method
-- <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
-- <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
+- FIREBASE_ID_TOKEN : is a JWT token generated using JWT Authentication Method
+- FIREBASE_PROJECT_ID: it's the Firebase project id. Find it on Firebase Console
+- APP_ID: It's the appid usend on multitenant environment. Use  "default" as default value
 
 
 Example:
