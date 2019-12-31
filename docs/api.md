@@ -92,7 +92,7 @@ Example. Send an image to recipient id U4HL3GWjBsd8zLX4Vva0s7W2FN92 :
 ```
 
 ### Message attributes
-With attributes you can also control internal behaviors:
+With attributes you can add custom attribute to the message as described below but you can also control internal behaviors:
 - disable push notification for each message with  attributes = {"sendnotification":false}
 - disable conversation model update with  attributes = {"updateconversation":false}
 
