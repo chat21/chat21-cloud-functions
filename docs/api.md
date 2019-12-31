@@ -44,7 +44,7 @@ You can send a message making a POST call to the endpoint :
   curl -X POST \
       -H 'Content-Type: application/json' \
       -H "Authorization: Bearer <FIREBASE_ID_TOKEN>" \
-       -d '{"sender_fullname": "<SENDER_FULLNAME>", "recipient_id": "<RECIPIENT_ID>", "recipient_fullname":"<RECIPIENT_FULLNAME>","text":"<MESSAGE_TEXT>", "channel_type": "<CHANNEL_TYPE>"}' \
+       -d '{"sender_fullname": "<SENDER_FULLNAME>", "recipient_id": "<RECIPIENT_ID>", "recipient_fullname":"<RECIPIENT_FULLNAME>","text":"<MESSAGE_TEXT>", "channel_type": "<CHANNEL_TYPE>", "type": "<TYPE>", "attributes": "<ATTRIBUTES>", "metadata": "<METADATA>"}' \
       'https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/messages'
 ```
 Where :
@@ -54,6 +54,9 @@ Where :
 - <RECIPIENT_FULLNAME>: is the Recipient Fullname. Ex: Andrea Sponziello
 - <MESSAGE_TEXT>: it's the message text
 - <CHANNEL_TYPE>: it's the channel type. "direct" value for one-to-one direct message and "group" for group messaging. Available values: direct (default) and group.
+- <TYPE>: Optional -  it's the message type. "text" value for textual message and "image" for sending image message. Available values: text (default) and image.
+- <ATTRIBUTES>: Optional -  it's the message custom attributes. Example: attributes = {"custom_attribute1": "value1"}
+- <METADATA>: Optional - it's the image properties: src is the absolute source path of the image, width is the image width, height is the image height. Example: metadata = { src: "https://www.tiledesk.com/wp-content/uploads/2018/03/tiledesk-logo.png", width: 200, height: 200 }
 - <FIREBASE_PROJECT_ID>: it's the Firebase project id. Find it on Firebase Console
 - <APP_ID>: It's the appid usend on multitenant environment. Use  "default" as default value
 
