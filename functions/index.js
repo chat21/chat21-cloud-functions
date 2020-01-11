@@ -26,10 +26,10 @@ exports.api = functions.https.onRequest(chatHttpApi.api);
 if (functions.config().support && functions.config().support.enabled && functions.config().support.enabled=="true") {
     const supportChat = require('./chat-support');
     exports.support = supportChat;
-
-    const chatSupportHttpApi = require('./chat-support-http-api');
-    exports.supportapi = functions.https.onRequest(chatSupportHttpApi.api);
 }
+const chatSupportHttpApi = require('./chat-support-http-api');
+exports.supportapi = functions.https.onRequest(chatSupportHttpApi.api);
+
 
 
 if (functions.config().webhook && functions.config().webhook.enabled && functions.config().webhook.enabled=="true") {
