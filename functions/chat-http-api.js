@@ -97,6 +97,8 @@ app.post('/:app_id/messages', (req, res) => {
         let attributes = req.body.attributes;
         let type = req.body.type;
         let metadata = req.body.metadata;
+        let timestamp = req.body.timestamp;
+        
 
         console.log('sender_id', sender_id);
         console.log('sender_fullname', sender_fullname);
@@ -108,19 +110,20 @@ app.post('/:app_id/messages', (req, res) => {
         console.log('attributes', attributes);
         console.log('type', type);
         console.log('metadata', metadata);
+        console.log('timestamp', timestamp);
         
 
 
         if (channel_type==null || channel_type=="direct") {  //is a direct message
           // sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, type, metadata) {
-          chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, type, metadata).then(function(result) {
+          chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, type, metadata).then(function(result) {
             console.log('result', result);
 
             res.status(201).send(result);
           });
         }else if (channel_type=="group") {
           // sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, type, metadata) {
-          chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, undefined, type, metadata).then(function(result) {
+          chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, timestamp, type, metadata).then(function(result) {
             console.log('result', result);
 
             res.status(201).send(result);
@@ -354,6 +357,7 @@ app.post('/:app_id/groups', (req, res) => {
           // createGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members) {
            chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members).then(function(result) {
             console.log('result', result);
+            // prima veniva ritornato il result
             res.status(201).send({"success":true});
           });
         }else {
