@@ -14,7 +14,7 @@ var AUTHORIZATION_TOKEN_API;
 
 const functions = require('firebase-functions');
 
-if (functions.config().support.api && functions.config().support.api.url) {
+if (functions.config().support && functions.config().support.api && functions.config().support.api.url) {
     BASE_API_URL = functions.config().support.api.url;
     console.log('BASE_API_URL', BASE_API_URL);
 
@@ -24,7 +24,7 @@ if (!BASE_API_URL) {
 }
 
 
-if (functions.config().support.api && functions.config().support.api.authtoken) {
+if (functions.config().support && functions.config().support.api && functions.config().support.api.authtoken) {
     AUTHORIZATION_TOKEN_API = functions.config().support.api.authtoken;
     console.log('AUTHORIZATION_TOKEN_API', AUTHORIZATION_TOKEN_API);
 
