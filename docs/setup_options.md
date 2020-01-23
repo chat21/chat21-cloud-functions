@@ -13,6 +13,7 @@ functions:config:set secretToken=MYSECRET
 
 # Push Notification
 * With click_action parameter you can choose which page the browser open when a user click on a push nofification. Push notification is supported by chat21-ionic component.
+
 Set the click_action parameter with: 
 ```
 firebase functions:config:set push.web.click_action=https://www.your_chat_url.com
@@ -24,6 +25,7 @@ firebase functions:config:set push.web.click_action=https://support.YOURDOMAIN.C
 
 # Email Notification
 * You can decide to send an email notification for each message sent to a recupient. 
+
 You can enable email notification with: 
 ```
 firebase functions:config:set email.enabled=true
@@ -55,9 +57,18 @@ More info here https://community.nodemailer.com/using-gmail/ and here https://me
 # WebHook
 
 * Configure billing account to make external network call to web services
-* Enable webhook ```firebase functions:config:set webhook.enabled=true```
-* Set webhook endpoint ```firebase functions:config:set webhook.url=https://<YOUR_TILEDESK_SERVER>/chat21/requests```. 
-For example: ```firebase functions:config:set webhook.url=https://tiledesk-server-pre.herokuapp.com/chat21/requests```
+* Enable webhook with :
+```
+firebase functions:config:set webhook.enabled=true
+```
+* Set webhook endpoint with:
+```
+firebase functions:config:set webhook.url=https://<YOUR_TILEDESK_SERVER>/chat21/requests
+```
+For example: 
+```
+firebase functions:config:set webhook.url=https://tiledesk-server-pre.herokuapp.com/chat21/requests
+```
 
 
 
