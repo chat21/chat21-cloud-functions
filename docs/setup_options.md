@@ -2,30 +2,30 @@
 # Retrieve your configuration
 Run the follow command to retrieve your environment config variables ```firebase functions:config:get``` 
 
-## Admin token
+# Admin token
 To change the default admin token (default = chat21-secret-orgAa,) run with firebase functions :
 ```
 functions:config:set secretToken=MYSECRET
 ```
 
-## Push Notification
+# Push Notification
 * With click_action parameter you can choose which page the browser open when a user click on a push nofification. Push notification is supported by chat21-ionic component.
 Set the click_action parameter with: 
 ```firebase functions:config:set push.web.click_action=https://www.your_chat_url.com``` 
 for example:  
 ```firebase functions:config:set push.web.click_action=https://support.YOURDOMAIN.COM/chat```
 
-## Email Notification
+# Email Notification
 * You can decide to send an email notification for each message sent to a recupient. You can enable email notification with: 
 ```firebase functions:config:set email.enabled=true```
 
-### Generic SMTP (Ex. MailGun)
+## Generic SMTP (Ex. MailGun)
 * Configure the SMTP URI endpoint with : 
 ```firebase functions:config:set email.endpoint=smtp://<Username>:<password>@smtp.mailgun.org``` 
 
 * Set email sender with: ```firebase functions:config:set email.from=<sender_email>```
 
-### Example for Gmail
+## Example for Gmail
 * Configure SMTP with a Gmail account using the following properties: ```firebase functions:config:set email.gmail.user=<EMAIL>``` and ```firebase functions:config:set email.gmail.password=<PASSWORD>```. More info here https://community.nodemailer.com/using-gmail/ and here https://medium.com/@manojsinghnegi/sending-an-email-using-nodemailer-gmail-7cfa0712a799
 
 # WebHook
@@ -40,7 +40,7 @@ For example: ```firebase functions:config:set webhook.url=https://tiledesk-serve
 
 # Experimental features and configurations
 
-# Support Mode
+## Support Mode
 * Enable Support features with: ```firebase functions:config:set support.enabled=true```
 * Set Tiledesk-server endpoint with: ```firebase functions:config:set support.api.url=https://<YOUR_TILEDESK_SERVER>```. For example 
 ```firebase functions:config:set support.api.url=https://tiledesk-server-test03.herokuapp.com```
