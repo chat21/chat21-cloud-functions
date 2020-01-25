@@ -41,7 +41,7 @@ npm install
 * Create a new user on the Firebase Console under Authentication Menu. 
 * Select Email/Password for Authentication Provider
 * Click on "Add New User" and populate Email and Password field with for example : email = a@a.com, password = 123456
-* Get a JWT token calling JWT Authentication method as described here [JWT Authentication](docs/api.md##jwt-authentication)
+* Get a JWT token calling JWT Authentication method as described here [JWT Authentication](docs/api.md#jwt-authentication)
 * Send a new message using Send Message API with JWT Authentication as described here [Send message](docs/api.md#send-a-message)
 
 
