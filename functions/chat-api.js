@@ -664,6 +664,17 @@ class ChatApi {
         return admin.database().ref(path).remove();
     }
 
+    updateAttributesGroup(attributes, group_id, app_id) {
+
+        var path = '/apps/'+app_id+'/groups/'+group_id+'/attributes/';
+        // DEBUG console.log("path", path);
+       
+        
+        console.log("member " + JSON.stringify(attributes) + " is updating attributes of group " + path);
+        return admin.database().ref(path).update(attributes);
+    }
+
+
     saveMemberInfo(member_id, group_id, app_id) {
 
         var path = '/apps/'+app_id+'/groups/'+group_id+'/membersinfo/'+member_id;

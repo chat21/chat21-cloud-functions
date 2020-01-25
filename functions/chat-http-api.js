@@ -574,6 +574,51 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
     });
 
 
+     /**
+ * Update attributes of a group
+ 
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.put('/:app_id/groups/:group_id/attributes', (req, res) => {
+  console.log('set attributes group');
+
+   
+    if (req.method !== 'PUT') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+        if (!req.params.group_id) {
+            res.status(405).send('group_id is not present!');
+        }
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+
+        let attributes = req.body.attributes;
+        let group_id = req.params.group_id;
+        let app_id = req.params.app_id;
+
+
+        console.log('attributes', attributes);
+        console.log('group_id', group_id);
+        console.log('app_id', app_id);
+
+        // updateAttributesGroup(attributes, group_id, app_id) {
+        chatApi.updateAttributesGroup(attributes, group_id, app_id).then(function(result) {
+          console.log('result', result);
+          res.status(200).send({"success":true});
+        });   
+      });
+    });
+
+
+
+
+
 
      /**
  * Typing
