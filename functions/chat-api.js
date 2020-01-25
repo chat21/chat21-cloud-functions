@@ -611,6 +611,32 @@ class ChatApi {
         return admin.database().ref(path).set(group);
     }
 
+    updateGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members) {
+
+        var path = '/apps/'+app_id+'/groups/'+group_id;
+        // console.log("path", path);
+
+
+        var group = {};
+
+        if (group_name) {
+            group.name = group_name;
+        }
+        if (group_owner) {
+            group.owner = group_owner;
+        }
+        if (attributes) {
+            group.attributes = attributes;
+        }        
+
+        if (invited_members) {
+            group.invited_members = invited_members;
+        }
+
+        console.log("updating group " + JSON.stringify(group) + " to "+ path);
+        return admin.database().ref(path).update(group);
+    }
+
 
 
     joinGroup(member_id, group_id, app_id) {

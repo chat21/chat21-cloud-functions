@@ -373,6 +373,60 @@ app.post('/:app_id/groups', (req, res) => {
 
 
 
+ /**
+ * Update a group
+ 
+ *
+ * This endpoint supports CORS.
+ */
+// [START trigger]
+app.put('/:app_id/groups/:group_id', (req, res) => {
+  console.log('set members group');
+
+   
+    if (req.method !== 'PUT') {
+      res.status(403).send('Forbidden!');
+    }
+      
+      cors(req, res, () => {
+
+        if (!req.params.group_id) {
+            res.status(405).send('group_id is not present!');
+        }
+        if (!req.params.app_id) {
+            res.status(405).send('app_id is not present!');
+        }
+
+       
+
+        let group_id = req.params.group_id;
+        let app_id = req.params.app_id;
+
+
+        let group_name = req.body.group_name;
+        let group_owner = req.body.group_owner;
+        let group_members = req.body.group_members;
+        let attributes = req.body.attributes;
+        let invited_members = req.body.invited_members;
+
+        
+        console.log('group_id', group_id);
+        console.log('app_id', app_id);
+        console.log('group_name', group_name);
+        console.log('group_owner', group_owner);
+        console.log('group_members', group_members);
+        console.log('attributes', attributes);
+        console.log('invited_members', invited_members);
+
+
+// updateGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members) {
+        chatApi.updateGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members).then(function(result) {
+          console.log('result', result);
+          res.status(200).send({"success":true});
+        });   
+      });
+    });
+
 
 
 
