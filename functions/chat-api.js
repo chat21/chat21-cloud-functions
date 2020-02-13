@@ -670,7 +670,7 @@ class ChatApi {
         // DEBUG console.log("path", path);
        
         
-        console.log("member " + JSON.stringify(attributes) + " is updating attributes of group " + path);
+        console.log("attributes " + JSON.stringify(attributes) + " is updating attributes of group " + path);
         return admin.database().ref(path).update(attributes);
     }
 
