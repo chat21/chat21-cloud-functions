@@ -8,7 +8,7 @@ firebase functions:config:get
 # Admin token
 To change the default admin token (default = chat21-secret-orgAa,) run with firebase functions :
 ```
-functions:config:set secretToken=MYSECRET
+firebase functions:config:set secret.token=MYSECRET
 ```
 
 # Push Notification
