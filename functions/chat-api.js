@@ -453,6 +453,23 @@ class ChatApi {
 
 
 
+
+    updateAttributesConversation(sender_id, recipient_id, app_id, attributes) {
+
+        var path = '/apps/'+app_id+'/users/'+sender_id+'/conversations/'+recipient_id + '/attributes';
+        console.log("path", path);
+       
+        if (attributes) {
+            console.log("attributes " + JSON.stringify(attributes) + " is updating attributes of group " + path);
+            return admin.database().ref(path).update(attributes);
+        }
+        return 0;
+        
+    }
+
+
+
+
     getGroupById(group_id, app_id) {
         // DEBUG console.log("getting group with id " + group_id + " and app_id "+ app_id);
 

@@ -143,7 +143,17 @@ exports.createConversation = functions.database.ref('/apps/{app_id}/users/{sende
     const conversation = data.val();
     console.log('conversation ' + JSON.stringify(conversation));
 
+    // return chatApi.deleteArchivedConversationIfExists(sender_id, recipient_id, app_id).then(function(deletedConversation) {
+    //     if (deletedConversation && deletedConversation.attributes) {
+    //         //merge archived conv attributes to standard conv attributes
+    //         console.log('deletedConversation.attributes ' + JSON.stringify(deletedConversation.attributes));
+    //         chatApi.updateAttributesConversation(sender_id, recipient_id, app_id, deletedConversation.attributes);
+    //     }
+    // });
+
     return chatApi.deleteArchivedConversation(sender_id, recipient_id, app_id);
+
+    
 
     
   });
