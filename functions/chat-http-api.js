@@ -779,6 +779,10 @@ app.post('/:app_id/contacts', (req, res) => {
         let email = req.body.email;
 
         let current_user = req.user.uid;
+       
+        if (req.body.current_user) {
+          current_user = req.body.current_user;
+        }
 
         let app_id = req.params.app_id;
 
@@ -833,6 +837,11 @@ app.put('/:app_id/contacts/me', (req, res) => {
 
         let current_user = req.user.uid;
 
+        if (req.body.current_user) {
+          current_user = req.body.current_user;
+        }
+
+        
         let app_id = req.params.app_id;
 
 
