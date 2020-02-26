@@ -34,7 +34,7 @@ More info here : https://firebase.google.com/docs/reference/rest/auth/#section-s
 ### Secret Authentication (for admin)
 
 To authenticate you can add the token query parameter to the endpoints. Example : ```?token=chat21-secret-orgAa,```
-You can change the secret token for your installation with ```firebase functions:config:set secretToken=MYSECRET```
+You can change the secret token for your installation with ```firebase functions:config:set secret.token=MYSECRET```
 
 ## Send a message
 

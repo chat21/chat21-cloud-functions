@@ -47,7 +47,7 @@ module.exports = {
             if (authQueryStr) {
                 idToken = req.query.token;
                 
-                let secretToken = functions.config().secretToken ? functions.config().secretToken : "chat21-secret-orgAa,";
+                let secretToken = functions.config().secret.token ? functions.config().secret.token : "chat21-secret-orgAa,";
                 console.log('secretToken',secretToken);
 
                 //TODO move to firebase config 
