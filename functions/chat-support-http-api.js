@@ -32,7 +32,7 @@ const app = express();
 const chatHttpAuth = require('./chat-http-auth');
 app.use(chatHttpAuth.authenticate);
 
-const chatSupportApi = require('./chat-support-api');
+// const chatSupportApi = require('./chat-support-api');
 
 
 
@@ -285,10 +285,10 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
         let app_id = req.params.app_id;
         let user_id = req.user.uid;
 
-        let open = false;
-        if (req.query.open) {
-          open = req.query.open;
-        }
+        // let open = false;
+        // if (req.query.open) {
+        //   open = req.query.open;
+        // }
 
 
         console.log('group_id', group_id);
@@ -301,7 +301,7 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
 
         // chatApi.archiveConversation(user_id, group_id, app_id);
 
-        if (open==false) {
+        // if (open==false) {
           Promise.all([
             //  disabled firestore db chatSupportApi.closeChat(group_id, app_id), 
               chatApi.archiveConversationForAllGroupMembers(group_id, app_id),
@@ -316,11 +316,12 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
             // res.render("cac", firebaseData);
             res.status(200).send();
           });
-        }else {
-          chatSupportApi.openChat(group_id, app_id).then(function(snapshots) {
-            res.status(200).send();
-          });
-        }
+        // }else {
+        //   attento qui
+        //   chatSupportApi.openChat(group_id, app_id).then(function(snapshots) {
+        //     res.status(200).send();
+        //   });
+        // }
       
         
         // console.log('result', result);
