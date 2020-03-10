@@ -294,7 +294,7 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
         console.log('group_id', group_id);
         console.log('app_id', app_id);
         console.log('user_id', user_id);
-        console.log('open', open);
+        // console.log('open', open);
 
        
         // var result =  chatSupportApi.closeChat(group_id, app_id);
