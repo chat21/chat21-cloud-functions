@@ -359,3 +359,56 @@ exports.onMemberLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{grou
 });
   
   
+
+
+// typing(writer_id, recipient_id, app_id) {
+
+//   var path = '/apps/'+app_id+'/typings/'+recipient_id;
+
+
+exports.onTyping = functions.database.ref('/apps/{app_id}/typings/{recipient_id}/{writer_id}').onCreate((data, context) => {
+    
+  const recipient_id = context.params.recipient_id;
+  const writer_id = context.params.writer_id;
+  const app_id = context.params.app_id;;
+  console.log("recipient_id: "+ recipient_id + " writer_id: "+ writer_id + ", app_id: " + app_id);
+  
+  const typingData = data.val();
+  console.log("typingData", typingData);
+
+
+
+// var data = {
+// member_id: member_id
+// };
+
+var json = {
+  event_type: "typing-start",
+  createdAt: new Date().getTime(),
+  app_id: app_id,
+  recipient_id: recipient_id,
+  writer_id: writer_id,
+  data: typingData
+};
+
+
+  return request({
+    "uri": URL,
+    "method": "POST",
+    //"agent": agent,
+    "json": json
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('http sent!');
+      return 0;
+    } else {
+      console.error("Unable to send http:" + err);
+      return 0;
+    }
+  }); 
+
+  
+
+
+});
+
