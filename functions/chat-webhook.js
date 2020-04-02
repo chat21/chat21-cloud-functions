@@ -12,11 +12,11 @@ var URL;
 
 if (functions.config().webhook && functions.config().webhook.url) {
     URL = functions.config().webhook.url;
-    console.log('URL', URL);
+    console.log('WebHook URL', URL);
 
 }
 if (!URL) {
-    console.info('URL is not defined');
+    console.info('WebHook URL is not defined');
 }
 
 //rename to onGroupMessage
@@ -366,14 +366,14 @@ exports.onMemberLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{grou
 //   var path = '/apps/'+app_id+'/typings/'+recipient_id;
 
 
-exports.onTyping = functions.database.ref('/apps/{app_id}/typings/{recipient_id}/{writer_id}').onCreate((data, context) => {
+exports.onTyping = functions.database.ref('/apps/{app_id}/typings/{recipient_id}/{writer_id}').onUpdate((change, context) => {
     
   const recipient_id = context.params.recipient_id;
   const writer_id = context.params.writer_id;
   const app_id = context.params.app_id;;
   console.log("recipient_id: "+ recipient_id + " writer_id: "+ writer_id + ", app_id: " + app_id);
   
-  const typingData = data.val();
+  const typingData = change.after.val();
   console.log("typingData", typingData);
 
 
