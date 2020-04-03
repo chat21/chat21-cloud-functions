@@ -847,19 +847,28 @@ class ChatApi {
     }
 
 
-    typing(writer_id, recipient_id, app_id) {
+    typing(writer_id, recipient_id, text, timestamp, app_id) {
 
         var path = '/apps/'+app_id+'/typings/'+recipient_id;
         // DEBUG  console.log("path", path);
     
     
+        if (!timestamp) {
+            timestamp = new Date();
+        }
+        
         var typing = {};
-        typing[writer_id] = 1;
+        typing[writer_id]["message"] = text;
+        typing[writer_id]["timestamp"] = timestamp;
+        // typing[writer_id] = 1;
+        
 
         console.log("typing typing " + typing  + " to " + path);
         return admin.database().ref(path).update(typing);
     }
 
+
+    // deprecated
     stopTyping(writer_id, recipient_id, app_id) {
 
         var path = '/apps/'+app_id+'/typings/'+recipient_id+"/"+ writer_id;

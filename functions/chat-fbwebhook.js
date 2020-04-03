@@ -69,8 +69,8 @@ exports.sendToFB = functions.database.ref('/apps/{app_id}/users/{sender_id}/mess
 
   console.log('it s a message to fb ', message);
 
-
-  chatApi.typing(sender_id, recipient_id, app_id);
+  // typing(writer_id, recipient_id, text, timestamp, app_id) 
+  chatApi.typing(sender_id, recipient_id, message.text, undefined, app_id);
 
   const fb_sender_id = sender_id.replace("fb_","");
 

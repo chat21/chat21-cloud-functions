@@ -647,16 +647,29 @@ app.put('/:app_id/typings/:recipient_id', (req, res) => {
         if (req.body.writer_id) {
           writer_id = req.body.writer_id;
         }
+        let text = "";
+        if (req.body.text) {
+          text = req.body.text;
+        }
        
+        let timestamp = undefined;
+        if (req.body.timestamp) {
+          timestamp = req.body.timestamp;
+        }
+       
+
         let recipient_id = req.params.recipient_id;
         let app_id = req.params.app_id;
 
 
         console.log('group_id', recipient_id);
         console.log('app_id', app_id);
+        console.log('text', text);
+        console.log('timestamp', timestamp);
 
 
-        chatApi.typing(writer_id, recipient_id, app_id).then(function(result) {
+          // typing(writer_id, recipient_id, text, app_id) 
+        chatApi.typing(writer_id, recipient_id, text, timestamp, app_id).then(function(result) {
           console.log('result', result);
           res.status(200).send({"success":true});
         });      
@@ -665,7 +678,7 @@ app.put('/:app_id/typings/:recipient_id', (req, res) => {
 
 
 
-
+// DEPRECATED NOT IN USE
     app.delete('/:app_id/typings/:recipient_id', (req, res) => {
       console.log('set Typing stop');
     
