@@ -35,6 +35,10 @@ npm install
 # Deploy
 * Deploy to Firebase using the following command: ```firebase deploy```. You can see the deployed functions on the Firebase Console under Functions menu.
 
+# Tips
+
+* If you get Error 403 "Your client does not have permission to the requested URL" please enable unauthenticated function for /api e /supportapi cloud functions following this guide: https://cloud.google.com/functions/docs/securing/managing-access-iam#allowing_unauthenticated_function_invocation
+
 # Test
 ## Send your first message 
 
