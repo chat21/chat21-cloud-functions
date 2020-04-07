@@ -662,7 +662,8 @@ app.put('/:app_id/typings/:recipient_id', (req, res) => {
         let app_id = req.params.app_id;
 
 
-        console.log('group_id', recipient_id);
+        console.log('recipient_id', recipient_id);
+        console.log('writer_id', writer_id);
         console.log('app_id', app_id);
         console.log('text', text);
         console.log('timestamp', timestamp);

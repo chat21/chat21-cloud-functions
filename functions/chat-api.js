@@ -858,11 +858,9 @@ class ChatApi {
         }
         
         var typing = {};
-        typing[writer_id]["message"] = text;
-        typing[writer_id]["timestamp"] = timestamp;
-        // typing[writer_id] = 1;
-        
-
+        var subObj = {message: text, timestamp:timestamp};
+        typing[writer_id] = subObj;
+                    
         console.log("typing typing " + typing  + " to " + path);
         return admin.database().ref(path).update(typing);
     }
