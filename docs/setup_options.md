@@ -20,7 +20,7 @@ firebase functions:config:set push.web.click_action=https://www.your_chat_url.co
 ``` 
 for example:  
 ```
-firebase functions:config:set push.web.click_action=https://support.YOURDOMAIN.COM/chat
+firebase functions:config:set push.web.click_action=https://console.YOURDOMAIN.COM/chat
 ```
 
 # Email Notification
