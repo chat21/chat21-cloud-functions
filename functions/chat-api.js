@@ -351,6 +351,11 @@ class ChatApi {
             console.log('not update the conversation because updateconversation is false');
             return 0;
         }
+
+        if (message.attributes && message.attributes.updateconversationfor && message.attributes.updateconversationfor.length>0 && message.attributes.updateconversationfor.indexOf(sender_id)==-1) {
+            console.log('not update the conversation because updateconversationfor is defined with value', message.attributes.updateconversationfor);
+            return 0;
+        }
     
         var conversation = {};
         // console.log("message.status : " + message.status);       
