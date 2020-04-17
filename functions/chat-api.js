@@ -448,6 +448,12 @@ class ChatApi {
             console.log(`conversation created`);
     
             if (message.attributes) {
+
+                if (!message.attributes['subtype']) { 
+                    //message.attributes['subtype'] = 'standard'; //reset conversation.attributes.subtype. otherwise if a message is sent with subtype = info the next messages have the subtype=info under conv.attributes
+                    message.attributes['subtype'] = null; //reset conversation.attributes.subtype. otherwise if a message is sent with subtype = info the next messages have the subtype=info under conv.attributes
+                }
+
                 return admin.database().ref(path + '/attributes').update(message.attributes);
             }
             return 0;
