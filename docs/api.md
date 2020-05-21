@@ -101,8 +101,9 @@ curl -X POST \
   
 ### Message attributes
 With attributes you can add custom attribute to the message as described below but you can also control internal behaviors:
-- disable push notification for each message with  attributes = {"sendnotification":false}
+- disable push notification for specific message with attributes = {"sendnotification":false}
 - disable conversation model update with  attributes = {"updateconversation":false}
+- send info message with blue badge to a chat. It's used to notifiy system events like: member join a chat, member leave a chat, etc.). You can send the info message using  attributes = {"subtype":"info"}
 
 ## Create a Group
 
