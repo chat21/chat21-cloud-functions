@@ -22,21 +22,18 @@ If the command fails, you may need to change npm permissions as described here h
 
 You can find more info about Firebase Functions here https://firebase.google.com/docs/functions/get-started
 
-# Project setup
+# Project building
 * Clone or download this repo from github 
 * Run from command line:
 ```
 cd functions 
 npm install
 ```
-* Login to Firebase CLI with ```firebase login```. More info here  https://firebase.google.com/docs/cli/
+
+# Project setup
+* Login to Firebase CLI with ```firebase login```. If you are not in localhost run ```firebase login --no-localhost```
+ More info here  https://firebase.google.com/docs/cli/
 * Set up your Firebase project by running ```firebase use --add```, select your Project ID and follow the instructions.
-
-# Run with Docker 
-
-```
-docker run -it chat21/chat21-cloud-functions sh
-```
 
 # Deploy
 * Deploy to Firebase using the following command: ```firebase deploy```. You can see the deployed functions on the Firebase Console under Functions menu.
@@ -44,6 +41,16 @@ docker run -it chat21/chat21-cloud-functions sh
 # Tips
 
 * If you get Error 403 "Your client does not have permission to the requested URL" please enable unauthenticated function for /api e /supportapi cloud functions following this guide: https://cloud.google.com/functions/docs/securing/managing-access-iam#allowing_unauthenticated_function_invocation
+
+# Run with Docker 
+If you prefer you can use a pre-built docker image to deploy the cloud functions to the Firebase project:
+
+Run: 
+```
+docker run -it chat21/chat21-cloud-functions sh
+```
+After that follow the "Project setup" and "Deploy paragraphs.
+
 
 # Test
 ## Send your first message 
