@@ -32,6 +32,12 @@ npm install
 * Login to Firebase CLI with ```firebase login```. More info here  https://firebase.google.com/docs/cli/
 * Set up your Firebase project by running ```firebase use --add```, select your Project ID and follow the instructions.
 
+# Run with Docker 
+
+```
+docker run chat21/chat21-cloud-functions --interactive sh
+```
+
 # Deploy
 * Deploy to Firebase using the following command: ```firebase deploy```. You can see the deployed functions on the Firebase Console under Functions menu.
 
