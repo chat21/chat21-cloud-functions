@@ -35,7 +35,7 @@ npm install
 # Run with Docker 
 
 ```
-docker run chat21/chat21-cloud-functions --interactive sh
+docker run -it chat21/chat21-cloud-functions sh
 ```
 
 # Deploy
