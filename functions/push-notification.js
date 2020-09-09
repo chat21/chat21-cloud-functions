@@ -24,6 +24,12 @@ if (functions.config().push && functions.config().push && functions.config().pus
     const app_id = context.params.app_id;
     const message = data.val();
 
+    var forcenotification = false;
+    if (message.attributes && message.attributes.forcenotification) {
+        forcenotification = message.attributes.forcenotification;
+        console.log('forcenotification', forcenotification);
+    }
+
     // DEBUG console.log("sender_id: "+ sender_id + ", recipient_id : " + recipient_id + ", app_id: " + app_id + ", message_id: " + message_id);
    
     // DEBUG console.log('message ' + JSON.stringify(message));
@@ -41,37 +47,44 @@ if (functions.config().push && functions.config().push && functions.config().pus
     
     const promises = [];
 
+    if (sender_id == "system"){
+        console.log('not send push notification for system user');
+        return 0;
+    }
+
     if (sender_id == recipient_id) {
         console.log('not send push notification for the same user');
         //if sender is receiver, don't send notification
         return 0;
     }
 
-    if (message.sender == "system"){
-        console.log('not send push notification for message with system as sender');
-  
-        return 0;
-    }
-  
-    if (sender_id == "system"){
-        console.log('not send push notification for system user');
-  
-        return 0;
-    }
+    if (forcenotification == false) {
 
-    if (message.attributes && message.attributes.sendnotification==false) {
-        console.log('not send push notification because sendnotification is false');
-        return 0;
+        if (message.sender == "system"){
+            console.log('not send push notification for message with system as sender');
+      
+            return 0;
+        }
+      
+    
+        if (message.attributes && message.attributes.sendnotification==false) {
+            console.log('not send push notification because sendnotification is false');
+            return 0;
+        }
+    
+    
+        // if (functions.config().push && functions.config().push.disabled && functions.config().push.mute.for ) {
+    
+        if (recipient_id == "general_group" ) {
+            console.log('dont send push notification for mute recipient');
+            //if sender is receiver, don't send notification
+            return 0;
+        }
+
+    } else {
+        console.log('forcenotification is enabled');
     }
-
-
-    // if (functions.config().push && functions.config().push.disabled && functions.config().push.mute.for ) {
-
-    if (recipient_id == "general_group" ) {
-        console.log('dont send push notification for mute recipient');
-        //if sender is receiver, don't send notification
-        return 0;
-    }
+    
 
     const text = message.text;
     const messageTimestamp = JSON.stringify(message.timestamp);

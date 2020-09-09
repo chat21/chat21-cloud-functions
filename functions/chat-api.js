@@ -144,11 +144,15 @@ class ChatApi {
                         // console.log('messageWithOutMessageId ' + JSON.stringify(messageWithOutMessageId));
                     
                     
-                        if (i>0) {
-                            if (message.attributes) {
-                                message.attributes.sendnotification = false;
-                            }
-                        } 
+                        // if (i>0) {
+                        if (!message.attributes) {
+                            message.attributes = {};
+                        }
+
+                        if (message.attributes.forcenotification != true) {
+                            message.attributes.sendnotification = false;
+                        }
+                        // } 
                         console.log('message ' + JSON.stringify(message));
                         i++;
                     });
@@ -403,6 +407,7 @@ class ChatApi {
         //     conversation.attributes = message.attributes;
         // }
         
+        // elimina
         if (message.senderAuthInfo) {
             conversation.senderAuthInfo = message.senderAuthInfo;
         }

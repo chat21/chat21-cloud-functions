@@ -71,7 +71,7 @@ if (functions.config().fbwebhook && functions.config().fbwebhook.enabled && func
 
    
 
-    
+    // elimina
     if (authVar && authType) {//First argument contains undefined in property 'apps.bbb2.messages.-LPkg7hrcixsLUSu7DAz.-LPkg8BKMeO-6AWEgNxy.senderAuthInfo.authVar'
         //Object.keys(authVar).forEach(key => authVar[key] === undefined ? delete userRecord[key] : '');
         message.senderAuthInfo = {"authVar":authVar, "authType": authType};
@@ -358,10 +358,12 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
      }
 
      var updateconversation = true;
+     var forcenotification = true;
 
      if (group_id.indexOf("support-group")>-1 ){
         console.log('dont update conversation for group creation message for support-group');
          updateconversation = false;
+         forcenotification = false;   //dont force notification for MEMBER_JOINED_GROUP for support-group
      }
 
      var sender_id =  "system";
@@ -376,7 +378,7 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
                 console.log("contact", contact);
                 var fullname = contact.firstname + " " + contact.lastname;
                 console.log("fullname", fullname);
-                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP", parameters:{member_id: member_id, fullname:fullname} }});
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, forcenotification: forcenotification, messagelabel: {key: "MEMBER_JOINED_GROUP", parameters:{member_id: member_id, fullname:fullname} }});
             }, function (error) {
             
                 var parameters = {member_id: member_id};
@@ -387,7 +389,7 @@ exports.sendInfoMessageOnJoinGroup = functions.database.ref('/apps/{app_id}/grou
 
                     console.log("parameters", parameters);
     
-                    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_JOINED_GROUP",  parameters}});
+                    return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, forcenotification: forcenotification, messagelabel: {key: "MEMBER_JOINED_GROUP",  parameters}});
 
 
                 } else {
