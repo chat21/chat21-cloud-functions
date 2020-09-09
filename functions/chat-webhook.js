@@ -412,3 +412,101 @@ var json = {
 
 });
 
+
+
+
+
+
+
+
+/*
+
+
+exports.onPresenceOnline = functions.database.ref('/apps/{app_id}/presence/{user_id}/connections/{connection_id}').onCreate((data, context) => {
+    
+  const user_id = context.params.user_id;
+  const connection_id = context.params.connection_id;
+
+  const app_id = context.params.app_id;;
+  console.log("user_id: "+ user_id  + " connection_id: "+ connection_id  + ", app_id: " + app_id);
+  
+  const connectionData = data.val();
+  console.log("connectionData", connectionData);
+
+
+
+// var data = {
+// member_id: member_id
+// };
+
+var json = {
+  event_type: "presence-change",
+  presence: 'online',
+  createdAt: new Date().getTime(),
+  app_id: app_id,
+  user_id: user_id,
+  data: connectionData
+};
+
+
+  return request({
+    "uri": URL,
+    "method": "POST",
+    //"agent": agent,
+    "json": json
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('http sent!');
+      return 0;
+    } else {
+      console.error("Unable to send http:" + err);
+      return 0;
+    }
+  }); 
+
+  
+
+
+});
+
+
+
+
+exports.onPresenceOffline = functions.database.ref('/apps/{app_id}/presence/{user_id}/connections').onDelete((data, context) => {
+    
+  const user_id = context.params.user_id;
+
+  const app_id = context.params.app_id;;
+  console.log("user_id: "+ user_id  + ", app_id: " + app_id);
+  
+ 
+var json = {
+  event_type: "presence-change",
+  presence: 'offline',
+  createdAt: new Date().getTime(),
+  app_id: app_id,
+  user_id: user_id,
+  // data: connectionData
+};
+
+
+  return request({
+    "uri": URL,
+    "method": "POST",
+    //"agent": agent,
+    "json": json
+  }, (err, res, body) => {
+    if (!err) {
+      console.log('http sent!');
+      return 0;
+    } else {
+      console.error("Unable to send http:" + err);
+      return 0;
+    }
+  }); 
+
+  
+
+
+});
+*/
