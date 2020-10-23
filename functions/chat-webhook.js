@@ -419,8 +419,6 @@ var json = {
 
 
 
-/*
-
 
 exports.onPresenceOnline = functions.database.ref('/apps/{app_id}/presence/{user_id}/connections/{connection_id}').onCreate((data, context) => {
     
@@ -509,4 +507,3 @@ var json = {
 
 
 });
-*/
