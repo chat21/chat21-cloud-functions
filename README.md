@@ -37,8 +37,8 @@ npm install
 
 # Deploy
 Deploy to Firebase using the following commands: 
-* Go in the project root directory with ```cd ..```.
-* Deploy with  ```firebase deploy```.
+* Go in the project root directory with ```cd ..```
+* Deploy with  ```firebase deploy```
 You can now see the deployed functions on the Firebase Console under Functions menu.
 
 # Tips
