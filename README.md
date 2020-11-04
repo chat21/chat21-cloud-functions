@@ -36,10 +36,10 @@ npm install
 * Set up your Firebase project by running ```firebase use --add```, select your Project ID and follow the instructions.
 
 # Deploy
-* Deploy to Firebase using the following commands: 
+Deploy to Firebase using the following commands: 
 * Go in the project root directory with ```cd ..```.
 * Deploy with  ```firebase deploy```.
-You can see the deployed functions on the Firebase Console under Functions menu.
+You can now see the deployed functions on the Firebase Console under Functions menu.
 
 # Tips
 
