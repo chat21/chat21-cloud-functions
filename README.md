@@ -18,7 +18,7 @@ Chat21-cloud function is the backend module required for the operation of the ot
 * Create a Firebase Project on https://console.firebase.google.com/. Follow the Firebase Documentation to create a new project on the Firebase console.
 * Install Firebase CLI running ```npm install -g firebase-tools```.
 More info here https://firebase.google.com/docs/cli/ 
-If the command fails, you may need to change npm permissions as described here https://docs.npmjs.com/getting-started/fixing-npm-permissions or try to install Firebase CLI locally with ```npm install firebase-tools@```
+If the command fails, you may need to change npm permissions as described here https://docs.npmjs.com/getting-started/fixing-npm-permissions or try to install Firebase CLI locally with ```npm install firebase-tools```
 
 You can find more info about Firebase Functions here https://firebase.google.com/docs/functions/get-started
 
