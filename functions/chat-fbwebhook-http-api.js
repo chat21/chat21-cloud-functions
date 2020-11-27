@@ -15,6 +15,7 @@
  */
 
 'use strict';
+const config = require('./config');
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
@@ -140,5 +141,5 @@ appWebHook.get('/:project_id', (req, res) => {
 
 
 // Expose the API as a function
-exports.api = functions.https.onRequest(appWebHook);
+exports.api = functions.region(config.region).https.onRequest(appWebHook);
 

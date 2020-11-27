@@ -22,6 +22,13 @@ for example:
 ```
 firebase functions:config:set push.web.click_action=https://console.YOURDOMAIN.COM/chat
 ```
+# Change the Server region
+
+As default Chat21 server is deployed by Google Firebase in **us-central1** location. Chat21 server is implemented using Firebase Cloud Functions and Firebase Realtime Database. If you want to change the location of the server to another region you must modify the location of the Firebase Cloud Functions using the property **region** of the file **functions/config.js**. After that you must **redeploy** your code with `firebase deploy` command.
+You can find more info regarding the supported region of the Cloud Functions [here](https://firebase.google.com/docs/functions/locations).
+
+Attention if you modify the Cloud Functions location it is recommended to modify also the location of the Firebase Realtime Database. To change the Realtime Database location follow this [link](https://firebase.google.com/docs/projects/locations#rtdb-locations).
+Here you can find an interesting [post](https://firebase.googleblog.com/2020/11/realtime-database-region-and-api.html)
 
 # Email Notification
 * You can decide to send an email notification for each message sent to a recupient. 

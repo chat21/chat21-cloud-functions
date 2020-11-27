@@ -2,10 +2,12 @@
 'use strict';
 
 const admin = require('firebase-admin');
+const config = require('./config');
+
 const cors = require('cors')({origin: true});
 const functions = require('firebase-functions');
 
-//let functions.config() = JSON.parse(process.env.FIREBASE_CONFIG);
+//let functions.region(config.region).config() = JSON.parse(process.env.FIREBASE_CONFIG);
 
 // Express middleware that validates Firebase ID Tokens passed in the Authorization HTTP header.
 // The Firebase ID token needs to be passed as a Bearer token in the Authorization HTTP header like this:

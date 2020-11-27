@@ -18,6 +18,8 @@
 // [START import]
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const config = require('./config');
+
 // const gcs = require('@google-cloud/storage');
 // do not use this. const gcs = require('@google-cloud/storage')();
 const spawn = require('child-process-promise').spawn;
@@ -32,7 +34,7 @@ const fs = require('fs');
  * ImageMagick.
  */
 // [START generateThumbnailTrigger]
-exports.generateThumbnail = functions.storage.object().onFinalize((object) => {
+exports.generateThumbnail = functions.region(config.region).storage.object().onFinalize((object) => {
 // [END generateThumbnailTrigger]
   // [START eventAttributes]
   const fileBucket = object.bucket; // The Storage bucket that contains the file.

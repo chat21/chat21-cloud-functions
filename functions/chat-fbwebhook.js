@@ -2,9 +2,11 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const config = require('./config');
+
 const chatApi = require('./chat-api');
 const request = require('request-promise');  
-//let functions.config() = JSON.parse(process.env.FIREBASE_CONFIG);
+//let functions.region(config.region).config() = JSON.parse(process.env.FIREBASE_CONFIG);
 
 function callSendAPI(sender_psid, response) {
   // Construct the message body
@@ -36,7 +38,7 @@ function callSendAPI(sender_psid, response) {
   }); 
 }
 
-exports.sendToFB = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.sendToFB = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
   // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
   const message_id = context.params.message_id;

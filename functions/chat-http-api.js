@@ -18,6 +18,8 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const config = require('./config');
+
 // const Language = require('@google-cloud/language');
 const chatApi = require('./chat-api');
 const express = require('express');
@@ -1062,5 +1064,5 @@ app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
 
 
 // Expose the API as a function
-exports.api = functions.https.onRequest(app);
+exports.api = functions.region(config.region).https.onRequest(app);
 

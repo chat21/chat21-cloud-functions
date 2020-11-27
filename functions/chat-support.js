@@ -4,6 +4,8 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const config = require('./config');
+
 const chatApi = require('./chat-api');
 const FieldValue = require('firebase-admin').firestore.FieldValue;
 const chatSupportApi = require('./chat-support-api');
@@ -28,8 +30,8 @@ const agent = new https.Agent({keepAlive: true});
 //console.log("chat-support.js loaded");
 
 
-exports.createGroupForNewSupportRequest = functions.database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
-    // exports.createGroupForNewSupportRequest = functions.database.ref('/DEPRECATED/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
+exports.createGroupForNewSupportRequest = functions.region(config.region).database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
+    // exports.createGroupForNewSupportRequest = functions.region(config.region).database.ref('/DEPRECATED/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
 
     // const sender_id = context.params.sender_id; 
     const recipient_id = context.params.recipient_id;
@@ -357,7 +359,7 @@ function updateMembersCount(group_id, operation, app_id) {
        });
    
 }
-exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
+exports.addMemberToReqFirestoreOnJoinGroup = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
     const member_id = context.params.member_id;
     const group_id = context.params.group_id;
@@ -425,7 +427,7 @@ exports.addMemberToReqFirestoreOnJoinGroup = functions.database.ref('/apps/{app_
 });
 
 
-exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
+exports.removeMemberToReqFirestoreOnLeaveGroup = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
     
     const member_id = context.params.member_id;
     const group_id = context.params.group_id;
@@ -467,7 +469,7 @@ exports.removeMemberToReqFirestoreOnLeaveGroup = functions.database.ref('/apps/{
 
 
 
-exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.saveSupportConversationToFirestore = functions.region(config.region).database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     const message_id = context.params.message_id;
     const recipient_id = context.params.recipient_id;
     const app_id = context.params.app_id;;
@@ -509,7 +511,7 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
 
 
-    exports.saveSupportMessagesToFirestore = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+    exports.saveSupportMessagesToFirestore = functions.region(config.region).database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
         const message_id = context.params.message_id;
       
         const recipient_id = context.params.recipient_id;
@@ -544,7 +546,7 @@ exports.saveSupportConversationToFirestore = functions.database.ref('/apps/{app_
 
 
     // var path = '/apps/'+app_id+'/users/'+user_id+'/archived_conversations/'+recipient_id;
-exports.reopenSupportRequest = functions.database.ref('/apps/{app_id}/users/{user_id}/archived_conversations/{recipient_id}').onDelete((snap, context) => {
+exports.reopenSupportRequest = functions.region(config.region).database.ref('/apps/{app_id}/users/{user_id}/archived_conversations/{recipient_id}').onDelete((snap, context) => {
     const app_id = context.params.app_id;
     const user_id = context.params.user_id;
     const recipient_id = context.params.recipient_id;
@@ -568,7 +570,7 @@ exports.reopenSupportRequest = functions.database.ref('/apps/{app_id}/users/{use
 });
 
 
-exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.removeBotWhenTextContainsSlashAgent = functions.region(config.region).database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     
     const message_id = context.params.message_id;
       
@@ -646,7 +648,7 @@ exports.removeBotWhenTextContainsSlashAgent = functions.database.ref('/apps/{app
 });
 
 
-exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.closeSupportWhenTextContainsSlashClose = functions.region(config.region).database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     
     const message_id = context.params.message_id;
       
@@ -686,7 +688,7 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 });
 
 
-// exports.sendInfoMessageOnGroupCreation = functions.database.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
+// exports.sendInfoMessageOnGroupCreation = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
     
 //     const group_id = context.params.group_id;
 //     const app_id = context.params.app_id;;
@@ -713,7 +715,7 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 
 
 // if (functions.config().support.storetobackend && functions.config().support.storetobackend.enabled && functions.config().support.storetobackend.enabled=="true") {
-//     exports.saveMessagesToNodeJs = functions.database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+//     exports.saveMessagesToNodeJs = functions.region(config.region).database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 //         const message_id = context.params.message_id;
 //         const recipient_id = context.params.recipient_id;
 //         const app_id = context.params.app_id;
@@ -746,7 +748,7 @@ exports.closeSupportWhenTextContainsSlashClose = functions.database.ref('/apps/{
 // }  
 
 
-exports.botreplyWithTwoReply = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.botreplyWithTwoReply = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
     // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
     const message_id = context.params.message_id;

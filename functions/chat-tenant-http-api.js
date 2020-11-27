@@ -2,6 +2,8 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const config = require('./config');
+
 const chatTenantApi = require('./chat-webhook-api.js');
 const express = require('express');
 const cors = require('cors')({origin: true});
@@ -80,4 +82,4 @@ app.post('/apps', (req, res) => {
 
 
 // Expose the API as a function
-exports.apiapps = functions.https.onRequest(app);
+exports.apiapps = functions.region(config.region).https.onRequest(app);

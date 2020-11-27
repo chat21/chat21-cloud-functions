@@ -21,6 +21,8 @@ const admin = require('firebase-admin');
 // const Language = require('@google-cloud/language');
 const chatApi = require('./chat-api');
 const express = require('express');
+const config = require('./config');
+
 const cors = require('cors')({origin: true});
 //var md5 = require('md5');
 
@@ -122,7 +124,7 @@ app.post('/:app_id/requests', (req, res) => {
 
     
 
-    //curl 'https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/requests/create?token=chat21-secret-orgAa,&sender_fullname=Bash&text=pingfromAPI&projectid=5b45e1c75313c50014b3abc6'
+    //curl 'https://us-central1-chat-v2-dev.cloudfunctions.region(config.region).net/supportapi/tilechat/requests/create?token=chat21-secret-orgAa,&sender_fullname=Bash&text=pingfromAPI&projectid=5b45e1c75313c50014b3abc6'
     app.get('/:app_id/requests/create', (req, res) => {
       console.log('create request');
     
@@ -336,5 +338,5 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
 
 
 // Expose the API as a function
-exports.api = functions.https.onRequest(app);
+exports.api = functions.region(config.region).https.onRequest(app);
 

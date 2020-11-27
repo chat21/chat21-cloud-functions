@@ -2,8 +2,10 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const config = require('./config');
+
 const chatApi = require('./chat-api');
-//let functions.config() = JSON.parse(process.env.FIREBASE_CONFIG);
+//let functions.region(config.region).config() = JSON.parse(process.env.FIREBASE_CONFIG);
 
 
 //
@@ -49,7 +51,7 @@ if (!mailTransport) {
 }
 
 
-exports.sendEmailNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.sendEmailNotification = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id; 
     const recipient_id = context.params.recipient_id;

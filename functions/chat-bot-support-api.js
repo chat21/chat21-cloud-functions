@@ -4,6 +4,7 @@
 
 // const admin = require('firebase-admin');
 const request = require('request-promise');  
+const config = require('./config');
 
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
@@ -17,7 +18,7 @@ var BASE_API_URL;
 var AUTHORIZATION_TOKEN_API;
 const functions = require('firebase-functions');
 
-if (functions.config().support.api && functions.config().support.api.url) {
+if (functions.region(config.region).region(config.region).region(config.region).region(config.region).region(config.region).config().support.api && functions.config().support.api.url) {
     BASE_API_URL = functions.config().support.api.url;
     console.log('BASE_API_URL', BASE_API_URL);
 

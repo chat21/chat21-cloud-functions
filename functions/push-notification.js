@@ -3,6 +3,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const chatApi = require('./chat-api');
+const config = require('./config');
 
 
 //console.log("push-notification.js loaded");
@@ -17,7 +18,7 @@ if (functions.config().push && functions.config().push && functions.config().pus
 //PUSH NOTIFICATION
 
  // invio di una singola notifica push ad un utente (direct)
- exports.sendNotification = functions.database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+ exports.sendNotification = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id; 
     const recipient_id = context.params.recipient_id;
