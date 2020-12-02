@@ -150,7 +150,6 @@ app.post('/:app_id/messages', (req, res) => {
  */
 // [START trigger]
 app.delete('/:app_id/messages/:recipient_id/:message_id', (req, res) => {
-  // app.delete('/groups/:group_id/members/:member_id', (req, res) => {
   console.log('delete a message');
 
    
@@ -244,7 +243,6 @@ app.delete('/:app_id/messages/:recipient_id/:message_id', (req, res) => {
  */
 // [START trigger]
 app.delete('/:app_id/conversations/:recipient_id/', (req, res) => {
-  // app.delete('/groups/:group_id/members/:member_id', (req, res) => {
   console.log('delete a conversation');
 
    
