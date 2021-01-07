@@ -67,7 +67,7 @@ module.exports = {
 
                 return next();
             }).catch(() => {
-                res.status(403).send('Unauthorized');
+                return res.status(403).send('Unauthorized');
             });
 
 

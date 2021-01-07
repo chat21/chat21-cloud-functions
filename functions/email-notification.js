@@ -7,6 +7,13 @@ const config = require('./config');
 const chatApi = require('./chat-api');
 //let functions.region(config.region).config() = JSON.parse(process.env.FIREBASE_CONFIG);
 
+// const db = require("./db");
+var db = functions.region(config.region).database;
+
+if (config.databaseInstance) {
+  console.log("databaseInstance", config.databaseInstance);
+  db = db.instance(config.databaseInstance);
+}
 
 //
 // ################ BEGIN EMAIL ################ //  
@@ -51,7 +58,7 @@ if (!mailTransport) {
 }
 
 
-exports.sendEmailNotification = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.sendEmailNotification = db.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id; 
     const recipient_id = context.params.recipient_id;

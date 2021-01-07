@@ -64,26 +64,26 @@ app.post('/:app_id/messages', (req, res) => {
 
    
       if (req.method !== 'POST') {
-        res.status(403).send('Forbidden!');
+        return res.status(403).send('Forbidden!');
       }
       
       cors(req, res, () => {
         let sender_id = req.user.uid;
 
         if (!req.body.sender_fullname) {
-            res.status(405).send('Sender Fullname is not present!');
+          return res.status(405).send('Sender Fullname is not present!');
         }
         if (!req.body.recipient_id) {
-            res.status(405).send('Recipient id is not present!');
+          return res.status(405).send('Recipient id is not present!');
         }
         if (!req.body.recipient_fullname) {
-            res.status(405).send('Recipient Fullname is not present!');
+          return res.status(405).send('Recipient Fullname is not present!');
         }
-        if (!req.body.text) {
-            res.status(405).send('text  is not present!');
-        }
+        // if (!req.body.text) {
+        //   return res.status(405).send('text  is not present!');
+        // }
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
         if (req.body.sender_id) {
@@ -118,20 +118,27 @@ app.post('/:app_id/messages', (req, res) => {
 
         if (channel_type==null || channel_type=="direct") {  //is a direct message
           // sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, type, metadata) {
-          chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, type, metadata).then(function(result) {
-            console.log('result', result);
+          return chatApi.sendDirectMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, timestamp, type, metadata).then(function(result) {
+            console.log('result', JSON.stringify(result));
 
-            res.status(201).send(result);
+            return res.status(201).send(result);
+          }).catch(function(err) {
+            console.log('error sendDirectMessage', JSON.stringify(err));
+            return res.status(500).send(err);
           });
         }else if (channel_type=="group") {
           // sendGroupMessage(sender_id, sender_fullname, recipient_group_id, recipient_group_fullname, text, app_id, attributes, projectid, timestamp, type, metadata) {
-          chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, timestamp, type, metadata).then(function(result) {
-            console.log('result', result);
+          return chatApi.sendGroupMessage(sender_id, sender_fullname, recipient_id, recipient_fullname, text, app_id, attributes, undefined, timestamp, type, metadata).then(function(result) {
+            console.log('result', JSON.stringify(result));
 
-            res.status(201).send(result);
+
+            return res.status(201).send(result);
+          }).catch(function(err) {
+            console.log('error sendGroupMessage', JSON.stringify(err));
+            return res.status(500).send(err);
           });
         }else {
-          res.status(405).send('channel_type error!');
+          return res.status(405).send('channel_type error!');
         }
 
         
@@ -162,15 +169,15 @@ app.delete('/:app_id/messages/:recipient_id/:message_id', (req, res) => {
         let sender_id = req.user.uid;
 
         if (!req.params.recipient_id) {
-          res.status(405).send('recipient_id is not present!');
+          return res.status(405).send('recipient_id is not present!');
         }
 
         if (!req.params.message_id) {
-            res.status(405).send('message_id is not present!');
+          return res.status(405).send('message_id is not present!');
         }
     
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
         if (req.body.sender_id) {
@@ -201,31 +208,31 @@ app.delete('/:app_id/messages/:recipient_id/:message_id', (req, res) => {
         
         if (channel_type=="direct") {
           if (all==false) {
-            chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id).then(function(result) {
+            return chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id).then(function(result) {
               console.log('result', result);
-              res.status(204).send({"success":true});
+              return res.status(204).send({"success":true});
             });
 
           }else {
-            chatApi.deleteMessageForAll(sender_id, recipient_id, message_id, app_id).then(function(result) {
+            return chatApi.deleteMessageForAll(sender_id, recipient_id, message_id, app_id).then(function(result) {
               console.log('result', result);
-              res.status(204).send({"success":true});
+              return res.status(204).send({"success":true});
             });
           }
         }else if (channel_type=="group") {
           if (all==false) {
-            chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id).then(function(result) {
+            return chatApi.deleteMessage(sender_id, recipient_id, message_id, app_id).then(function(result) {
               console.log('result', result);
-              res.status(204).send({"success":true});
+              return res.status(204).send({"success":true});
             });
           }else {
-            chatApi.deleteMessageGroupForAll(recipient_id, message_id, app_id).then(function(result) {
+            return chatApi.deleteMessageGroupForAll(recipient_id, message_id, app_id).then(function(result) {
               console.log('result', result);
-              res.status(204).send({"success":true});
+              return res.status(204).send({"success":true});
             });
           }
         }else {
-          res.status(405).send('channel_type error');
+          return res.status(405).send('channel_type error');
         }
         
       
@@ -253,12 +260,12 @@ app.delete('/:app_id/conversations/:recipient_id/', (req, res) => {
       cors(req, res, () => {
 
         if (!req.params.recipient_id) {
-          res.status(405).send('recipient_id is not present!');
+          return res.status(405).send('recipient_id is not present!');
         }
 
       
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
 
@@ -286,14 +293,14 @@ app.delete('/:app_id/conversations/:recipient_id/', (req, res) => {
       
     
         if (physicsDelete==false) {
-          chatApi.archiveConversation(user_id, recipient_id, app_id).then(function(result) {
+          return chatApi.archiveConversation(user_id, recipient_id, app_id).then(function(result) {
             console.log('result', result);
-            res.status(204).send({"success":true});
+            return res.status(204).send({"success":true});
           });
         }else {
-          chatApi.deleteConversation(user_id, recipient_id, app_id).then(function(result) {
+          return chatApi.deleteConversation(user_id, recipient_id, app_id).then(function(result) {
             console.log('result', result);
-            res.status(204).send({"success":true});
+            return res.status(204).send({"success":true});
           });
         }                         
       });
@@ -312,19 +319,19 @@ app.post('/:app_id/groups', (req, res) => {
 
    
     if (req.method !== 'POST') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
         if (!req.body.group_name) {
-            res.status(405).send('group_name is not present!');
+          return res.status(405).send('group_name is not present!');
         }
         // if (!req.body.group_members) {
         //     res.status(405).send('group_members is not present!');
         // }
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return  res.status(405).send('app_id is not present!');
         }
 
         let group_name = req.body.group_name;
@@ -355,16 +362,16 @@ app.post('/:app_id/groups', (req, res) => {
 
         if (group_id) {
           // createGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members) {
-           chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members).then(function(result) {
+          return chatApi.createGroupWithId(group_id, group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members).then(function(result) {
             console.log('result', result);
             // prima veniva ritornato il result
-            res.status(201).send({"success":true});
+            return res.status(201).send({"success":true});
           });
         }else {
           // createGroup(group_name, group_owner, group_members, app_id, attributes, invited_members) {
-            chatApi.createGroup(group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members).then(function(result) {
+          return chatApi.createGroup(group_name, group_owner, group_members, app_id, req.body.attributes, req.body.invited_members).then(function(result) {
               console.log('result', result);
-              res.status(201).send({"success":true});
+              return res.status(201).send({"success":true});
             });
       
         }               
@@ -385,16 +392,16 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
 
    
     if (req.method !== 'PUT') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
         if (!req.params.group_id) {
-            res.status(405).send('group_id is not present!');
+          return res.status(405).send('group_id is not present!');
         }
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
        
@@ -420,9 +427,9 @@ app.put('/:app_id/groups/:group_id', (req, res) => {
 
 
 // updateGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members) {
-        chatApi.updateGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members).then(function(result) {
+      return chatApi.updateGroupWithId(group_id, group_name, group_owner, group_members, app_id, attributes, invited_members).then(function(result) {
           console.log('result', result);
-          res.status(200).send({"success":true});
+          return res.status(200).send({"success":true});
         });   
       });
     });
@@ -446,19 +453,19 @@ app.post('/:app_id/groups/:group_id/members', (req, res) => {
 
    
     if (req.method !== 'POST') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
         if (!req.body.member_id) {
-            res.status(405).send('member_id is not present!');
+          return res.status(405).send('member_id is not present!');
         }
         if (!req.params.group_id) {
-            res.status(405).send('group_id is not present!');
+          return res.status(405).send('group_id is not present!');
         }
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
         let member_id = req.body.member_id;
@@ -471,9 +478,9 @@ app.post('/:app_id/groups/:group_id/members', (req, res) => {
         console.log('app_id', app_id);
 
 
-       chatApi.joinGroup(member_id, group_id, app_id).then(function(result) {
+      return chatApi.joinGroup(member_id, group_id, app_id).then(function(result) {
         console.log('result', result);
-        res.status(201).send({"success":true});
+        return res.status(201).send({"success":true});
       });             
       });
     });
@@ -505,13 +512,13 @@ app.delete('/:app_id/groups/:group_id/members/:member_id', (req, res) => {
       cors(req, res, () => {
 
         if (!req.params.member_id) {
-            res.status(405).send('member_id is not present!');
+          return res.status(405).send('member_id is not present!');
         }
         if (!req.params.group_id) {
-            res.status(405).send('group_id is not present!');
+          return res.status(405).send('group_id is not present!');
         }
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
         let member_id = req.params.member_id;
@@ -524,9 +531,9 @@ app.delete('/:app_id/groups/:group_id/members/:member_id', (req, res) => {
         console.log('app_id', app_id);
 
 
-        chatApi.leaveGroup(member_id, group_id, app_id).then(function(result) {
+        return chatApi.leaveGroup(member_id, group_id, app_id).then(function(result) {
           console.log('result', result);
-          res.status(204).send({"success":true});
+          return res.status(204).send({"success":true});
         });      
       });
     });
@@ -544,16 +551,16 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
 
    
     if (req.method !== 'PUT') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
         if (!req.params.group_id) {
-            res.status(405).send('group_id is not present!');
+          return res.status(405).send('group_id is not present!');
         }
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
         let members = req.body.members;
@@ -566,9 +573,9 @@ app.put('/:app_id/groups/:group_id/members', (req, res) => {
         console.log('app_id', app_id);
 
 
-        chatApi.setMembersGroup(members, group_id, app_id).then(function(result) {
+        return chatApi.setMembersGroup(members, group_id, app_id).then(function(result) {
           console.log('result', result);
-          res.status(200).send({"success":true});
+          return res.status(200).send({"success":true});
         });   
       });
     });
@@ -586,16 +593,16 @@ app.put('/:app_id/groups/:group_id/attributes', (req, res) => {
 
    
     if (req.method !== 'PUT') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
         if (!req.params.group_id) {
-            res.status(405).send('group_id is not present!');
+          return res.status(405).send('group_id is not present!');
         }
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
         let attributes = req.body.attributes;
@@ -608,9 +615,9 @@ app.put('/:app_id/groups/:group_id/attributes', (req, res) => {
         console.log('app_id', app_id);
 
         // updateAttributesGroup(attributes, group_id, app_id) {
-        chatApi.updateAttributesGroup(attributes, group_id, app_id).then(function(result) {
+        return chatApi.updateAttributesGroup(attributes, group_id, app_id).then(function(result) {
           console.log('result', result);
-          res.status(200).send({"success":true});
+          return res.status(200).send({"success":true});
         });   
       });
     });
@@ -632,16 +639,16 @@ app.put('/:app_id/typings/:recipient_id', (req, res) => {
 
    
     if (req.method !== 'PUT') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
         if (!req.params.recipient_id) {
-            res.status(405).send('recipient_id is not present!');
+          return res.status(405).send('recipient_id is not present!');
         }
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
         let writer_id = req.user.uid;
         if (req.body.writer_id) {
@@ -670,9 +677,9 @@ app.put('/:app_id/typings/:recipient_id', (req, res) => {
 
 
           // typing(writer_id, recipient_id, text, app_id) 
-        chatApi.typing(writer_id, recipient_id, text, timestamp, app_id).then(function(result) {
+        return chatApi.typing(writer_id, recipient_id, text, timestamp, app_id).then(function(result) {
           console.log('result', result);
-          res.status(200).send({"success":true});
+          return res.status(200).send({"success":true});
         });      
       });
     });
@@ -685,16 +692,16 @@ app.put('/:app_id/typings/:recipient_id', (req, res) => {
     
        
         if (req.method !== 'DELETE') {
-          res.status(403).send('Forbidden!');
+          return res.status(403).send('Forbidden!');
         }
           
           cors(req, res, () => {
     
             if (!req.params.recipient_id) {
-                res.status(405).send('recipient_id is not present!');
+              return res.status(405).send('recipient_id is not present!');
             }
             if (!req.params.app_id) {
-                res.status(405).send('app_id is not present!');
+              return res.status(405).send('app_id is not present!');
             }
             let writer_id = req.user.uid;
             if (req.body.writer_id) {
@@ -709,9 +716,9 @@ app.put('/:app_id/typings/:recipient_id', (req, res) => {
             console.log('app_id', app_id);
     
     
-            chatApi.stopTyping(writer_id, recipient_id, app_id).then(function(result) {
+            return chatApi.stopTyping(writer_id, recipient_id, app_id).then(function(result) {
               console.log('result', result);
-              res.status(200).send({"success":true});
+              return res.status(200).send({"success":true});
             });
                     
           });
@@ -731,18 +738,18 @@ app.get('/:app_id/contacts/:contact_id', (req, res) => {
 
    
     if (req.method !== 'GET') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
        
         if (!req.params.contact_id) {
-            res.status(405).send('contact_id is not present!');
+          return res.status(405).send('contact_id is not present!');
         }
 
         if (!req.params.app_id) {
-          res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
 
@@ -753,8 +760,8 @@ app.get('/:app_id/contacts/:contact_id', (req, res) => {
         console.log('contact_id', contact_id);
         console.log('app_id', app_id);
 
-        chatApi.getContactById(contact_id, app_id).then(function(contact) {
-          res.status(200).send(contact);
+        return chatApi.getContactById(contact_id, app_id).then(function(contact) {
+          return res.status(200).send(contact);
         });
        
       });
@@ -772,20 +779,20 @@ app.post('/:app_id/contacts', (req, res) => {
 
    
     if (req.method !== 'POST') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
         if (req.body.firstname  == undefined) {
-            res.status(405).send('firstname is not present!');
+          return res.status(405).send('firstname is not present!');
         }
         if (req.body.lastname == undefined) {
-          res.status(405).send('lastname is not present!');
+          return res.status(405).send('lastname is not present!');
         }
        
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
         let firstname = req.body.firstname;
@@ -807,9 +814,9 @@ app.post('/:app_id/contacts', (req, res) => {
         console.log('app_id', app_id);
 
 
-       chatApi.createContactWithId(current_user, firstname, lastname, email, app_id).then(function(result) {
+      return chatApi.createContactWithId(current_user, firstname, lastname, email, app_id).then(function(result) {
         console.log('result', result);
-        res.status(201).send({"success":true});
+        return res.status(201).send({"success":true});
       });      
       });
     });
@@ -829,20 +836,20 @@ app.put('/:app_id/contacts/me', (req, res) => {
 
    
     if (req.method !== 'PUT') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
         if (req.body.firstname  == undefined) {
-            res.status(405).send('firstname is not present!');
+          return res.status(405).send('firstname is not present!');
         }
         if (req.body.lastname == undefined) {
-          res.status(405).send('lastname is not present!');
+          return res.status(405).send('lastname is not present!');
         }
        
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
         let firstname = req.body.firstname;
@@ -865,9 +872,9 @@ app.put('/:app_id/contacts/me', (req, res) => {
         console.log('app_id', app_id);
 
 
-       chatApi.changeContactFullname(current_user, firstname, lastname, app_id).then(function(result) {
+      return chatApi.changeContactFullname(current_user, firstname, lastname, app_id).then(function(result) {
         console.log('result', result);
-        res.status(200).send({"success":true});
+        return res.status(200).send({"success":true});
       });     
       });
     });
@@ -907,7 +914,7 @@ app.put('/:app_id/contacts/me/photo', (req, res) => {
   console.log('upload my photo profile information');
 
   if (req.method !== 'PUT') {
-    res.status(403).send('Forbidden!');
+    return res.status(403).send('Forbidden!');
   }
     
     cors(req, res, () => {
@@ -929,7 +936,7 @@ app.put('/:app_id/contacts/me/photo', (req, res) => {
           })
             .then(() => {
                 return cors(req, res, () => {
-                    res.status(200).send({ "url": bucket.file('a.jpg').getSignedUrl()});
+                  return res.status(200).send({ "url": bucket.file('a.jpg').getSignedUrl()});
                   });
               });
       });
@@ -946,14 +953,14 @@ app.delete('/:app_id/contacts/me/photo', (req, res) => {
 
    
     if (req.method !== 'DELETE') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
        
         if (!req.params.app_id) {
-            res.status(405).send('app_id is not present!');
+          return res.status(405).send('app_id is not present!');
         }
 
       
@@ -966,9 +973,9 @@ app.delete('/:app_id/contacts/me/photo', (req, res) => {
         console.log('app_id', app_id);
 
 
-        chatApi.deleteContactBucket(current_user, app_id).then(() => {
+        return chatApi.deleteContactBucket(current_user, app_id).then(() => {
           console.log(`Bucket  deleted.`);
-          res.status(204).send();
+          return res.status(204).send();
         });
 
       });
@@ -987,12 +994,12 @@ app.get('/verifytoken', (req, res) => {
 
    
     if (req.method !== 'GET') {
-      res.status(403).send('Forbidden!');
+      return res.status(403).send('Forbidden!');
     }
       
       cors(req, res, () => {
 
-        res.status(200).send();
+        return res.status(200).send();
       });
     });
     
@@ -1009,13 +1016,13 @@ app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
   console.log('===== BEGIN email - unsubscribe =====');
 
   if (req.method !== 'POST') {
-    res.status(403).send('Forbidden!');
+    return res.status(403).send('Forbidden!');
   }
 
   cors(req, res, () => {
 
     if (!req.params.app_id) {
-      res.status(405).send('app_id is not present!');
+      return  res.status(405).send('app_id is not present!');
     }
 
     // if (!req.body.user_id) {
@@ -1023,11 +1030,11 @@ app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
     // }
 
     if (!req.params.user_id) {
-      res.status(405).send('user_id is not present!');
+      return res.status(405).send('user_id is not present!');
     }
 
     if (!req.body.is_subscribed) {
-      res.status(405).send('is_subscribed is not present!');
+      return res.status(405).send('is_subscribed is not present!');
     }
 
     let app_id = req.params.app_id;
@@ -1049,11 +1056,11 @@ app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
       console.log('===== END email - unsubscribe =====');
       // res.status(201).send(JSON.stringify(data['snapshot']));
       // res.status(201).send(JSON.stringify(data['email']));
-      res.status(201).send(data['email']);
+      return res.status(201).send(data['email']);
     }).catch(function (error) {
       console.log("email subscriptions setting could not be saved. " , error);
       console.log('===== END email - unsubscribe =====');
-      res.status(405).send(JSON.stringify(error));
+      return res.status(405).send(JSON.stringify(error));
     });
   });
 });

@@ -8,6 +8,14 @@ const chatApi = require('./chat-api');
 const request = require('request-promise');  
 //let functions.region(config.region).config() = JSON.parse(process.env.FIREBASE_CONFIG);
 
+// const db = require("./db");
+var db = functions.region(config.region).database;
+
+if (config.databaseInstance) {
+  console.log("databaseInstance", config.databaseInstance);
+  db = db.instance(config.databaseInstance);
+}
+
 function callSendAPI(sender_psid, response) {
   // Construct the message body
   let request_body = {
@@ -38,7 +46,7 @@ function callSendAPI(sender_psid, response) {
   }); 
 }
 
-exports.sendToFB = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.sendToFB = db.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
   // CONTROLLARE SU NODEJS SE SONO UN BOT SE SI GET DI MICROSOFT URL QNA 
   const message_id = context.params.message_id;

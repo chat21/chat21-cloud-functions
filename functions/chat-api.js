@@ -377,7 +377,12 @@ class ChatApi {
             conversation.status = message.status;
         }
        
-        conversation.last_message_text = message.text;
+        if (message.text) {
+            conversation.last_message_text = message.text;
+        }else {
+            //for image set Image?
+        }
+        
         if (message.sender_fullname){ //message potrebbe non avere il sender fullname perche la app non l'ha passato. in questo caso se nn c'è il fullname anche la conversation non ha il fullname
             conversation.sender_fullname = message.sender_fullname;
         }

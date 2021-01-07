@@ -5,7 +5,13 @@ const admin = require('firebase-admin');
 const chatApi = require('./chat-api');
 const config = require('./config');
 
+// const db = require("./db");
+var db = functions.region(config.region).database;
 
+if (config.databaseInstance) {
+  console.log("databaseInstance", config.databaseInstance);
+  db = db.instance(config.databaseInstance);
+}
 //console.log("push-notification.js loaded");
 
 let webClickAction = "http://localhost:4200/";
@@ -18,7 +24,7 @@ if (functions.config().push && functions.config().push && functions.config().pus
 //PUSH NOTIFICATION
 
  // invio di una singola notifica push ad un utente (direct)
- exports.sendNotification = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+ exports.sendNotification = db.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id; 
     const recipient_id = context.params.recipient_id;

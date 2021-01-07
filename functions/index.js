@@ -1,9 +1,19 @@
 const functions = require('firebase-functions');
 const config = require('./config');
-
+console.log("config", config);
 
 var admin = require('firebase-admin');
-admin.initializeApp();
+
+// https://firebase.google.com/docs/database/admin/start#authenticate-with-admin-privileges
+var firebaseConfig = {};
+if (config.databaseURL) {
+    firebaseConfig.databaseURL = config.databaseURL;
+    console.log("firebaseConfig", firebaseConfig);
+    admin.initializeApp(firebaseConfig);
+} else {
+    admin.initializeApp();
+}
+
 
 const removeEmpty = (obj) => 
   Object.entries(obj).forEach(([key, val]) => {
@@ -51,9 +61,17 @@ if (functions.config().fbwebhook && functions.config().fbwebhook.enabled && func
 }
 
 
+// const db = require("./db");
+var db = functions.region(config.region).database;
 
-  exports.insertAndSendMessage = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
-   
+if (config.databaseInstance) {
+  console.log("databaseInstance", config.databaseInstance);
+  db = db.instance(config.databaseInstance);
+}
+
+
+exports.insertAndSendMessage = db.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+    
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id;
     const recipient_id = context.params.recipient_id;
@@ -102,7 +120,7 @@ if (functions.config().fbwebhook && functions.config().fbwebhook.enabled && func
 
 
 //se metto {uid} prende utente corrente
-exports.createConversation = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.createConversation = db.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
    
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id;    
@@ -136,7 +154,7 @@ exports.createConversation = functions.region(config.region).database.ref('/apps
    
   });
 
-  exports.deleteArchivedConversation = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/conversations/{recipient_id}').onCreate((data, context) => {
+  exports.deleteArchivedConversation = db.ref('/apps/{app_id}/users/{sender_id}/conversations/{recipient_id}').onCreate((data, context) => {
     const sender_id = context.params.sender_id;    
     const recipient_id = context.params.recipient_id;  
     const app_id = context.params.app_id;;
@@ -163,7 +181,7 @@ exports.createConversation = functions.region(config.region).database.ref('/apps
 
 
 //only for direct message
-  exports.sendMessageReturnReceipt = functions.region(config.region).database.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onUpdate((change, context) => {
+  exports.sendMessageReturnReceipt = db.ref('/apps/{app_id}/users/{sender_id}/messages/{recipient_id}/{message_id}').onUpdate((change, context) => {
    
     const message_id = context.params.message_id;
     const sender_id = context.params.sender_id;
@@ -215,7 +233,7 @@ exports.createConversation = functions.region(config.region).database.ref('/apps
 
 
 
-  exports.fanOutGroup = functions.region(config.region).database.ref('/apps/{tenantId}/groups/{groupId}').onWrite((data, context) => {
+  exports.fanOutGroup = db.ref('/apps/{tenantId}/groups/{groupId}').onWrite((data, context) => {
     
      //console.log('event: ' +  event);
    
@@ -293,7 +311,7 @@ exports.createConversation = functions.region(config.region).database.ref('/apps
 
   
 
-   exports.sendInfoMessageOnGroupCreation = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
+   exports.sendInfoMessageOnGroupCreation = db.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
     
      const group_id = context.params.group_id;
      const app_id = context.params.app_id;;
@@ -319,7 +337,7 @@ exports.createConversation = functions.region(config.region).database.ref('/apps
   });
 
 
-exports.duplicateTimelineOnJoinGroup = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
+exports.duplicateTimelineOnJoinGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
      const member_id = context.params.member_id;
      const group_id = context.params.group_id;
@@ -332,7 +350,7 @@ exports.duplicateTimelineOnJoinGroup = functions.region(config.region).database.
 });
 
 
-exports.duplicateTimelineOnJoinGroupForInvitedMembers = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/invited_members/{member_id}').onCreate((data, context) => {
+exports.duplicateTimelineOnJoinGroupForInvitedMembers = db.ref('/apps/{app_id}/groups/{group_id}/invited_members/{member_id}').onCreate((data, context) => {
     
     const member_id = context.params.member_id;
     const group_id = context.params.group_id;
@@ -345,7 +363,7 @@ exports.duplicateTimelineOnJoinGroupForInvitedMembers = functions.region(config.
 
 
 
-exports.sendInfoMessageOnJoinGroup = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
+exports.sendInfoMessageOnJoinGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
      const member_id = context.params.member_id;
      const group_id = context.params.group_id;
@@ -426,7 +444,7 @@ exports.sendInfoMessageOnJoinGroup = functions.region(config.region).database.re
 
 
 //DEPRECATED UNUSED. REMOVE IT
-exports.saveMemberInfoOnJoinGroup = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
+exports.saveMemberInfoOnJoinGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
     const member_id = context.params.member_id;
     const group_id = context.params.group_id;
@@ -440,7 +458,7 @@ exports.saveMemberInfoOnJoinGroup = functions.region(config.region).database.ref
 
 });
 //DEPRECATED UNUSED. REMOVE IT
-exports.removeMemberInfoOnLeaveGroup = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
+exports.removeMemberInfoOnLeaveGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
     
     const member_id = context.params.member_id;
     const group_id = context.params.group_id;
@@ -453,7 +471,7 @@ exports.removeMemberInfoOnLeaveGroup = functions.region(config.region).database.
 
 
 if (functions.config().group && functions.config().group.general && functions.config().group.general.autojoin ) {
-    exports.addToGeneralMembersOnContantCreation = functions.region(config.region).database.ref('/apps/{app_id}/contacts/{contact_id}').onCreate((data, context) => {
+    exports.addToGeneralMembersOnContantCreation = db.ref('/apps/{app_id}/contacts/{contact_id}').onCreate((data, context) => {
         
         const contact_id = context.params.contact_id;
         const app_id = context.params.app_id;;

@@ -9,6 +9,12 @@ const chatApi = require('./chat-api');
 const http = require('http');
 // const agent = new http.Agent({keepAlive: true});
 
+// const db = require("./db");
+var db = functions.region(config.region).database;
+if (config.databaseInstance) {
+  console.log("databaseInstance", config.databaseInstance);
+  db = db.instance(config.databaseInstance);
+}
 
 var URL;
 
@@ -22,7 +28,7 @@ if (!URL) {
 }
 
 //rename to onGroupMessage
-exports.onMessage = functions.region(config.region).database.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
+exports.onMessage = db.ref('/apps/{app_id}/messages/{recipient_id}/{message_id}').onCreate((data, context) => {
 
   const message_id = context.params.message_id;
 
@@ -75,7 +81,7 @@ exports.onMessage = functions.region(config.region).database.ref('/apps/{app_id}
 
 
 //DEPRECATED REMOVE IT
-// exports.onFirstMessage = functions.region(config.region).database.ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
+// exports.onFirstMessage = functions.region(config.region).database.instance(config.databaseInstance).ref('/apps/{app_id}/messages/{recipient_id}').onCreate((data, context) => {
 //   // const sender_id = context.params.sender_id; 
 //   const recipient_id = context.params.recipient_id;
 //   const app_id = context.params.app_id;;
@@ -137,7 +143,7 @@ exports.onMessage = functions.region(config.region).database.ref('/apps/{app_id}
 
 
 
-exports.onDeleteConversation = functions.region(config.region).database.ref('/apps/{app_id}/users/{user_id}/conversations/{recipient_id}').onDelete((snap, context) => {
+exports.onDeleteConversation = db.ref('/apps/{app_id}/users/{user_id}/conversations/{recipient_id}').onDelete((snap, context) => {
   const app_id = context.params.app_id;
   const user_id = context.params.user_id;
   const recipient_id = context.params.recipient_id;
@@ -178,7 +184,7 @@ exports.onDeleteConversation = functions.region(config.region).database.ref('/ap
 
 });
 
-exports.onDeleteArchivedConversation = functions.region(config.region).database.ref('/apps/{app_id}/users/{user_id}/archived_conversations/{recipient_id}').onDelete((snap, context) => {
+exports.onDeleteArchivedConversation = db.ref('/apps/{app_id}/users/{user_id}/archived_conversations/{recipient_id}').onDelete((snap, context) => {
   const app_id = context.params.app_id;
   const user_id = context.params.user_id;
   const recipient_id = context.params.recipient_id;
@@ -222,7 +228,7 @@ exports.onDeleteArchivedConversation = functions.region(config.region).database.
 
 
 
-exports.onGroupCreated = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
+exports.onGroupCreated = db.ref('/apps/{app_id}/groups/{group_id}').onCreate((data, context) => {
     
   const group_id = context.params.group_id;
   const app_id = context.params.app_id;;
@@ -258,7 +264,7 @@ exports.onGroupCreated = functions.region(config.region).database.ref('/apps/{ap
 });
 
 
-exports.onMemberJoinGroup = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
+exports.onMemberJoinGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
     const member_id = context.params.member_id;
     const group_id = context.params.group_id;
@@ -310,7 +316,7 @@ exports.onMemberJoinGroup = functions.region(config.region).database.ref('/apps/
 });
 
 
-exports.onMemberLeaveGroup = functions.region(config.region).database.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
+exports.onMemberLeaveGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
     
     const member_id = context.params.member_id;
     const group_id = context.params.group_id;
@@ -368,7 +374,7 @@ exports.onMemberLeaveGroup = functions.region(config.region).database.ref('/apps
 //   var path = '/apps/'+app_id+'/typings/'+recipient_id;
 
 
-exports.onTyping = functions.region(config.region).database.ref('/apps/{app_id}/typings/{recipient_id}/{writer_id}').onUpdate((change, context) => {
+exports.onTyping = db.ref('/apps/{app_id}/typings/{recipient_id}/{writer_id}').onUpdate((change, context) => {
     
   const recipient_id = context.params.recipient_id;
   const writer_id = context.params.writer_id;
@@ -422,7 +428,7 @@ var json = {
 
 
 
-exports.onPresenceOnline = functions.region(config.region).database.ref('/apps/{app_id}/presence/{user_id}/connections/{connection_id}').onCreate((data, context) => {
+exports.onPresenceOnline = db.ref('/apps/{app_id}/presence/{user_id}/connections/{connection_id}').onCreate((data, context) => {
     
   const user_id = context.params.user_id;
   const connection_id = context.params.connection_id;
@@ -472,7 +478,7 @@ var json = {
 
 
 
-exports.onPresenceOffline = functions.region(config.region).database.ref('/apps/{app_id}/presence/{user_id}/connections').onDelete((data, context) => {
+exports.onPresenceOffline = db.ref('/apps/{app_id}/presence/{user_id}/connections').onDelete((data, context) => {
     
   const user_id = context.params.user_id;
 
