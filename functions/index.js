@@ -29,7 +29,7 @@ const chatHttpApi = require('./chat-http-api');
 
 //console.log("index.js loaded");
 
-exports.api = functions.region(config.region).region(config.region).https.onRequest(chatHttpApi.api);
+exports.api = functions.region(config.region).https.onRequest(chatHttpApi.api);
 
 //let functions.region(config.region).config() = JSON.parse(process.env.FIREBASE_CONFIG);
 //console.log("functions.region(config.region).config()", functions.region(config.region).config());

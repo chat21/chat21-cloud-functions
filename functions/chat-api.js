@@ -441,7 +441,7 @@ class ChatApi {
         //         (message.status == null || message.status==chatApi.CHAT_MESSAGE_STATUS.SENDING)
         //         ){ //the message sender will reopen the support group
         //         console.log('reopening the support request', archived_conversation);
-        //         if (functions.region(config.region).region(config.region).region(config.region).region(config.region).region(config.region).config().support && functions.config().support.enabled) {
+        //         if (functions.region(config.region).config().support && functions.config().support.enabled) {
         //             return chatSupportApi.openChat(archived_conversation.recipient, app_id);
         //         }
                 
