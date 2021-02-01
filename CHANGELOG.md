@@ -1,4 +1,4 @@
-# 1.0.34
+# 1.0.35
 - Duplicate region fix
 
 # 1.0.33
