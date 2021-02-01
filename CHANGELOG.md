@@ -1,3 +1,6 @@
+# 1.0.34
+- Duplicate region fix
+
 # 1.0.33
 - Fix return value for REST Api 
 - Text field is optional for messages
