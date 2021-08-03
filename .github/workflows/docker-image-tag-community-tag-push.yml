@@ -17,5 +17,5 @@ jobs:
        with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        repository: tiledesk/tiledesk-server
+        repository: chat21/chat21-cloud-functions
         tag_with_ref: true
