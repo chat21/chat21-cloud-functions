@@ -64,7 +64,7 @@ You can send a message making a POST call to the endpoint:
       'https://us-central1-<FIREBASE_PROJECT_ID>.cloudfunctions.net/api/<APP_ID>/messages'
 ```
 
-![successful-message](../../../Desktop/successful-message.png)
+![successful-message](./successful-message.png)
 
 Where:
 
