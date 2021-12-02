@@ -3,3 +3,5 @@ node_modules
 .gradle
 functions/firebase-debug.log
 firebase-debug.log
+
+.DS_Store

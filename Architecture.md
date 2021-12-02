@@ -1,26 +1,26 @@
-# Info
+# System Architecture
 
-# Security (optional)
-See the file database.rules.json to understand the databases security rules.
+## Security (optional)
 
+See the file `database.rules.json` to understand the databases security rules.
 
-# Database structure
+## Database structure
 
 ```
 /apps/$appId/
             --> /users/$uid
                             --> /messages/$recipientId/$messageId
                                                                   --> {
-                                                                        "channel_type" : "direct",                        // "direct" or "group"
+                                                                        "channel_type" : "direct",                       // "direct" or "group"
                                                                         "language" : "it",
-                                                                        "recipient" : "jjXVZKQSzMhOhhyIjSVOGqy4cMd2",    //recipient id
+                                                                        "recipient" : "jjXVZKQSzMhOhhyIjSVOGqy4cMd2",    // recipient id
                                                                         "recipient_fullname" : "Stefano Depascalis",
-                                                                        "sender" : "AHNfnoWiF7SDVy6iKVTmgsAjLOv2",        //sender id
+                                                                        "sender" : "AHNfnoWiF7SDVy6iKVTmgsAjLOv2",       // sender id
                                                                         "sender_fullname" : "Andrea Leo",
                                                                         "status" : 150,
                                                                         "text" : "First message!!!",                     // text message
                                                                         "timestamp" : 1516288744310,
-                                                                        "type" : "text"                                 // "text" or "image" or "file"                 
+                                                                        "type" : "text"                                  // "text" or "image" or "file"
                                                                       }
 
 
@@ -36,8 +36,8 @@ See the file database.rules.json to understand the databases security rules.
                                                                     "status" : 2,
                                                                     "timestamp" : 1516291089368
                                                                     }
-                            
-                            
+
+
                             --> /contacts/$contactId       -->  {
                                                                 "email" : "stefanodp91@gmail.com",
                                                                 "firstname" : "Stefano",
@@ -59,10 +59,8 @@ See the file database.rules.json to understand the databases security rules.
                                                                 "name" : "First Group",
                                                                 "owner" : "DQ6CmBKhRreONqnNvQdHVom5FEr1"
                                                                 }
-```                                                 
-
-
-
+```
 
 ## Messages timeline
+
 When a message is sent it's archived into the sender timeline. With a fan-out operation the message is placed into the recipient timeline.
