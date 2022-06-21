@@ -1,5 +1,6 @@
 module.exports = {
     region:'us-central1',     //Find other locations here https://firebase.google.com/docs/functions/locations
+    // minInstances: 1
     //region: 'europe-west1',
 
     // https://firebase.google.com/docs/database/admin/start#authenticate-with-admin-privileges

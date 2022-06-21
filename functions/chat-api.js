@@ -315,6 +315,27 @@ class ChatApi {
         
     }
 
+
+    hasConversation(user_id, app_id) {
+        var that = this;
+        return new Promise(function(resolve, reject) {
+
+            var path = '/apps/'+app_id+'/users/'+user_id+'/conversations/';
+            return admin.database().ref(path).once('value').then(function(conversationsSnapshot) {
+                //console.log('conversationSnapshot ' + JSON.stringify(conversationSnapshot) );
+                if (conversationsSnapshot.val()){ //exists
+                    console.log('conversationsSnapshot exists ' + JSON.stringify(conversationsSnapshot.val()) );
+                    return resolve(true);
+                }else {
+                    console.log('conversationsSnapshot not exists ');
+                    return resolve(false);
+                }
+            });
+
+             
+        });
+    }
+
     getLastMessage(sender_id, recipient_id, app_id) {
         const messagePath = '/apps/'+app_id+'/users/'+sender_id+'/messages/'+recipient_id;
         //console.log("messagePath:",messagePath);
@@ -467,6 +488,7 @@ class ChatApi {
 
                 return admin.database().ref(path + '/attributes').update(message.attributes);
             }
+
             return 0;
 
             

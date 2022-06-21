@@ -30,6 +30,7 @@ const chatHttpApi = require('./chat-http-api');
 //console.log("index.js loaded");
 
 exports.api = functions.region(config.region).https.onRequest(chatHttpApi.api);
+//.runWith({minInstances: config.minInstances})
 
 //let functions.region(config.region).config() = JSON.parse(process.env.FIREBASE_CONFIG);
 //console.log("functions.region(config.region).config()", functions.region(config.region).config());
@@ -399,7 +400,7 @@ exports.sendInfoMessageOnJoinGroup = db.ref('/apps/{app_id}/groups/{group_id}/me
                 console.log("contact", contact);
                 var fullname = contact.firstname + " " + contact.lastname;
                 console.log("fullname", fullname);
-                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, forcenotification: forcenotification, messagelabel: {key: "MEMBER_JOINED_GROUP", parameters:{member_id: member_id, fullname:fullname} }});
+                return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, forcenotification: forcenotification, messagelabel: {key: "MEMBER_JOINED_GROUP", parameters:{member_id: member_id, fullname:fullname, firstname: contact.firstname,lastname: contact.lastname} }});
             }, function (error) {
             
                 var parameters = {member_id: member_id};
@@ -407,7 +408,9 @@ exports.sendInfoMessageOnJoinGroup = db.ref('/apps/{app_id}/groups/{group_id}/me
                 if (member_id.startsWith("bot_")) { 
                     
                     parameters["fullname"] = "Bot";
-
+                    parameters["firstname"] = contact.firstname;
+                    parameters["lastname"] = contact.lastname;
+                    
                     console.log("parameters", parameters);
     
                     return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "New member added to group", app_id, {subtype:"info", "updateconversation" : updateconversation, forcenotification: forcenotification, messagelabel: {key: "MEMBER_JOINED_GROUP",  parameters}});

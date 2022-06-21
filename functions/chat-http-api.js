@@ -1070,4 +1070,5 @@ app.post('/:app_id/users/:user_id/settings/email', (req, res) => {
 
 // Expose the API as a function
 exports.api = functions.region(config.region).https.onRequest(app);
+//.runWith({minInstances: config.minInstances})
 

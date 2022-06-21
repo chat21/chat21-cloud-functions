@@ -28,8 +28,8 @@
             "$recipient_id":{
               ".indexOn": ["timestamp"]                
               } 
-          },
-          "users":{
+          },          
+          "users":{            
             "$uid":{
                 ".read": "$uid === auth.uid",
                 ".write": "$uid === auth.uid",
@@ -44,6 +44,10 @@
                 },
                 "archived_conversations":{
                   ".indexOn": ["timestamp"]
+                },
+                "instances": {
+                  ".read": "true",
+                  ".write": "true"
                 }
             }
           }

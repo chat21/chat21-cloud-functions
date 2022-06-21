@@ -373,7 +373,6 @@ exports.onMemberLeaveGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{m
 
 //   var path = '/apps/'+app_id+'/typings/'+recipient_id;
 
-
 exports.onTyping = db.ref('/apps/{app_id}/typings/{recipient_id}/{writer_id}').onUpdate((change, context) => {
     
   const recipient_id = context.params.recipient_id;
@@ -441,34 +440,46 @@ exports.onPresenceOnline = db.ref('/apps/{app_id}/presence/{user_id}/connections
 
 
 
-// var data = {
-// member_id: member_id
-// };
-
-var json = {
-  event_type: "presence-change",
-  presence: 'online',
-  createdAt: new Date().getTime(),
-  app_id: app_id,
-  user_id: user_id,
-  data: connectionData
-};
+  // chatApi.hasConversation(user_id, app_id).then(function(exists) {
+  //   console.log("exists", exists);
 
 
-  return request({
-    "uri": URL,
-    "method": "POST",
-    //"agent": agent,
-    "json": json
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('http sent!');
-      return 0;
-    } else {
-      console.error("Unable to send http:" + err);
-      return 0;
-    }
-  }); 
+  //   if (exists===false) {
+  //     console.log("skip presence webhook for "+user_id + " app_id " + app_id + " connection_id " + connection_id);
+  //     return 0;
+  //   }
+
+
+      var json = {
+        event_type: "presence-change",
+        presence: 'online',
+        createdAt: new Date().getTime(),
+        app_id: app_id,
+        user_id: user_id,
+        data: connectionData
+      };
+
+
+        return request({
+          "uri": URL,
+          "method": "POST",
+          //"agent": agent,
+          "json": json
+        }, (err, res, body) => {
+          if (!err) {
+            console.log('http sent for '+user_id + " app_id " + app_id + " connection_id " + connection_id);
+            return 0;
+          } else {
+            console.error("Unable to send http:" + err);
+            return 0;
+          }
+        }); 
+
+        
+  // });
+
+
+
 
   
 
@@ -485,33 +496,43 @@ exports.onPresenceOffline = db.ref('/apps/{app_id}/presence/{user_id}/connection
   const app_id = context.params.app_id;;
   console.log("user_id: "+ user_id  + ", app_id: " + app_id);
   
- 
-var json = {
-  event_type: "presence-change",
-  presence: 'offline',
-  createdAt: new Date().getTime(),
-  app_id: app_id,
-  user_id: user_id,
-  // data: connectionData
-};
+  // chatApi.hasConversation(user_id, app_id).then(function(exists) {
+  //   console.log("exists", exists);
 
 
-  return request({
-    "uri": URL,
-    "method": "POST",
-    //"agent": agent,
-    "json": json
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('http sent!');
-      return 0;
-    } else {
-      console.error("Unable to send http:" + err);
-      return 0;
-    }
-  }); 
+  //     if (exists===false) {
+  //       console.log("skip presence webhook for "+user_id + " app_id " + app_id);
+  //       return 0;
+  //     }
+
 
   
+      var json = {
+        event_type: "presence-change",
+        presence: 'offline',
+        createdAt: new Date().getTime(),
+        app_id: app_id,
+        user_id: user_id,
+        // data: connectionData
+      };
+
+
+    return request({
+      "uri": URL,
+      "method": "POST",
+      //"agent": agent,
+      "json": json
+    }, (err, res, body) => {
+      if (!err) {
+        console.log('http sent for '+user_id + " app_id " + app_id);
+        return 0;
+      } else {
+        console.error("Unable to send http:" + err);
+        return 0;
+      }
+    }); 
+
+  // });
 
 
 });
