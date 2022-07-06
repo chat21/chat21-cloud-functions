@@ -1,3 +1,6 @@
+# 1.0.36
+- Release in production
+
 # 1.0.35
 - Duplicate region fix
 
