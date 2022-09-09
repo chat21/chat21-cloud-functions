@@ -489,6 +489,7 @@ class ChatApi {
                 return admin.database().ref(path + '/attributes').update(message.attributes);
             }
 
+
             return 0;
 
             
@@ -1047,12 +1048,20 @@ class ChatApi {
         return chatApi.getAllGroupMembers(recipient_group_id, app_id).then(function (groupMembers) {
           
             groupMembers.forEach(function(groupMember) {
-              //   DEBUG console.log('groupMember ' + groupMember);
+                console.log('groupMember ' + groupMember);
         
+                    if (message.attributes && message.attributes.privateFor && message.attributes.privateFor === groupMember) {
+                        console.log('sendGroupMessageToMembersTimeline skip message for ' +  message.attributes.privateFor);
+                        return;
+                    }
+
+                  
+
                     //DON'T send a message to the sender of the message 
                     if (groupMember!=sender_id) { 
                         updates['/'+groupMember+'/messages/'+recipient_group_id + '/'+ message_id] = message; 
                     }
+                    console.log('updates ', updates);
             });
         
                 console.log('sendGroupMessageToMembersTimeline with message ' + JSON.stringify(message) + " TO: " + JSON.stringify(updates) );
