@@ -446,6 +446,93 @@ exports.sendInfoMessageOnJoinGroup = db.ref('/apps/{app_id}/groups/{group_id}/me
 });
 
 
+
+
+exports.sendInfoMessageOnLeaveGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onDelete((data, context) => {
+    
+    const member_id = context.params.member_id;
+    const group_id = context.params.group_id;
+    const app_id = context.params.app_id;;
+    console.log("member_id: "+ member_id + ", group_id : " + group_id + ", app_id: " + app_id);
+    
+    const member = data.val();
+    console.log("member", member);
+
+
+    if (member_id == "system"){
+        return 0;
+    }
+
+    var updateconversation = true;
+    var forcenotification = true;
+
+    if (group_id.indexOf("support-group")>-1 ){
+       console.log('dont update conversation for group creation message for support-group');
+        updateconversation = false;
+        forcenotification = false;   //dont force notification for MEMBER_JOINED_GROUP for support-group
+    }
+
+    var sender_id =  "system";
+    var sender_fullname = "System";
+
+
+    return chatApi.getGroupById(group_id, app_id).then(function (group) {
+       console.log("group", group);
+       if (group) {
+
+           return chatApi.getContactById(member_id, app_id).then(function (contact) {
+               console.log("contact", contact);
+               var fullname = contact.firstname + " " + contact.lastname;
+               console.log("fullname", fullname);
+               return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, fullname + " removed from group", app_id, {subtype:"info", "updateconversation" : updateconversation, forcenotification: forcenotification, messagelabel: {key: "MEMBER_LEFT_GROUP", parameters:{member_id: member_id, fullname:fullname, firstname: contact.firstname,lastname: contact.lastname} }});
+           }, function (error) {
+           
+               var parameters = {member_id: member_id};
+               
+               if (member_id.startsWith("bot_")) { 
+                   
+                   parameters["fullname"] = "Bot";
+                   parameters["firstname"] = contact.firstname;
+                   parameters["lastname"] = contact.lastname;
+                   
+                   console.log("parameters", parameters);
+   
+                   return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Bot removed from group", app_id, {subtype:"info", "updateconversation" : updateconversation, forcenotification: forcenotification, messagelabel: {key: "MEMBER_LEFT_GROUP",  parameters}});
+
+
+               } else {
+
+                   if (group.attributes) {
+                       var prechatFullname = "";
+                       if (group.attributes.userName) {
+                           prechatFullname = group.attributes.userName;
+                       }
+                       if (group.attributes.userEmail) {
+                           prechatFullname = prechatFullname + " (" + group.attributes.userEmail + ")";
+                       }
+                       if (prechatFullname.length>0) {
+                           parameters["fullname"] = prechatFullname;
+                       }
+                   }
+   
+                   console.log("parameters", parameters);
+   
+                   return chatApi.sendGroupMessage(sender_id, sender_fullname, group_id, group.name, "Member removed from group", app_id, {subtype:"info", "updateconversation" : updateconversation, messagelabel: {key: "MEMBER_LEFT_GROUP",  parameters}});
+
+               }
+               
+               
+           });
+   
+       }
+    });
+   
+});
+
+
+
+
+
 //DEPRECATED UNUSED. REMOVE IT
 exports.saveMemberInfoOnJoinGroup = db.ref('/apps/{app_id}/groups/{group_id}/members/{member_id}').onCreate((data, context) => {
     
