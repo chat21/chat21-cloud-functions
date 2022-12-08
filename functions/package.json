@@ -22,7 +22,7 @@
     "@google-cloud/storage": "^2.1.0",
     "child-process-promise": "^2.2.0",
     "cors": "^2.8.4",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "firebase-admin": "~9.4.2",
     "firebase-functions": "^3.13.0",
     "html-entities": "1.2.1",
